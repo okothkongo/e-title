@@ -18,6 +18,12 @@ defmodule ETitleWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    live "/identities", IdentityLive.Index, :index
+    live "/identities/new", IdentityLive.Index, :new
+    live "/identities/:id/edit", IdentityLive.Index, :edit
+
+    live "/identities/:id", IdentityLive.Show, :show
+    live "/identities/:id/show/edit", IdentityLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

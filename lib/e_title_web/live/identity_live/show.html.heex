@@ -1,0 +1,38 @@
+<.header>
+  Identity {@identity.id}
+  <:subtitle>This is a identity record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/identities/#{@identity}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit identity</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="First name">{@identity.first_name}</:item>
+  <:item title="Other names">{@identity.other_names}</:item>
+  <:item title="Surname">{@identity.surname}</:item>
+  <:item title="Birth date">{@identity.birth_date}</:item>
+  <:item title="Id doc">{@identity.id_doc}</:item>
+  <:item title="Nationality">{@identity.nationality}</:item>
+  <:item title="Kra pin">{@identity.kra_pin}</:item>
+  <:item title="Passport photo">{@identity.passport_photo}</:item>
+</.list>
+
+<.back navigate={~p"/identities"}>Back to identities</.back>
+
+<.modal
+  :if={@live_action == :edit}
+  id="identity-modal"
+  show
+  on_cancel={JS.patch(~p"/identities/#{@identity}")}
+>
+  <.live_component
+    module={ETitleWeb.IdentityLive.FormComponent}
+    id={@identity.id}
+    title={@page_title}
+    action={@live_action}
+    identity={@identity}
+    patch={~p"/identities/#{@identity}"}
+  />
+</.modal>

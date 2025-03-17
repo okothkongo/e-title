@@ -1,0 +1,53 @@
+<.header>
+  Listing Identities
+  <:actions>
+    <.link patch={~p"/identities/new"}>
+      <.button>New Identity</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="identities"
+  rows={@streams.identities}
+  row_click={fn {_id, identity} -> JS.navigate(~p"/identities/#{identity}") end}
+>
+  <:col :let={{_id, identity}} label="First name">{identity.first_name}</:col>
+  <:col :let={{_id, identity}} label="Other names">{identity.other_names}</:col>
+  <:col :let={{_id, identity}} label="Surname">{identity.surname}</:col>
+  <:col :let={{_id, identity}} label="Birth date">{identity.birth_date}</:col>
+  <:col :let={{_id, identity}} label="Id doc">{identity.id_doc}</:col>
+  <:col :let={{_id, identity}} label="Nationality">{identity.nationality}</:col>
+  <:col :let={{_id, identity}} label="Kra pin">{identity.kra_pin}</:col>
+  <:col :let={{_id, identity}} label="Passport photo">{identity.passport_photo}</:col>
+  <:action :let={{_id, identity}}>
+    <div class="sr-only">
+      <.link navigate={~p"/identities/#{identity}"}>Show</.link>
+    </div>
+    <.link patch={~p"/identities/#{identity}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, identity}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: identity.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal
+  :if={@live_action in [:new, :edit]}
+  id="identity-modal"
+  show
+  on_cancel={JS.patch(~p"/identities")}
+>
+  <.live_component
+    module={ETitleWeb.IdentityLive.FormComponent}
+    id={@identity.id || :new}
+    title={@page_title}
+    action={@live_action}
+    identity={@identity}
+    patch={~p"/identities"}
+  />
+</.modal>
