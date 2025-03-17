@@ -6,7 +6,7 @@ defmodule ETitle.Accounts do
   import Ecto.Query, warn: false
   alias ETitle.Repo
 
-  alias ETitle.Accounts.Identity
+  alias ETitle.Accounts.Schemas.Identity
 
   @doc """
   Returns the list of identities.

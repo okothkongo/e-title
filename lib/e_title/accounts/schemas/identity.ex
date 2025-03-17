@@ -1,4 +1,4 @@
-defmodule ETitle.Accounts.Identity do
+defmodule ETitle.Accounts.Schemas.Identity do
   use Ecto.Schema
   import Ecto.Changeset
 

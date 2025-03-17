@@ -2,7 +2,7 @@ defmodule ETitleWeb.IdentityLive.Index do
   use ETitleWeb, :live_view
 
   alias ETitle.Accounts
-  alias ETitle.Accounts.Identity
+  alias ETitle.Accounts.Schemas.Identity
 
   @impl true
   def mount(_params, _session, socket) do

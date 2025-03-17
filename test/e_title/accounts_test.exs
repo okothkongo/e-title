@@ -4,7 +4,7 @@ defmodule ETitle.AccountsTest do
   alias ETitle.Accounts
 
   describe "identities" do
-    alias ETitle.Accounts.Identity
+    alias ETitle.Accounts.Schemas.Identity
 
     import ETitle.AccountsFixtures
 
