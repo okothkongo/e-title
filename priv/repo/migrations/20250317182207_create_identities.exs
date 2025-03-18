@@ -11,7 +11,7 @@ defmodule ETitle.Repo.Migrations.CreateIdentities do
       add :nationality, :string, null: false
       add :kra_pin, :string, null: false
       add :passport_photo, :string, null: false
-
+      add :slug, :string, null: false
       timestamps(type: :utc_datetime)
     end
 

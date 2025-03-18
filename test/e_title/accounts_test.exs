@@ -2,100 +2,90 @@ defmodule ETitle.AccountsTest do
   use ETitle.DataCase
 
   alias ETitle.Accounts
+  alias ETitle.Factory
+  alias ETitle.Accounts.Schemas.Identity
 
-  describe "identities" do
-    alias ETitle.Accounts.Schemas.Identity
+  @valid_attrs %{
+    first_name: "some first_name",
+    other_names: "some other_names",
+    surname: "some surname",
+    birth_date: ~D[2025-03-16],
+    id_doc: "some id_doc",
+    nationality: "some nationality",
+    kra_pin: "some kra_pin",
+    passport_photo: "some passport_photo"
+  }
 
-    import ETitle.AccountsFixtures
+  @required_fields Identity.required_fields()
 
-    @invalid_attrs %{
-      first_name: nil,
-      other_names: nil,
-      surname: nil,
-      birth_date: nil,
-      id_doc: nil,
-      nationality: nil,
-      kra_pin: nil,
-      passport_photo: nil
-    }
-
-    test "list_identities/0 returns all identities" do
-      identity = identity_fixture()
-      assert Accounts.list_identities() == [identity]
-    end
-
-    test "get_identity!/1 returns the identity with given id" do
-      identity = identity_fixture()
-      assert Accounts.get_identity!(identity.id) == identity
-    end
-
-    test "create_identity/1 with valid data creates a identity" do
-      valid_attrs = %{
-        first_name: "some first_name",
-        other_names: "some other_names",
-        surname: "some surname",
-        birth_date: ~D[2025-03-16],
-        id_doc: "some id_doc",
-        nationality: "some nationality",
-        kra_pin: "some kra_pin",
-        passport_photo: "some passport_photo"
-      }
-
-      assert {:ok, %Identity{} = identity} = Accounts.create_identity(valid_attrs)
+  describe "create_identity/1" do
+    test "with valid data creates a identity" do
+      assert {:ok, %Identity{} = identity} = Accounts.create_identity(@valid_attrs)
       assert identity.first_name == "some first_name"
-      assert identity.other_names == "some other_names"
-      assert identity.surname == "some surname"
       assert identity.birth_date == ~D[2025-03-16]
       assert identity.id_doc == "some id_doc"
-      assert identity.nationality == "some nationality"
-      assert identity.kra_pin == "some kra_pin"
-      assert identity.passport_photo == "some passport_photo"
+      assert is_binary(identity.slug)
     end
 
-    test "create_identity/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Accounts.create_identity(@invalid_attrs)
+    for field <- @required_fields do
+      test "required field #{field} is validated" do
+        field = unquote(field)
+        attrs = Map.delete(@valid_attrs, field)
+        assert {:error, changeset} = Accounts.create_identity(attrs)
+        assert "can't be blank" in errors_on(changeset)[field]
+      end
     end
 
-    test "update_identity/2 with valid data updates the identity" do
-      identity = identity_fixture()
-
-      update_attrs = %{
-        first_name: "some updated first_name",
-        other_names: "some updated other_names",
-        surname: "some updated surname",
-        birth_date: ~D[2025-03-17],
-        id_doc: "some updated id_doc",
-        nationality: "some updated nationality",
-        kra_pin: "some updated kra_pin",
-        passport_photo: "some updated passport_photo"
-      }
-
-      assert {:ok, %Identity{} = identity} = Accounts.update_identity(identity, update_attrs)
-      assert identity.first_name == "some updated first_name"
-      assert identity.other_names == "some updated other_names"
-      assert identity.surname == "some updated surname"
-      assert identity.birth_date == ~D[2025-03-17]
-      assert identity.id_doc == "some updated id_doc"
-      assert identity.nationality == "some updated nationality"
-      assert identity.kra_pin == "some updated kra_pin"
-      assert identity.passport_photo == "some updated passport_photo"
+    test "unique kra_pin is validated" do
+      assert {:ok, %Identity{}} = Accounts.create_identity(@valid_attrs)
+      assert {:error, changeset} = Accounts.create_identity(@valid_attrs)
+      assert "has already been taken" in errors_on(changeset).kra_pin
     end
 
-    test "update_identity/2 with invalid data returns error changeset" do
-      identity = identity_fixture()
-      assert {:error, %Ecto.Changeset{}} = Accounts.update_identity(identity, @invalid_attrs)
+    test "unique id_doc and nationality is validated" do
+      assert {:ok, %Identity{}} = Accounts.create_identity(@valid_attrs)
+
+      assert {:error, changeset} =
+               Accounts.create_identity(%{@valid_attrs | kra_pin: "some kra_pin 2"})
+
+      assert "has already been taken" in errors_on(changeset).id_doc
+    end
+  end
+
+  setup do
+    identity = Factory.insert!(:identity)
+    %{identity: identity}
+  end
+
+  describe "update_identity/2" do
+    test "with valid data updates the identity", %{identity: identity} do
+      assert {:ok, %Identity{} = identity} =
+               Accounts.update_identity(identity, %{first_name: "New Name"})
+
+      assert identity.first_name == "New Name"
+    end
+
+    test "with invalid data returns error changeset", %{identity: identity} do
+      assert {:error, changeset} = Accounts.update_identity(identity, %{first_name: nil})
+      assert "can't be blank" in errors_on(changeset).first_name
       assert identity == Accounts.get_identity!(identity.id)
     end
+  end
 
-    test "delete_identity/1 deletes the identity" do
-      identity = identity_fixture()
-      assert {:ok, %Identity{}} = Accounts.delete_identity(identity)
-      assert_raise Ecto.NoResultsError, fn -> Accounts.get_identity!(identity.id) end
-    end
+  test "list_identities/0 returns all identities", %{identity: identity} do
+    assert Accounts.list_identities() == [identity]
+  end
 
-    test "change_identity/1 returns a identity changeset" do
-      identity = identity_fixture()
-      assert %Ecto.Changeset{} = Accounts.change_identity(identity)
-    end
+  test "get_identity!/1 returns the identity with given id", %{identity: identity} do
+    assert Accounts.get_identity!(identity.id) == identity
+  end
+
+  test "change_identity/1 returns a identity changeset", %{identity: identity} do
+    assert %Ecto.Changeset{} = Accounts.change_identity(identity)
+  end
+
+  test "delete_identity/1 deletes the identity", %{identity: identity} do
+    assert {:ok, %Identity{}} = Accounts.delete_identity(identity)
+    assert_raise Ecto.NoResultsError, fn -> Accounts.get_identity!(identity.id) end
   end
 end

@@ -2,7 +2,8 @@ defmodule ETitleWeb.IdentityLiveTest do
   use ETitleWeb.ConnCase
 
   import Phoenix.LiveViewTest
-  import ETitle.AccountsFixtures
+
+  alias ETitle.Factory
 
   @create_attrs %{
     first_name: "some first_name",
@@ -24,25 +25,13 @@ defmodule ETitleWeb.IdentityLiveTest do
     kra_pin: "some updated kra_pin",
     passport_photo: "some updated passport_photo"
   }
-  @invalid_attrs %{
-    first_name: nil,
-    other_names: nil,
-    surname: nil,
-    birth_date: nil,
-    id_doc: nil,
-    nationality: nil,
-    kra_pin: nil,
-    passport_photo: nil
-  }
 
-  defp create_identity(_) do
-    identity = identity_fixture()
+  setup do
+    identity = Factory.insert!(:identity)
     %{identity: identity}
   end
 
   describe "Index" do
-    setup [:create_identity]
-
     test "lists all identities", %{conn: conn, identity: identity} do
       {:ok, _index_live, html} = live(conn, ~p"/identities")
 
@@ -59,7 +48,7 @@ defmodule ETitleWeb.IdentityLiveTest do
       assert_patch(index_live, ~p"/identities/new")
 
       assert index_live
-             |> form("#identity-form", identity: @invalid_attrs)
+             |> form("#identity-form", identity: %{})
              |> render_change() =~ "can&#39;t be blank"
 
       assert index_live
@@ -82,7 +71,7 @@ defmodule ETitleWeb.IdentityLiveTest do
       assert_patch(index_live, ~p"/identities/#{identity}/edit")
 
       assert index_live
-             |> form("#identity-form", identity: @invalid_attrs)
+             |> form("#identity-form", identity: %{first_name: nil})
              |> render_change() =~ "can&#39;t be blank"
 
       assert index_live
@@ -105,8 +94,6 @@ defmodule ETitleWeb.IdentityLiveTest do
   end
 
   describe "Show" do
-    setup [:create_identity]
-
     test "displays identity", %{conn: conn, identity: identity} do
       {:ok, _show_live, html} = live(conn, ~p"/identities/#{identity}")
 
@@ -123,7 +110,7 @@ defmodule ETitleWeb.IdentityLiveTest do
       assert_patch(show_live, ~p"/identities/#{identity}/show/edit")
 
       assert show_live
-             |> form("#identity-form", identity: @invalid_attrs)
+             |> form("#identity-form", identity: %{first_name: nil})
              |> render_change() =~ "can&#39;t be blank"
 
       assert show_live
