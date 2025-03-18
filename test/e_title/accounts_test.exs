@@ -17,6 +17,7 @@ defmodule ETitle.AccountsTest do
   }
 
   @required_fields Identity.required_fields()
+  @email "account#{System.unique_integer()}@example.com"
 
   describe "create_identity/1" do
     test "with valid data creates a identity" do
@@ -98,7 +99,7 @@ defmodule ETitle.AccountsTest do
     end
 
     test "returns the account if the email exists" do
-      %{id: id} = account = account_fixture()
+      %{id: id} = account = Factory.insert!(:account)
       assert %Account{id: ^id} = Accounts.get_account_by_email(account.email)
     end
   end
@@ -109,12 +110,12 @@ defmodule ETitle.AccountsTest do
     end
 
     test "does not return the account if the password is not valid" do
-      account = account_fixture()
+      account = Factory.insert!(:account)
       refute Accounts.get_account_by_email_and_password(account.email, "invalid")
     end
 
     test "returns the account if the email and password are valid" do
-      %{id: id} = account = account_fixture()
+      %{id: id} = account = Factory.insert!(:account)
 
       assert %Account{id: ^id} =
                Accounts.get_account_by_email_and_password(account.email, valid_account_password())
@@ -129,7 +130,7 @@ defmodule ETitle.AccountsTest do
     end
 
     test "returns the account with the given id" do
-      %{id: id} = account = account_fixture()
+      %{id: id} = account = Factory.insert!(:account)
       assert %Account{id: ^id} = Accounts.get_account!(account.id)
     end
   end
@@ -162,7 +163,7 @@ defmodule ETitle.AccountsTest do
     end
 
     test "validates email uniqueness" do
-      %{email: email} = account_fixture()
+      %{email: email} = Factory.insert!(:account)
       {:error, changeset} = Accounts.register_account(%{email: email})
       assert "has already been taken" in errors_on(changeset).email
 
@@ -172,9 +173,16 @@ defmodule ETitle.AccountsTest do
     end
 
     test "registers accounts with a hashed password" do
-      email = unique_account_email()
-      {:ok, account} = Accounts.register_account(valid_account_attributes(email: email))
-      assert account.email == email
+      identity = Factory.insert!(:identity)
+
+      {:ok, account} =
+        Accounts.register_account(%{
+          email: @email,
+          identity_id: identity.id,
+          password: valid_account_password()
+        })
+
+      assert account.email == @email
       assert is_binary(account.hashed_password)
       assert is_nil(account.confirmed_at)
       assert is_nil(account.password)
@@ -184,21 +192,21 @@ defmodule ETitle.AccountsTest do
   describe "change_account_registration/2" do
     test "returns a changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_account_registration(%Account{})
-      assert changeset.required == [:password, :email, :role]
+      assert changeset.required == [:password, :email, :role, :identity_id]
     end
 
     test "allows fields to be set" do
-      email = unique_account_email()
       password = valid_account_password()
+      identity = Factory.insert!(:identity)
 
       changeset =
         Accounts.change_account_registration(
           %Account{},
-          valid_account_attributes(email: email, password: password)
+          valid_account_attributes(email: @email, password: password, identity_id: identity.id)
         )
 
       assert changeset.valid?
-      assert get_change(changeset, :email) == email
+      assert get_change(changeset, :email) == @email
       assert get_change(changeset, :password) == password
       assert is_nil(get_change(changeset, :hashed_password))
     end
@@ -213,7 +221,7 @@ defmodule ETitle.AccountsTest do
 
   describe "apply_account_email/3" do
     setup do
-      %{account: account_fixture()}
+      %{account: Factory.insert!(:account)}
     end
 
     test "requires email to change", %{account: account} do
@@ -238,7 +246,7 @@ defmodule ETitle.AccountsTest do
     end
 
     test "validates email uniqueness", %{account: account} do
-      %{email: email} = account_fixture()
+      %{email: email} = Factory.insert!(:account)
       password = valid_account_password()
 
       {:error, changeset} = Accounts.apply_account_email(account, password, %{email: email})
@@ -248,30 +256,28 @@ defmodule ETitle.AccountsTest do
 
     test "validates current password", %{account: account} do
       {:error, changeset} =
-        Accounts.apply_account_email(account, "invalid", %{email: unique_account_email()})
+        Accounts.apply_account_email(account, "invalid", %{email: @email})
 
       assert %{current_password: ["is not valid"]} = errors_on(changeset)
     end
 
     test "applies the email without persisting it", %{account: account} do
-      email = unique_account_email()
-
       {:ok, account} =
-        Accounts.apply_account_email(account, valid_account_password(), %{email: email})
+        Accounts.apply_account_email(account, valid_account_password(), %{email: @email})
 
-      assert account.email == email
-      assert Accounts.get_account!(account.id).email != email
+      assert account.email == @email
+      assert Accounts.get_account!(account.id).email != @email
     end
   end
 
   describe "deliver_account_update_email_instructions/3" do
     setup do
-      %{account: account_fixture()}
+      %{account: Factory.insert!(:account)}
     end
 
     test "sends token through notification", %{account: account} do
       token =
-        extract_account_token(fn url ->
+        ETitle.Factory.extract_account_token(fn url ->
           Accounts.deliver_account_update_email_instructions(account, "current@example.com", url)
         end)
 
@@ -285,26 +291,25 @@ defmodule ETitle.AccountsTest do
 
   describe "update_account_email/2" do
     setup do
-      account = account_fixture()
-      email = unique_account_email()
+      account = Factory.insert!(:account)
 
       token =
-        extract_account_token(fn url ->
+        ETitle.Factory.extract_account_token(fn url ->
           Accounts.deliver_account_update_email_instructions(
-            %{account | email: email},
+            %{account | email: @email},
             account.email,
             url
           )
         end)
 
-      %{account: account, token: token, email: email}
+      %{account: account, token: token, email: @email}
     end
 
-    test "updates the email with a valid token", %{account: account, token: token, email: email} do
+    test "updates the email with a valid token", %{account: account, token: token, email: @email} do
       assert Accounts.update_account_email(account, token) == :ok
       changed_account = Repo.get!(Account, account.id)
       assert changed_account.email != account.email
-      assert changed_account.email == email
+      assert changed_account.email == @email
       assert changed_account.confirmed_at
       assert changed_account.confirmed_at != account.confirmed_at
       refute Repo.get_by(AccountToken, account_id: account.id)
@@ -352,7 +357,7 @@ defmodule ETitle.AccountsTest do
 
   describe "update_account_password/3" do
     setup do
-      %{account: account_fixture()}
+      %{account: Factory.insert!(:account)}
     end
 
     test "validates password", %{account: account} do
@@ -408,7 +413,7 @@ defmodule ETitle.AccountsTest do
 
   describe "generate_account_session_token/1" do
     setup do
-      %{account: account_fixture()}
+      %{account: Factory.insert!(:account)}
     end
 
     test "generates a token", %{account: account} do
@@ -420,7 +425,7 @@ defmodule ETitle.AccountsTest do
       assert_raise Ecto.ConstraintError, fn ->
         Repo.insert!(%AccountToken{
           token: account_token.token,
-          account_id: account_fixture().id,
+          account_id: Factory.insert!(:account).id,
           context: "session"
         })
       end
@@ -429,7 +434,7 @@ defmodule ETitle.AccountsTest do
 
   describe "get_account_by_session_token/1" do
     setup do
-      account = account_fixture()
+      account = Factory.insert!(:account)
       token = Accounts.generate_account_session_token(account)
       %{account: account, token: token}
     end
@@ -451,7 +456,7 @@ defmodule ETitle.AccountsTest do
 
   describe "delete_account_session_token/1" do
     test "deletes the token" do
-      account = account_fixture()
+      account = Factory.insert!(:account)
       token = Accounts.generate_account_session_token(account)
       assert Accounts.delete_account_session_token(token) == :ok
       refute Accounts.get_account_by_session_token(token)
@@ -460,12 +465,12 @@ defmodule ETitle.AccountsTest do
 
   describe "deliver_account_confirmation_instructions/2" do
     setup do
-      %{account: account_fixture()}
+      %{account: Factory.insert!(:account)}
     end
 
     test "sends token through notification", %{account: account} do
       token =
-        extract_account_token(fn url ->
+        ETitle.Factory.extract_account_token(fn url ->
           Accounts.deliver_account_confirmation_instructions(account, url)
         end)
 
@@ -479,10 +484,10 @@ defmodule ETitle.AccountsTest do
 
   describe "confirm_account/1" do
     setup do
-      account = account_fixture()
+      account = Factory.insert!(:account)
 
       token =
-        extract_account_token(fn url ->
+        ETitle.Factory.extract_account_token(fn url ->
           Accounts.deliver_account_confirmation_instructions(account, url)
         end)
 
@@ -513,12 +518,12 @@ defmodule ETitle.AccountsTest do
 
   describe "deliver_account_reset_password_instructions/2" do
     setup do
-      %{account: account_fixture()}
+      %{account: Factory.insert!(:account)}
     end
 
     test "sends token through notification", %{account: account} do
       token =
-        extract_account_token(fn url ->
+        ETitle.Factory.extract_account_token(fn url ->
           Accounts.deliver_account_reset_password_instructions(account, url)
         end)
 
@@ -532,10 +537,10 @@ defmodule ETitle.AccountsTest do
 
   describe "get_account_by_reset_password_token/1" do
     setup do
-      account = account_fixture()
+      account = Factory.insert!(:account)
 
       token =
-        extract_account_token(fn url ->
+        ETitle.Factory.extract_account_token(fn url ->
           Accounts.deliver_account_reset_password_instructions(account, url)
         end)
 
@@ -561,7 +566,7 @@ defmodule ETitle.AccountsTest do
 
   describe "reset_account_password/2" do
     setup do
-      %{account: account_fixture()}
+      %{account: Factory.insert!(:account)}
     end
 
     test "validates password", %{account: account} do

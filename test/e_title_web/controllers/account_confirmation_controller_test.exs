@@ -3,10 +3,10 @@ defmodule ETitleWeb.AccountConfirmationControllerTest do
 
   alias ETitle.Accounts
   alias ETitle.Repo
-  import ETitle.AccountsFixtures
+  alias ETitle.Factory
 
   setup do
-    %{account: account_fixture()}
+    %{account: Factory.insert!(:account)}
   end
 
   describe "GET /accounts/confirm" do
@@ -81,7 +81,7 @@ defmodule ETitleWeb.AccountConfirmationControllerTest do
   describe "POST /accounts/confirm/:token" do
     test "confirms the given token once", %{conn: conn, account: account} do
       token =
-        extract_account_token(fn url ->
+        ETitle.Factory.extract_account_token(fn url ->
           Accounts.deliver_account_confirmation_instructions(account, url)
         end)
 

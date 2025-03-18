@@ -14,7 +14,7 @@ defmodule ETitle.Accounts.Account do
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
     field :role, Ecto.Enum, values: @all_roles, default: :user
-
+    belongs_to :identity, ETitle.Accounts.Schemas.Identity
     timestamps(type: :utc_datetime)
   end
 
@@ -43,8 +43,8 @@ defmodule ETitle.Accounts.Account do
   """
   def registration_changeset(account, attrs, opts \\ []) do
     account
-    |> cast(attrs, [:email, :password, :role])
-    |> validate_required([:role])
+    |> cast(attrs, [:email, :password, :role, :identity_id])
+    |> validate_required([:role, :identity_id])
     |> validate_email(opts)
     |> validate_password(opts)
   end

@@ -3,10 +3,10 @@ defmodule ETitleWeb.AccountResetPasswordControllerTest do
 
   alias ETitle.Accounts
   alias ETitle.Repo
-  import ETitle.AccountsFixtures
+  alias ETitle.Factory
 
   setup do
-    %{account: account_fixture()}
+    %{account: Factory.insert!(:account)}
   end
 
   describe "GET /accounts/reset_password" do
@@ -52,7 +52,7 @@ defmodule ETitleWeb.AccountResetPasswordControllerTest do
   describe "GET /accounts/reset_password/:token" do
     setup %{account: account} do
       token =
-        extract_account_token(fn url ->
+        ETitle.Factory.extract_account_token(fn url ->
           Accounts.deliver_account_reset_password_instructions(account, url)
         end)
 
@@ -76,7 +76,7 @@ defmodule ETitleWeb.AccountResetPasswordControllerTest do
   describe "PUT /accounts/reset_password/:token" do
     setup %{account: account} do
       token =
-        extract_account_token(fn url ->
+        ETitle.Factory.extract_account_token(fn url ->
           Accounts.deliver_account_reset_password_instructions(account, url)
         end)
 

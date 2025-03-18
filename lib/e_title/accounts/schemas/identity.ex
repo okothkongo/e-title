@@ -15,7 +15,7 @@ defmodule ETitle.Accounts.Schemas.Identity do
     field :kra_pin, :string
     field :passport_photo, :string
     field :slug, :string, default: Ecto.UUID.generate()
-
+    has_many :accounts, ETitle.Accounts.Account
     timestamps(type: :utc_datetime)
   end
 
@@ -39,6 +39,8 @@ defmodule ETitle.Accounts.Schemas.Identity do
     |> unique_constraint(:kra_pin)
     |> unique_constraint([:id_doc, :nationality])
     |> validate_age()
+
+    # |> cast_assoc(:accounts)
   end
 
   def required_fields, do: @identity_required_fields

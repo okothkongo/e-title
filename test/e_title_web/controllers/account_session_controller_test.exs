@@ -2,9 +2,10 @@ defmodule ETitleWeb.AccountSessionControllerTest do
   use ETitleWeb.ConnCase, async: true
 
   import ETitle.AccountsFixtures
+  alias ETitle.Factory
 
   setup do
-    %{account: account_fixture()}
+    %{account: Factory.insert!(:account)}
   end
 
   describe "GET /accounts/log_in" do

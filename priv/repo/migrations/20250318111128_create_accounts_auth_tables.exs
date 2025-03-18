@@ -9,7 +9,7 @@ defmodule ETitle.Repo.Migrations.CreateAccountsAuthTables do
       add :hashed_password, :string, null: false
       add :confirmed_at, :utc_datetime
       add :role, :string, null: false, default: "user"
-
+      add :identity_id, references(:identities, on_delete: :delete_all), null: false
       timestamps(type: :utc_datetime)
     end
 

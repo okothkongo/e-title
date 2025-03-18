@@ -2,6 +2,7 @@ defmodule ETitleWeb.AccountRegistrationControllerTest do
   use ETitleWeb.ConnCase, async: true
 
   import ETitle.AccountsFixtures
+  alias ETitle.Factory
 
   describe "GET /accounts/register" do
     test "renders registration page", %{conn: conn} do
@@ -13,7 +14,7 @@ defmodule ETitleWeb.AccountRegistrationControllerTest do
     end
 
     test "redirects if already logged in", %{conn: conn} do
-      conn = conn |> log_in_account(account_fixture()) |> get(~p"/accounts/register")
+      conn = conn |> log_in_account(Factory.insert!(:account)) |> get(~p"/accounts/register")
 
       assert redirected_to(conn) == ~p"/"
     end
@@ -22,11 +23,12 @@ defmodule ETitleWeb.AccountRegistrationControllerTest do
   describe "POST /accounts/register" do
     @tag :capture_log
     test "creates account and logs the account in", %{conn: conn} do
-      email = unique_account_email()
+      email = "account#{System.unique_integer()}@example.com"
+      identity = Factory.insert!(:identity, %{id_doc: "1234567891"})
 
       conn =
         post(conn, ~p"/accounts/register", %{
-          "account" => valid_account_attributes(email: email)
+          "account" => valid_account_attributes(email: email, identity_id: identity.id)
         })
 
       assert get_session(conn, :account_token)

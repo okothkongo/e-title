@@ -4,8 +4,8 @@ defmodule ETitleWeb.AccountAuthTest do
   alias Phoenix.LiveView
   alias ETitle.Accounts
   alias ETitleWeb.AccountAuth
-  import ETitle.AccountsFixtures
 
+  alias ETitle.Factory
   @remember_me_cookie "_e_title_web_account_remember_me"
 
   setup %{conn: conn} do
@@ -14,7 +14,7 @@ defmodule ETitleWeb.AccountAuthTest do
       |> Map.replace!(:secret_key_base, ETitleWeb.Endpoint.config(:secret_key_base))
       |> init_test_session(%{})
 
-    %{account: account_fixture(), conn: conn}
+    %{account: Factory.insert!(:account), conn: conn}
   end
 
   describe "log_in_account/3" do

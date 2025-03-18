@@ -15,6 +15,7 @@ defmodule ETitleWeb.ConnCase do
   this option is not recommended for other databases.
   """
 
+  alias ETitle.Factory
   use ExUnit.CaseTemplate
 
   using do
@@ -45,7 +46,7 @@ defmodule ETitleWeb.ConnCase do
   test context.
   """
   def register_and_log_in_account(%{conn: conn}) do
-    account = ETitle.AccountsFixtures.account_fixture()
+    account = Factory.insert!(:account)
     %{conn: log_in_account(conn, account), account: account}
   end
 

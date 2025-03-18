@@ -3,6 +3,7 @@ defmodule ETitleWeb.AccountSettingsControllerTest do
 
   alias ETitle.Accounts
   import ETitle.AccountsFixtures
+  @email "account#{System.unique_integer()}@example.com"
 
   setup :register_and_log_in_account
 
@@ -70,7 +71,7 @@ defmodule ETitleWeb.AccountSettingsControllerTest do
         put(conn, ~p"/accounts/settings", %{
           "action" => "update_email",
           "current_password" => valid_account_password(),
-          "account" => %{"email" => unique_account_email()}
+          "account" => %{"email" => @email}
         })
 
       assert redirected_to(conn) == ~p"/accounts/settings"
@@ -98,18 +99,16 @@ defmodule ETitleWeb.AccountSettingsControllerTest do
 
   describe "GET /accounts/settings/confirm_email/:token" do
     setup %{account: account} do
-      email = unique_account_email()
-
       token =
-        extract_account_token(fn url ->
+        ETitle.Factory.extract_account_token(fn url ->
           Accounts.deliver_account_update_email_instructions(
-            %{account | email: email},
+            %{account | email: @email},
             account.email,
             url
           )
         end)
 
-      %{token: token, email: email}
+      %{token: token, email: @email}
     end
 
     test "updates the account email once", %{
