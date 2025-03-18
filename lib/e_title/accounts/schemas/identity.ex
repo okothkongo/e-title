@@ -28,6 +28,8 @@ defmodule ETitle.Accounts.Schemas.Identity do
     :kra_pin,
     :passport_photo
   ]
+  @min_age 18
+  @max_age 200
 
   @doc false
   def changeset(identity, attrs) do
@@ -36,7 +38,23 @@ defmodule ETitle.Accounts.Schemas.Identity do
     |> validate_required(@identity_required_fields)
     |> unique_constraint(:kra_pin)
     |> unique_constraint([:id_doc, :nationality])
+    |> validate_age()
   end
 
   def required_fields, do: @identity_required_fields
+
+  defp validate_age(%{changes: %{birth_date: birth_date}} = changeset) do
+    today = Date.utc_today()
+    age_in_days = Date.diff(today, birth_date)
+    min_age = @min_age * 365
+    max_age = @max_age * 365
+
+    if age_in_days <= min_age or age_in_days >= max_age do
+      add_error(changeset, :birth_date, "must be between #{@min_age} and #{@max_age} years old")
+    else
+      changeset
+    end
+  end
+
+  defp validate_age(changeset), do: changeset
 end

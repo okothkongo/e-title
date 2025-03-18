@@ -9,7 +9,7 @@ defmodule ETitle.AccountsTest do
     first_name: "some first_name",
     other_names: "some other_names",
     surname: "some surname",
-    birth_date: ~D[2025-03-16],
+    birth_date: ~D[2000-03-16],
     id_doc: "some id_doc",
     nationality: "some nationality",
     kra_pin: "some kra_pin",
@@ -22,7 +22,7 @@ defmodule ETitle.AccountsTest do
     test "with valid data creates a identity" do
       assert {:ok, %Identity{} = identity} = Accounts.create_identity(@valid_attrs)
       assert identity.first_name == "some first_name"
-      assert identity.birth_date == ~D[2025-03-16]
+      assert identity.birth_date == ~D[2000-03-16]
       assert identity.id_doc == "some id_doc"
       assert is_binary(identity.slug)
     end

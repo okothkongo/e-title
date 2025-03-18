@@ -10,7 +10,7 @@ defmodule ETitle.Factory do
       first_name: "John",
       other_names: "Doe",
       surname: "Doe",
-      birth_date: ~D[2025-03-16],
+      birth_date: ~D[2000-03-16],
       id_doc: "1234567890",
       nationality: "Kenya",
       kra_pin: "some kra_pin#{System.unique_integer([:positive])}",
