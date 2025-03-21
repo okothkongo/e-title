@@ -4,6 +4,7 @@ defmodule ETitle.Accounts.Schemas.Identity do
   """
   use Ecto.Schema
   import Ecto.Changeset
+  alias ETitle.Accounts.Account
 
   schema "identities" do
     field :first_name, :string
@@ -15,7 +16,7 @@ defmodule ETitle.Accounts.Schemas.Identity do
     field :kra_pin, :string
     field :passport_photo, :string
     field :slug, :string, default: Ecto.UUID.generate()
-
+    has_many :accounts, Account
     timestamps(type: :utc_datetime)
   end
 
@@ -33,6 +34,16 @@ defmodule ETitle.Accounts.Schemas.Identity do
 
   @doc false
   def changeset(identity, attrs) do
+    identity
+    |> cast(attrs, @identity_required_fields ++ [:other_names, :slug])
+    |> validate_required(@identity_required_fields)
+    |> unique_constraint(:kra_pin)
+    |> unique_constraint([:id_doc, :nationality])
+    |> validate_age()
+    |> cast_assoc(:accounts, with: &Account.registration_changeset/2, required: true)
+  end
+
+  def update_changeset(identity, attrs) do
     identity
     |> cast(attrs, @identity_required_fields ++ [:other_names, :slug])
     |> validate_required(@identity_required_fields)
