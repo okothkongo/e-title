@@ -13,7 +13,8 @@ defmodule ETitleWeb.IdentityLiveTest do
     id_doc: "some id_doc",
     nationality: "some nationality1",
     kra_pin: "some kra_pin",
-    passport_photo: "some passport_photo"
+    passport_photo: "some passport_photo",
+    accounts: %{"0" => %{"email" => "test@test.com"}}
   }
   @update_attrs %{
     first_name: "some updated first_name",
@@ -27,7 +28,7 @@ defmodule ETitleWeb.IdentityLiveTest do
   }
 
   setup do
-    identity = Factory.insert!(:identity)
+    identity = Factory.insert!(:identity, accounts: [Factory.insert!(:account)])
     %{identity: identity}
   end
 

@@ -69,7 +69,7 @@ defmodule ETitle.Accounts do
   """
   def update_identity(%Identity{} = identity, attrs) do
     identity
-    |> Identity.changeset(attrs)
+    |> Identity.update_changeset(attrs)
     |> Repo.update()
   end
 

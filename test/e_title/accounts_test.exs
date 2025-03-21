@@ -4,6 +4,7 @@ defmodule ETitle.AccountsTest do
   alias ETitle.Accounts
   alias ETitle.Factory
   alias ETitle.Accounts.Schemas.Identity
+  @email "account#{System.unique_integer()}@example.com"
 
   @valid_attrs %{
     first_name: "some first_name",
@@ -13,11 +14,11 @@ defmodule ETitle.AccountsTest do
     id_doc: "some id_doc",
     nationality: "some nationality",
     kra_pin: "some kra_pin",
-    passport_photo: "some passport_photo"
+    passport_photo: "some passport_photo",
+    accounts: %{"0" => %{"email" => "test@test.com", "password" => "1234567890123"}}
   }
 
   @required_fields Identity.required_fields()
-  @email "account#{System.unique_integer()}@example.com"
 
   describe "create_identity/1" do
     test "with valid data creates a identity" do
@@ -39,15 +40,18 @@ defmodule ETitle.AccountsTest do
 
     test "unique kra_pin is validated" do
       assert {:ok, %Identity{}} = Accounts.create_identity(@valid_attrs)
-      assert {:error, changeset} = Accounts.create_identity(@valid_attrs)
+
+      valid_attrs = update_in(@valid_attrs, [:accounts, "0"], &Map.put(&1, "email", @email))
+      assert {:error, changeset} = Accounts.create_identity(valid_attrs)
       assert "has already been taken" in errors_on(changeset).kra_pin
     end
 
     test "unique id_doc and nationality is validated" do
       assert {:ok, %Identity{}} = Accounts.create_identity(@valid_attrs)
+      valid_attrs = update_in(@valid_attrs, [:accounts, "0"], &Map.put(&1, "email", @email))
 
       assert {:error, changeset} =
-               Accounts.create_identity(%{@valid_attrs | kra_pin: "some kra_pin 2"})
+               Accounts.create_identity(%{valid_attrs | kra_pin: "some kra_pin 2"})
 
       assert "has already been taken" in errors_on(changeset).id_doc
     end
@@ -192,7 +196,7 @@ defmodule ETitle.AccountsTest do
   describe "change_account_registration/2" do
     test "returns a changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_account_registration(%Account{})
-      assert changeset.required == [:password, :email, :role, :identity_id]
+      assert changeset.required == [:password, :email, :role]
     end
 
     test "allows fields to be set" do

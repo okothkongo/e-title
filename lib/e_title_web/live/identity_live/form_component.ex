@@ -1,7 +1,8 @@
 defmodule ETitleWeb.IdentityLive.FormComponent do
   use ETitleWeb, :live_component
-
+  require Logger
   alias ETitle.Accounts
+  require Logger
 
   @impl true
   def render(assigns) do
@@ -27,6 +28,12 @@ defmodule ETitleWeb.IdentityLive.FormComponent do
         <.input field={@form[:nationality]} type="text" label="Nationality" />
         <.input field={@form[:kra_pin]} type="text" label="Kra pin" />
         <.input field={@form[:passport_photo]} type="text" label="Passport photo" />
+        <%= if @action == :new do %>
+          <.inputs_for :let={f} field={@form[:accounts]}>
+            <.input field={f[:email]} type="email" label="Email Address" />
+            <.input field={f[:password]} type="hidden" value={get_password()} />
+          </.inputs_for>
+        <% end %>
         <:actions>
           <.button phx-disable-with="Saving...">Save Identity</.button>
         </:actions>
@@ -36,22 +43,42 @@ defmodule ETitleWeb.IdentityLive.FormComponent do
   end
 
   @impl true
-  def update(%{identity: identity} = assigns, socket) do
+  def update(%{identity: identity, action: :edit} = assigns, socket) do
+    changeset =
+      identity
+      |> Accounts.change_identity()
+
     {:ok,
      socket
      |> assign(assigns)
-     |> assign_new(:form, fn ->
-       to_form(Accounts.change_identity(identity))
-     end)}
+     |> assign(:form, to_form(changeset))}
+  end
+
+  def update(%{identity: identity} = assigns, socket) do
+    changeset =
+      identity
+      |> Accounts.change_identity()
+      |> Ecto.Changeset.put_assoc(:accounts, [%{}])
+
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> assign(:form, to_form(changeset))}
   end
 
   @impl true
   def handle_event("validate", %{"identity" => identity_params}, socket) do
-    changeset = Accounts.change_identity(socket.assigns.identity, identity_params)
-    {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
+    changeset =
+      socket.assigns.identity
+      |> Accounts.change_identity(identity_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign(socket, form: to_form(changeset))}
   end
 
   def handle_event("save", %{"identity" => identity_params}, socket) do
+    password = identity_params["accounts"][0]["password"]
+    Logger.info("This is the default password: #{inspect(password)}")
     save_identity(socket, socket.assigns.action, identity_params)
   end
 
@@ -86,4 +113,6 @@ defmodule ETitleWeb.IdentityLive.FormComponent do
   end
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
+
+  defp get_password, do: :crypto.strong_rand_bytes(13) |> Base.url_encode64(padding: false)
 end

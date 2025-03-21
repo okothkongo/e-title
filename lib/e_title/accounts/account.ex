@@ -44,7 +44,7 @@ defmodule ETitle.Accounts.Account do
   def registration_changeset(account, attrs, opts \\ []) do
     account
     |> cast(attrs, [:email, :password, :role, :identity_id])
-    |> validate_required([:role, :identity_id])
+    |> validate_required([:role])
     |> validate_email(opts)
     |> validate_password(opts)
   end
