@@ -11,7 +11,7 @@ defmodule ETitleWeb.IdentityLiveTest do
     surname: "some surname",
     birth_date: ~D[2000-03-16],
     id_doc: "some id_doc",
-    nationality: "some nationality1",
+    nationality: "Kenya",
     kra_pin: "some kra_pin",
     passport_photo: "some passport_photo",
     accounts: %{"0" => %{"email" => "test@test.com"}}
@@ -22,7 +22,7 @@ defmodule ETitleWeb.IdentityLiveTest do
     surname: "some updated surname",
     birth_date: ~D[2000-03-17],
     id_doc: "some updated id_doc",
-    nationality: "some updated nationality",
+    nationality: "Kenya",
     kra_pin: "some updated kra_pin",
     passport_photo: "some updated passport_photo"
   }

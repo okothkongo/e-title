@@ -13,7 +13,7 @@ defmodule ETitle.Factory do
       surname: "Doe",
       birth_date: ~D[2000-03-16],
       id_doc: "#{System.unique_integer([:positive])}",
-      nationality: "Kenya",
+      nationality: :Kenya,
       kra_pin: "some kra_pin#{System.unique_integer([:positive])}",
       passport_photo: "some passport_photo"
     }

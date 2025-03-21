@@ -6,13 +6,19 @@ defmodule ETitle.Accounts.Schemas.Identity do
   import Ecto.Changeset
   alias ETitle.Accounts.Account
 
+  @project_path File.cwd!()
+  @countries "#{@project_path}/priv/data/countries.txt"
+             |> File.read!()
+             |> Jason.decode!()
+             |> Enum.map(&String.to_atom/1)
+
   schema "identities" do
     field :first_name, :string
     field :other_names, :string
     field :surname, :string
     field :birth_date, :date
     field :id_doc, :string
-    field :nationality, :string
+    field :nationality, Ecto.Enum, values: @countries
     field :kra_pin, :string
     field :passport_photo, :string
     field :slug, :string, default: Ecto.UUID.generate()

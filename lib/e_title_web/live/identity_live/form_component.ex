@@ -25,7 +25,13 @@ defmodule ETitleWeb.IdentityLive.FormComponent do
         <.input field={@form[:surname]} type="text" label="Surname" />
         <.input field={@form[:birth_date]} type="date" label="Birth date" />
         <.input field={@form[:id_doc]} type="text" label="Id doc" />
-        <.input field={@form[:nationality]} type="text" label="Nationality" />
+        <.input
+          field={@form[:nationality]}
+          type="select"
+          label="Nationality"
+          options={Ecto.Enum.values(ETitle.Accounts.Schemas.Identity, :nationality)}
+          prompt=""
+        />
         <.input field={@form[:kra_pin]} type="text" label="Kra pin" />
         <.input field={@form[:passport_photo]} type="text" label="Passport photo" />
         <%= if @action == :new do %>
