@@ -1,4 +1,8 @@
 defmodule ETitle.Accounts.Account do
+  @moduledoc """
+  Schema for user accounts
+  User can have multiple accounts
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

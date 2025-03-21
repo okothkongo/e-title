@@ -1,4 +1,7 @@
 defmodule ETitle.Accounts.AccountToken do
+  @moduledoc """
+  Handles user account tokens for the application.
+  """
   use Ecto.Schema
   import Ecto.Query
   alias ETitle.Accounts.AccountToken

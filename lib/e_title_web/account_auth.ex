@@ -1,4 +1,7 @@
 defmodule ETitleWeb.AccountAuth do
+  @moduledoc """
+  Handles user authentication for the application.
+  """
   use ETitleWeb, :verified_routes
 
   import Plug.Conn

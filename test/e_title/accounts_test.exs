@@ -12,7 +12,7 @@ defmodule ETitle.AccountsTest do
     surname: "some surname",
     birth_date: ~D[2000-03-16],
     id_doc: "some id_doc",
-    nationality: "some nationality",
+    nationality: "Kenya",
     kra_pin: "some kra_pin",
     passport_photo: "some passport_photo",
     accounts: %{"0" => %{"email" => "test@test.com", "password" => "1234567890123"}}
