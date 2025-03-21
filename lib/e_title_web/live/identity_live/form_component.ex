@@ -23,7 +23,13 @@ defmodule ETitleWeb.IdentityLive.FormComponent do
         <.input field={@form[:first_name]} type="text" label="First name" />
         <.input field={@form[:other_names]} type="text" label="Other names" />
         <.input field={@form[:surname]} type="text" label="Surname" />
-        <.input field={@form[:birth_date]} type="date" label="Birth date" />
+        <.input
+          field={@form[:birth_date]}
+          type="date"
+          label="Date Of Birth"
+          min={get_dob_of_200_year_old()}
+          max={get_dob_of_18_year_old()}
+        />
         <.input field={@form[:id_doc]} type="text" label="Id doc" />
         <.input
           field={@form[:nationality]}
@@ -121,4 +127,6 @@ defmodule ETitleWeb.IdentityLive.FormComponent do
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
 
   defp get_password, do: :crypto.strong_rand_bytes(13) |> Base.url_encode64(padding: false)
+  defp get_dob_of_18_year_old, do: Date.utc_today() |> Date.add(-18 * 365)
+  defp get_dob_of_200_year_old, do: Date.utc_today() |> Date.add(-200 * 365)
 end
