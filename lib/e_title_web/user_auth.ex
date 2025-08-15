@@ -1,4 +1,7 @@
 defmodule ETitleWeb.UserAuth do
+  @moduledoc """
+  Handles user authentication and authorization.
+  """
   use ETitleWeb, :verified_routes
 
   import Plug.Conn
