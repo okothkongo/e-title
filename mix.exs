@@ -100,13 +100,12 @@ defmodule ETitle.MixProject do
         "phx.digest"
       ],
       cover: ["cmd MIX_ENV=test mix coveralls"],
+      lint: ["format --check-formatted", "compile --warnings-as-errors --force", "credo --strict"],
       precommit: [
         "cover",
-        "compile --warning-as-errors --force",
+        "lint",
         "deps.unlock --unused",
-        "format",
-        "test",
-        "credo --strict"
+        "test"
       ]
     ]
   end
