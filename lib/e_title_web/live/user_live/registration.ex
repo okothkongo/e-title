@@ -8,64 +8,83 @@ defmodule ETitleWeb.UserLive.Registration do
   def render(assigns) do
     ~H"""
     <Layouts.app flash={@flash} current_scope={@current_scope}>
-      <div class="mx-auto max-w-sm">
-        <div class="text-center">
-          <.header>
-            Register for an account
-            <:subtitle>
-              Already registered?
-              <.link navigate={~p"/users/log-in"} class="font-semibold text-brand hover:underline">
-                Log in
-              </.link>
-              to your account now.
-            </:subtitle>
-          </.header>
+      <div class="max-w-3xl mx-auto py-12 px-6">
+        <div class="bg-white rounded-xl shadow-lg p-8 border-t-4 border-green-700">
+          <div class="text-center">
+            <.header>
+              <h2 class="text-2xl font-bold text-green-700 text-center mb-2">
+                Register for an account
+              </h2>
+              <:subtitle>
+                Already registered?
+                <.link navigate={~p"/users/log-in"} class="text-green-700 font-medium hover:underline">
+                  Log in
+                </.link>
+                to your account now.
+              </:subtitle>
+            </.header>
+          </div>
+
+          <.form
+            for={@form}
+            id="registration_form"
+            phx-submit="save"
+            phx-change="validate"
+            class="space-y-5"
+          >
+            <.input
+              field={@form[:first_name]}
+              type="text"
+              label="First Name"
+              required
+              phx-mounted={JS.focus()}
+              class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <.input
+              field={@form[:middle_name]}
+              type="text"
+              label="Middle Name"
+              class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <.input
+              field={@form[:surname]}
+              type="text"
+              label="Surname"
+              required
+              class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <.input
+              field={@form[:email]}
+              type="email"
+              label="Email"
+              autocomplete="username"
+              required
+              class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <.input
+              field={@form[:phone_number]}
+              type="text"
+              label="Phone Number"
+              required
+              placeholder="254XXXXXXXXX"
+              class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <.input
+              field={@form[:national_id]}
+              type="text"
+              label="National ID"
+              required
+              class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+
+            <.button
+              phx-disable-with="Creating account..."
+              class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded shadow"
+            >
+              Create an account
+            </.button>
+          </.form>
         </div>
-
-        <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate">
-          <.input
-            field={@form[:first_name]}
-            type="text"
-            label="First Name"
-            required
-            phx-mounted={JS.focus()}
-          />
-          <.input
-            field={@form[:middle_name]}
-            type="text"
-            label="Middle Name"
-          />
-          <.input
-            field={@form[:surname]}
-            type="text"
-            label="Surname"
-            required
-          />
-          <.input
-            field={@form[:email]}
-            type="email"
-            label="Email"
-            autocomplete="username"
-            required
-          />
-          <.input
-            field={@form[:phone_number]}
-            type="text"
-            label="Phone Number"
-            required
-            placeholder="254XXXXXXXXX"
-          />
-          <.input
-            field={@form[:national_id]}
-            type="text"
-            label="National ID"
-            required
-          />
-
-          <.button phx-disable-with="Creating account..." class="btn btn-primary w-full">
-            Create an account
-          </.button>
-        </.form>
       </div>
     </Layouts.app>
     """

@@ -11,7 +11,7 @@ defmodule ETitleWeb.UserLive.Settings do
     <Layouts.app flash={@flash} current_scope={@current_scope}>
       <div class="text-center">
         <.header>
-          Account Settings
+          <h2 class="text-2xl font-bold text-green-700 text-center mb-2">Account Settings</h2>
           <:subtitle>Manage your account email address and password settings</:subtitle>
         </.header>
       </div>
@@ -23,8 +23,15 @@ defmodule ETitleWeb.UserLive.Settings do
           label="Email"
           autocomplete="username"
           required
+          class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
-        <.button variant="primary" phx-disable-with="Changing...">Change Email</.button>
+        <.button
+          variant="primary"
+          phx-disable-with="Changing..."
+          class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded shadow"
+        >
+          Change Email
+        </.button>
       </.form>
 
       <div class="divider" />
@@ -44,6 +51,7 @@ defmodule ETitleWeb.UserLive.Settings do
           id="hidden_user_email"
           autocomplete="username"
           value={@current_email}
+          class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
         <.input
           field={@password_form[:password]}
@@ -51,14 +59,20 @@ defmodule ETitleWeb.UserLive.Settings do
           label="New password"
           autocomplete="new-password"
           required
+          class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
         <.input
           field={@password_form[:password_confirmation]}
           type="password"
           label="Confirm new password"
           autocomplete="new-password"
+          class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
-        <.button variant="primary" phx-disable-with="Saving...">
+        <.button
+          variant="primary"
+          phx-disable-with="Saving..."
+          class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded shadow"
+        >
           Save Password
         </.button>
       </.form>
