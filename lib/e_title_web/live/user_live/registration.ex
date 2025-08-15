@@ -76,7 +76,13 @@ defmodule ETitleWeb.UserLive.Registration do
               required
               class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
-
+            <.input
+              field={@form[:role]}
+              type="hidden"
+              value="user"
+              required
+              class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
             <.button
               phx-disable-with="Creating account..."
               class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded shadow"

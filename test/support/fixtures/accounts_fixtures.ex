@@ -19,7 +19,8 @@ defmodule ETitle.AccountsFixtures do
       middle_name: "Middle",
       surname: "Surname",
       phone_number: "254#{Enum.random(100_000_000..999_999_999)}",
-      national_id: "#{Enum.random(100_000_000..999_999_999)}"
+      national_id: "#{Enum.random(100_000_000..999_999_999)}",
+      role: :user
     })
   end
 
