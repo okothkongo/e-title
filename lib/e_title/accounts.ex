@@ -6,8 +6,10 @@ defmodule ETitle.Accounts do
   import Ecto.Query, warn: false
   alias ETitle.Repo
 
-  alias ETitle.Accounts.{User, UserToken, UserNotifier}
+  alias ETitle.Accounts.User
 
+  alias ETitle.Accounts.UserNotifier
+  alias ETitle.Accounts.UserToken
   ## Database getters
 
   @doc """

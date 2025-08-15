@@ -1,4 +1,7 @@
 defmodule ETitle.Accounts.User do
+  @moduledoc """
+  Handles user registration, authentication, and authorization.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

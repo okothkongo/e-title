@@ -1,10 +1,10 @@
 defmodule ETitleWeb.UserAuthTest do
   use ETitleWeb.ConnCase, async: true
 
-  alias Phoenix.LiveView
   alias ETitle.Accounts
   alias ETitle.Accounts.Scope
   alias ETitleWeb.UserAuth
+  alias Phoenix.LiveView
 
   import ETitle.AccountsFixtures
 
