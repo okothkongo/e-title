@@ -43,11 +43,5 @@ jobs:
       run: |
         mix deps.get
         mix deps.compile
-    - name: Check for unused dependencies
-      run: mix deps.get &&  mix deps.unlock --check-unused
-    - name: Setup db
-      run: mix ecto.create
-    - name: Run tests
-      run: mix test
-    - name: coverage
-      run: MIX_ENV=test mix coveralls
+    - name: run precommit rules
+      run:  mix precommit

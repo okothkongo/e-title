@@ -75,7 +75,8 @@ defmodule ETitle.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:bandit, "~> 1.5"},
-      {:excoveralls, "~> 0.18", only: :test}
+      {:excoveralls, "~> 0.18", only: :test},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -98,7 +99,15 @@ defmodule ETitle.MixProject do
         "esbuild e_title --minify",
         "phx.digest"
       ],
-      precommit: ["compile --warning-as-errors", "deps.unlock --unused", "format", "test"]
+      cover: ["cmd MIX_ENV=test mix coveralls"],
+      precommit: [
+        "cover",
+        "compile --warning-as-errors --force",
+        "deps.unlock --unused",
+        "format",
+        "test",
+        "credo --strict"
+      ]
     ]
   end
 end
