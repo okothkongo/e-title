@@ -13,6 +13,7 @@ defmodule ETitle.Accounts.User do
     field :surname, :string
     field :phone_number, :string
     field :national_id, :string
+    field :role, Ecto.Enum, values: [:user, :admin], default: :user
 
     timestamps(type: :utc_datetime)
   end
