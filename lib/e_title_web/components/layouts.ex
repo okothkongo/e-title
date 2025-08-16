@@ -130,7 +130,8 @@ defmodule ETitleWeb.Layouts do
   def nav_links(assigns) do
     ~H"""
     <a href={~p"/"} class={["hover:underline", @class]}>Home</a>
-    <a href="#" class={["hover:underline", @class]}>Register Land</a>
+
+    <a href={~p"/lands/new"} class={["hover:underline", @class]}>Register Land</a>
     <a href="#" class={["hover:underline", @class]}>Search Title</a>
     <a href="#" class={["hover:underline", @class]}>Help</a>
     <a href="#" class={["hover:underline", @class]}>Contact</a>
