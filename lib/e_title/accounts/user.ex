@@ -17,7 +17,7 @@ defmodule ETitle.Accounts.User do
     field :phone_number, :string
     field :national_id, :string
     field :role, Ecto.Enum, values: [:user, :admin], default: :user
-
+    has_many :lands, ETitle.Lands.Land, foreign_key: :owner_id
     timestamps(type: :utc_datetime)
   end
 
