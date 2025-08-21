@@ -195,13 +195,13 @@ defmodule ETitle.AccountsTest do
         Accounts.change_account_password(
           %Account{},
           %{
-            "password" => "new valid password"
+            "password" => "New valid password@123"
           },
           hash_password: false
         )
 
       assert changeset.valid?
-      assert get_change(changeset, :password) == "new valid password"
+      assert get_change(changeset, :password) == "New valid password@123"
       assert is_nil(get_change(changeset, :hashed_password))
     end
   end
@@ -214,8 +214,8 @@ defmodule ETitle.AccountsTest do
     test "validates password", %{account: account} do
       {:error, changeset} =
         Accounts.update_account_password(account, %{
-          password: "not valid",
-          password_confirmation: "another"
+          password: "Not valid@1",
+          password_confirmation: "another@12345W"
         })
 
       assert %{
@@ -225,7 +225,7 @@ defmodule ETitle.AccountsTest do
     end
 
     test "validates maximum values for password for security", %{account: account} do
-      too_long = String.duplicate("db", 100)
+      too_long = String.duplicate("Db@1", 100)
 
       {:error, changeset} =
         Accounts.update_account_password(account, %{password: too_long})
@@ -236,12 +236,12 @@ defmodule ETitle.AccountsTest do
     test "updates the password", %{account: account} do
       {:ok, {account, expired_tokens}} =
         Accounts.update_account_password(account, %{
-          password: "new valid password"
+          password: "New valid password@123"
         })
 
       assert expired_tokens == []
       assert is_nil(account.password)
-      assert Accounts.get_account_by_email_and_password(account.email, "new valid password")
+      assert Accounts.get_account_by_email_and_password(account.email, "New valid password@123")
     end
 
     test "deletes all tokens for the given account", %{account: account} do
@@ -249,7 +249,7 @@ defmodule ETitle.AccountsTest do
 
       {:ok, {_, _}} =
         Accounts.update_account_password(account, %{
-          password: "new valid password"
+          password: "New valid password@123"
         })
 
       refute Repo.get_by(AccountToken, account_id: account.id)
