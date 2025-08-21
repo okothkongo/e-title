@@ -21,7 +21,8 @@ defmodule ETitleWeb.AccountLive.LoginTest do
       {:ok, lv, _html} = live(conn, ~p"/accounts/log-in")
 
       {:ok, _lv, html} =
-        form(lv, "#login_form_magic", account: %{email: account.email})
+        lv
+        |> form("#login_form_magic", account: %{email: account.email})
         |> render_submit()
         |> follow_redirect(conn, ~p"/accounts/log-in")
 
@@ -35,7 +36,8 @@ defmodule ETitleWeb.AccountLive.LoginTest do
       {:ok, lv, _html} = live(conn, ~p"/accounts/log-in")
 
       {:ok, _lv, html} =
-        form(lv, "#login_form_magic", account: %{email: "idonotexist@example.com"})
+        lv
+        |> form("#login_form_magic", account: %{email: "idonotexist@example.com"})
         |> render_submit()
         |> follow_redirect(conn, ~p"/accounts/log-in")
 

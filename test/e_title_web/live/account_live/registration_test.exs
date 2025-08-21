@@ -43,7 +43,8 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
       form = form(lv, "#registration_form", account: valid_account_attributes(email: email))
 
       {:ok, _lv, html} =
-        render_submit(form)
+        form
+        |> render_submit()
         |> follow_redirect(conn, ~p"/accounts/log-in")
 
       assert html =~
