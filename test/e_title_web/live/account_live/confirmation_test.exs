@@ -60,7 +60,8 @@ defmodule ETitleWeb.AccountLive.ConfirmationTest do
       conn = build_conn()
 
       {:ok, _lv, html} =
-        live(conn, ~p"/accounts/log-in/#{token}")
+        conn
+        |> live(~p"/accounts/log-in/#{token}")
         |> follow_redirect(conn, ~p"/accounts/log-in")
 
       assert html =~ "Magic link is invalid or it has expired"
@@ -91,7 +92,8 @@ defmodule ETitleWeb.AccountLive.ConfirmationTest do
       conn = build_conn()
 
       {:ok, _lv, html} =
-        live(conn, ~p"/accounts/log-in/#{token}")
+        conn
+        |> live(~p"/accounts/log-in/#{token}")
         |> follow_redirect(conn, ~p"/accounts/log-in")
 
       assert html =~ "Magic link is invalid or it has expired"
@@ -99,7 +101,8 @@ defmodule ETitleWeb.AccountLive.ConfirmationTest do
 
     test "raises error for invalid token", %{conn: conn} do
       {:ok, _lv, html} =
-        live(conn, ~p"/accounts/log-in/invalid-token")
+        conn
+        |> live(~p"/accounts/log-in/invalid-token")
         |> follow_redirect(conn, ~p"/accounts/log-in")
 
       assert html =~ "Magic link is invalid or it has expired"

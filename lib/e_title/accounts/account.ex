@@ -1,4 +1,8 @@
 defmodule ETitle.Accounts.Account do
+  @moduledoc """
+  Represents a user account in the system.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 

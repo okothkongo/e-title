@@ -1,4 +1,8 @@
 defmodule ETitle.Accounts.AccountNotifier do
+  @moduledoc """
+  Handles the delivery of account-related notifications.
+  """
+
   import Swoosh.Email
 
   alias ETitle.Mailer
