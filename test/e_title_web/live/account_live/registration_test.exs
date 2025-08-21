@@ -5,7 +5,11 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
 
   import ETitle.Factory
 
-  @valid_account_attributes %{email: "test@example.com", phone_number: "1234567890", type: :citizen}
+  @valid_account_attributes %{
+    email: "test@example.com",
+    phone_number: "1234567890",
+    type: :citizen
+  }
 
   describe "Registration page" do
     test "renders registration page", %{conn: conn} do
@@ -41,7 +45,6 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
   describe "register account" do
     test "creates account but does not log in", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/accounts/register")
-
 
       form = form(lv, "#registration_form", account: @valid_account_attributes)
 

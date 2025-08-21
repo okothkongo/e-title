@@ -7,8 +7,11 @@ defmodule ETitle.AccountsTest do
   import ETitle.AccountsFixtures
   alias ETitle.Accounts.{Account, AccountToken}
 
-
-  @valid_account_attributes %{email: "test@example.com", phone_number: "1234567890", type: :citizen}
+  @valid_account_attributes %{
+    email: "test@example.com",
+    phone_number: "1234567890",
+    type: :citizen
+  }
 
   describe "get_account_by_email/1" do
     test "does not return the account if the email does not exist" do
@@ -82,7 +85,6 @@ defmodule ETitle.AccountsTest do
     end
 
     test "registers accounts without password" do
-
       {:ok, account} = Accounts.register_account(@valid_account_attributes)
       assert account.email == "test@example.com"
       assert is_nil(account.hashed_password)
@@ -139,7 +141,7 @@ defmodule ETitle.AccountsTest do
   describe "update_account_email/2" do
     setup do
       account = insert(:unconfirmed_account)
-      email = unique_account_email()
+      email = "test@example.com"
 
       token =
         extract_account_token(fn url ->

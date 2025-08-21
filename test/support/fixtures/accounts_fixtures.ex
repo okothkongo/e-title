@@ -7,15 +7,6 @@ defmodule ETitle.AccountsFixtures do
   import Ecto.Query
 
   alias ETitle.Accounts
-  alias ETitle.Accounts.Scope
-
-  def unique_account_email, do: "account#{System.unique_integer()}@example.com"
-
-
-
-  def account_scope_fixture(account) do
-    Scope.for_account(account)
-  end
 
   def extract_account_token(fun) do
     {:ok, captured_email} = fun.(&"[TOKEN]#{&1}[TOKEN]")
@@ -23,6 +14,7 @@ defmodule ETitle.AccountsFixtures do
     token
   end
 
+  @spec override_token_authenticated_at(binary(), any()) :: any()
   def override_token_authenticated_at(token, authenticated_at) when is_binary(token) do
     ETitle.Repo.update_all(
       from(t in Accounts.AccountToken,

@@ -31,6 +31,20 @@ defmodule ETitleWeb.AccountLive.Registration do
             required
             phx-mounted={JS.focus()}
           />
+          <.input
+            field={@form[:type]}
+            type="text"
+            label="Type"
+            required
+            phx-mounted={JS.focus()}
+          />
+          <.input
+            field={@form[:phone_number]}
+            type="text"
+            label="Phone Number"
+            required
+            phx-mounted={JS.focus()}
+          />
 
           <.button phx-disable-with="Creating account..." class="btn btn-primary w-full">
             Create an account

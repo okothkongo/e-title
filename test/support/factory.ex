@@ -1,5 +1,7 @@
 defmodule ETitle.Factory do
-  # with Ecto
+  @moduledoc """
+  This module defines factory functions for creating test data.
+  """
   use ExMachina.Ecto, repo: ETitle.Repo
 
   alias ETitle.Accounts.Account

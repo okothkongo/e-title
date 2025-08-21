@@ -138,7 +138,8 @@ defmodule ETitle.Accounts.Account do
     Bcrypt.no_user_verify()
     false
   end
+
   def required_fields do
-     @required_fields
+    @required_fields
   end
 end
