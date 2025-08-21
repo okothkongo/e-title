@@ -2,7 +2,14 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
   use ETitleWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
-  import ETitle.AccountsFixtures
+
+  import ETitle.Factory
+
+  @valid_account_attributes %{
+    email: "test@example.com",
+    phone_number: "1234567890",
+    type: :citizen
+  }
 
   describe "Registration page" do
     test "renders registration page", %{conn: conn} do
@@ -15,7 +22,7 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
     test "redirects if already logged in", %{conn: conn} do
       result =
         conn
-        |> log_in_account(account_fixture())
+        |> log_in_account(insert(:account))
         |> live(~p"/accounts/register")
         |> follow_redirect(conn, ~p"/")
 
@@ -39,8 +46,7 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
     test "creates account but does not log in", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/accounts/register")
 
-      email = unique_account_email()
-      form = form(lv, "#registration_form", account: valid_account_attributes(email: email))
+      form = form(lv, "#registration_form", account: @valid_account_attributes)
 
       {:ok, _lv, html} =
         form
@@ -54,7 +60,7 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
     test "renders errors for duplicated email", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/accounts/register")
 
-      account = account_fixture(%{email: "test@email.com"})
+      account = insert(:account, email: "test@email.com")
 
       result =
         lv

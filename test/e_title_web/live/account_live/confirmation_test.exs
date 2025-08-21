@@ -3,11 +3,12 @@ defmodule ETitleWeb.AccountLive.ConfirmationTest do
 
   import Phoenix.LiveViewTest
   import ETitle.AccountsFixtures
+  import ETitle.Factory
 
   alias ETitle.Accounts
 
   setup do
-    %{unconfirmed_account: unconfirmed_account_fixture(), confirmed_account: account_fixture()}
+    %{unconfirmed_account: insert(:unconfirmed_account), confirmed_account: insert(:account)}
   end
 
   describe "Confirm account" do

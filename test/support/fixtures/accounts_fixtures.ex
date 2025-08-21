@@ -7,55 +7,6 @@ defmodule ETitle.AccountsFixtures do
   import Ecto.Query
 
   alias ETitle.Accounts
-  alias ETitle.Accounts.Scope
-
-  def unique_account_email, do: "account#{System.unique_integer()}@example.com"
-  def valid_account_password, do: "hello World!1234"
-
-  def valid_account_attributes(attrs \\ %{}) do
-    Enum.into(attrs, %{
-      email: unique_account_email()
-    })
-  end
-
-  def unconfirmed_account_fixture(attrs \\ %{}) do
-    {:ok, account} =
-      attrs
-      |> valid_account_attributes()
-      |> Accounts.register_account()
-
-    account
-  end
-
-  def account_fixture(attrs \\ %{}) do
-    account = unconfirmed_account_fixture(attrs)
-
-    token =
-      extract_account_token(fn url ->
-        Accounts.deliver_login_instructions(account, url)
-      end)
-
-    {:ok, {account, _expired_tokens}} =
-      Accounts.login_account_by_magic_link(token)
-
-    account
-  end
-
-  def account_scope_fixture do
-    account = account_fixture()
-    account_scope_fixture(account)
-  end
-
-  def account_scope_fixture(account) do
-    Scope.for_account(account)
-  end
-
-  def set_password(account) do
-    {:ok, {account, _expired_tokens}} =
-      Accounts.update_account_password(account, %{password: valid_account_password()})
-
-    account
-  end
 
   def extract_account_token(fun) do
     {:ok, captured_email} = fun.(&"[TOKEN]#{&1}[TOKEN]")
@@ -63,6 +14,7 @@ defmodule ETitle.AccountsFixtures do
     token
   end
 
+  @spec override_token_authenticated_at(binary(), any()) :: any()
   def override_token_authenticated_at(token, authenticated_at) when is_binary(token) do
     ETitle.Repo.update_all(
       from(t in Accounts.AccountToken,

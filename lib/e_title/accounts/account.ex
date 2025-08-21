@@ -18,6 +18,8 @@ defmodule ETitle.Accounts.Account do
     timestamps(type: :utc_datetime)
   end
 
+  @required_fields ~w(email phone_number type)a
+
   @doc """
   A account changeset for registering or changing the email.
 
@@ -31,14 +33,14 @@ defmodule ETitle.Accounts.Account do
   """
   def email_changeset(account, attrs, opts \\ []) do
     account
-    |> cast(attrs, [:email])
+    |> cast(attrs, [:email, :phone_number, :type])
+    |> validate_required(@required_fields)
     |> validate_email(opts)
   end
 
   defp validate_email(changeset, opts) do
     changeset =
       changeset
-      |> validate_required([:email])
       |> validate_format(:email, ~r/^[^@,;\s]+@[^@,;\s]+$/,
         message: "must have the @ sign and no spaces"
       )
@@ -135,5 +137,9 @@ defmodule ETitle.Accounts.Account do
   def valid_password?(_, _) do
     Bcrypt.no_user_verify()
     false
+  end
+
+  def required_fields do
+    @required_fields
   end
 end

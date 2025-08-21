@@ -2,19 +2,19 @@ defmodule ETitleWeb.AccountSessionControllerTest do
   use ETitleWeb.ConnCase, async: true
 
   import ETitle.AccountsFixtures
+  import ETitle.Factory
   alias ETitle.Accounts
 
+  @valid_account_password "hello World!1234"
   setup do
-    %{unconfirmed_account: unconfirmed_account_fixture(), account: account_fixture()}
+    %{unconfirmed_account: insert(:unconfirmed_account), account: insert(:account)}
   end
 
   describe "POST /accounts/log-in - email and password" do
     test "logs the account in", %{conn: conn, account: account} do
-      account = set_password(account)
-
       conn =
         post(conn, ~p"/accounts/log-in", %{
-          "account" => %{"email" => account.email, "password" => valid_account_password()}
+          "account" => %{"email" => account.email, "password" => @valid_account_password}
         })
 
       assert get_session(conn, :account_token)
@@ -29,13 +29,11 @@ defmodule ETitleWeb.AccountSessionControllerTest do
     end
 
     test "logs the account in with remember me", %{conn: conn, account: account} do
-      account = set_password(account)
-
       conn =
         post(conn, ~p"/accounts/log-in", %{
           "account" => %{
             "email" => account.email,
-            "password" => valid_account_password(),
+            "password" => @valid_account_password,
             "remember_me" => "true"
           }
         })
@@ -45,15 +43,13 @@ defmodule ETitleWeb.AccountSessionControllerTest do
     end
 
     test "logs the account in with return to", %{conn: conn, account: account} do
-      account = set_password(account)
-
       conn =
         conn
         |> init_test_session(account_return_to: "/foo/bar")
         |> post(~p"/accounts/log-in", %{
           "account" => %{
             "email" => account.email,
-            "password" => valid_account_password()
+            "password" => @valid_account_password
           }
         })
 

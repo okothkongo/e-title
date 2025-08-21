@@ -3,8 +3,15 @@ defmodule ETitle.AccountsTest do
 
   alias ETitle.Accounts
 
+  import ETitle.Factory
   import ETitle.AccountsFixtures
   alias ETitle.Accounts.{Account, AccountToken}
+
+  @valid_account_attributes %{
+    email: "test@example.com",
+    phone_number: "1234567890",
+    type: :citizen
+  }
 
   describe "get_account_by_email/1" do
     test "does not return the account if the email does not exist" do
@@ -12,7 +19,7 @@ defmodule ETitle.AccountsTest do
     end
 
     test "returns the account if the email exists" do
-      %{id: id} = account = account_fixture()
+      %{id: id} = account = insert(:account)
       assert %Account{id: ^id} = Accounts.get_account_by_email(account.email)
     end
   end
@@ -23,15 +30,15 @@ defmodule ETitle.AccountsTest do
     end
 
     test "does not return the account if the password is not valid" do
-      account = account_fixture() |> set_password()
+      account = insert(:account)
       refute Accounts.get_account_by_email_and_password(account.email, "invalid")
     end
 
     test "returns the account if the email and password are valid" do
-      %{id: id} = account = account_fixture() |> set_password()
+      %{id: id} = account = insert(:account)
 
       assert %Account{id: ^id} =
-               Accounts.get_account_by_email_and_password(account.email, valid_account_password())
+               Accounts.get_account_by_email_and_password(account.email, "hello World!1234")
     end
   end
 
@@ -43,7 +50,7 @@ defmodule ETitle.AccountsTest do
     end
 
     test "returns the account with the given id" do
-      %{id: id} = account = account_fixture()
+      %{id: id} = account = insert(:account)
       assert %Account{id: ^id} = Accounts.get_account!(account.id)
     end
   end
@@ -68,7 +75,7 @@ defmodule ETitle.AccountsTest do
     end
 
     test "validates email uniqueness" do
-      %{email: email} = account_fixture()
+      %{email: email} = insert(:account)
       {:error, changeset} = Accounts.register_account(%{email: email})
       assert "has already been taken" in errors_on(changeset).email
 
@@ -78,9 +85,8 @@ defmodule ETitle.AccountsTest do
     end
 
     test "registers accounts without password" do
-      email = unique_account_email()
-      {:ok, account} = Accounts.register_account(valid_account_attributes(email: email))
-      assert account.email == email
+      {:ok, account} = Accounts.register_account(@valid_account_attributes)
+      assert account.email == "test@example.com"
       assert is_nil(account.hashed_password)
       assert is_nil(account.confirmed_at)
       assert is_nil(account.password)
@@ -109,13 +115,13 @@ defmodule ETitle.AccountsTest do
   describe "change_account_email/3" do
     test "returns a account changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_account_email(%Account{})
-      assert changeset.required == [:email]
+      assert changeset.required == Account.required_fields()
     end
   end
 
   describe "deliver_account_update_email_instructions/3" do
     setup do
-      %{account: account_fixture()}
+      %{account: insert(:account)}
     end
 
     test "sends token through notification", %{account: account} do
@@ -134,8 +140,8 @@ defmodule ETitle.AccountsTest do
 
   describe "update_account_email/2" do
     setup do
-      account = unconfirmed_account_fixture()
-      email = unique_account_email()
+      account = insert(:unconfirmed_account)
+      email = "test@example.com"
 
       token =
         extract_account_token(fn url ->
@@ -208,7 +214,7 @@ defmodule ETitle.AccountsTest do
 
   describe "update_account_password/2" do
     setup do
-      %{account: account_fixture()}
+      %{account: insert(:account)}
     end
 
     test "validates password", %{account: account} do
@@ -258,7 +264,7 @@ defmodule ETitle.AccountsTest do
 
   describe "generate_account_session_token/1" do
     setup do
-      %{account: account_fixture()}
+      %{account: insert(:account)}
     end
 
     test "generates a token", %{account: account} do
@@ -271,7 +277,7 @@ defmodule ETitle.AccountsTest do
       assert_raise Ecto.ConstraintError, fn ->
         Repo.insert!(%AccountToken{
           token: account_token.token,
-          account_id: account_fixture().id,
+          account_id: insert(:account).id,
           context: "session"
         })
       end
@@ -288,7 +294,7 @@ defmodule ETitle.AccountsTest do
 
   describe "get_account_by_session_token/1" do
     setup do
-      account = account_fixture()
+      account = insert(:account)
       token = Accounts.generate_account_session_token(account)
       %{account: account, token: token}
     end
@@ -313,7 +319,7 @@ defmodule ETitle.AccountsTest do
 
   describe "get_account_by_magic_link_token/1" do
     setup do
-      account = account_fixture()
+      account = insert(:account)
       {encoded_token, _hashed_token} = generate_account_magic_link_token(account)
       %{account: account, token: encoded_token}
     end
@@ -335,7 +341,7 @@ defmodule ETitle.AccountsTest do
 
   describe "login_account_by_magic_link/1" do
     test "confirms account and expires tokens" do
-      account = unconfirmed_account_fixture()
+      account = insert(:unconfirmed_account)
       refute account.confirmed_at
       {encoded_token, hashed_token} = generate_account_magic_link_token(account)
 
@@ -346,7 +352,7 @@ defmodule ETitle.AccountsTest do
     end
 
     test "returns account and (deleted) token for confirmed account" do
-      account = account_fixture()
+      account = insert(:account)
       assert account.confirmed_at
       {encoded_token, _hashed_token} = generate_account_magic_link_token(account)
       assert {:ok, {^account, []}} = Accounts.login_account_by_magic_link(encoded_token)
@@ -355,7 +361,7 @@ defmodule ETitle.AccountsTest do
     end
 
     test "raises when unconfirmed account has password set" do
-      account = unconfirmed_account_fixture()
+      account = insert(:unconfirmed_account)
       {1, nil} = Repo.update_all(Account, set: [hashed_password: "hashed"])
       {encoded_token, _hashed_token} = generate_account_magic_link_token(account)
 
@@ -367,7 +373,7 @@ defmodule ETitle.AccountsTest do
 
   describe "delete_account_session_token/1" do
     test "deletes the token" do
-      account = account_fixture()
+      account = insert(:account)
       token = Accounts.generate_account_session_token(account)
       assert Accounts.delete_account_session_token(token) == :ok
       refute Accounts.get_account_by_session_token(token)
@@ -376,7 +382,7 @@ defmodule ETitle.AccountsTest do
 
   describe "deliver_login_instructions/2" do
     setup do
-      %{account: unconfirmed_account_fixture()}
+      %{account: insert(:unconfirmed_account)}
     end
 
     test "sends token through notification", %{account: account} do
