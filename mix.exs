@@ -10,6 +10,13 @@ defmodule ETitle.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ],
       compilers: [:phoenix_live_view] ++ Mix.compilers(),
       listeners: [Phoenix.CodeReloader]
     ]
@@ -65,7 +72,9 @@ defmodule ETitle.MixProject do
       {:gettext, "~> 0.26"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:excoveralls, "~> 0.18", only: :test},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
@@ -88,7 +97,14 @@ defmodule ETitle.MixProject do
         "esbuild e_title --minify",
         "phx.digest"
       ],
-      precommit: ["compile --warning-as-errors", "deps.unlock --unused", "format", "test"]
+      cover: ["cmd MIX_ENV=test mix coveralls"],
+      lint: ["format --check-formatted", "compile --warnings-as-errors --force", "credo --strict"],
+      precommit: [
+        "cover",
+        "lint",
+        "deps.unlock --unused",
+        "test"
+      ]
     ]
   end
 end
