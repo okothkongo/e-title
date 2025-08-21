@@ -10,7 +10,7 @@ defmodule ETitle.AccountsFixtures do
   alias ETitle.Accounts.Scope
 
   def unique_account_email, do: "account#{System.unique_integer()}@example.com"
-  def valid_account_password, do: "hello world!"
+  def valid_account_password, do: "hello World!1234"
 
   def valid_account_attributes(attrs \\ %{}) do
     Enum.into(attrs, %{
