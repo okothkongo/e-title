@@ -7,6 +7,19 @@
 # General application configuration
 import Config
 
+config :e_title, :scopes,
+  account: [
+    default: true,
+    module: ETitle.Accounts.Scope,
+    assign_key: :current_scope,
+    access_path: [:account, :id],
+    schema_key: :account_id,
+    schema_type: :id,
+    schema_table: :accounts,
+    test_data_fixture: ETitle.AccountsFixtures,
+    test_setup_helper: :register_and_log_in_account
+  ]
+
 config :e_title,
   ecto_repos: [ETitle.Repo],
   generators: [timestamp_type: :utc_datetime]
