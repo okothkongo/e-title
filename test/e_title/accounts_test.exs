@@ -75,7 +75,7 @@ defmodule ETitle.AccountsTest do
     end
 
     test "validates email uniqueness" do
-      %{email: email} = insert(:account)
+      %{email: email} = insert(:account, user: insert(:user))
       {:error, changeset} = Accounts.register_account(%{email: email})
       assert "has already been taken" in errors_on(changeset).email
 
@@ -85,7 +85,8 @@ defmodule ETitle.AccountsTest do
     end
 
     test "registers accounts without password" do
-      {:ok, account} = Accounts.register_account(@valid_account_attributes)
+      valid_account_attributes = Map.put(@valid_account_attributes, :user_id, insert(:user).id)
+      {:ok, account} = Accounts.register_account(valid_account_attributes)
       assert account.email == "test@example.com"
       assert is_nil(account.hashed_password)
       assert is_nil(account.confirmed_at)
@@ -352,10 +353,14 @@ defmodule ETitle.AccountsTest do
     end
 
     test "returns account and (deleted) token for confirmed account" do
-      account = insert(:account)
+      account = insert(:account, user: insert(:user))
       assert account.confirmed_at
       {encoded_token, _hashed_token} = generate_account_magic_link_token(account)
-      assert {:ok, {^account, []}} = Accounts.login_account_by_magic_link(encoded_token)
+      account_id = account.id
+
+      assert {:ok, {%Account{id: ^account_id}, []}} =
+               Accounts.login_account_by_magic_link(encoded_token)
+
       # one time use only
       assert {:error, :not_found} = Accounts.login_account_by_magic_link(encoded_token)
     end
@@ -402,6 +407,94 @@ defmodule ETitle.AccountsTest do
   describe "inspect/2 for the Account module" do
     test "does not include password" do
       refute inspect(%Account{password: "123456"}) =~ "password: \"123456\""
+    end
+  end
+
+  describe "users" do
+    alias ETitle.Accounts.User
+
+    import ETitle.AccountsFixtures
+
+    @invalid_attrs %{first_name: nil, middle_name: nil, surname: nil, identity_document: nil}
+
+    test "list_users/1 returns all scoped users" do
+      scope = build(:account_scope, account: insert(:account))
+      other_scope = build(:account_scope, account: insert(:account))
+      user = scope.account.user
+      other_user = other_scope.account.user
+      assert Accounts.list_users(scope) == [user]
+      assert Accounts.list_users(other_scope) == [other_user]
+    end
+
+    test "get_user!/2 returns the user with given id" do
+      scope = build(:account_scope, account: insert(:account))
+      other_scope = build(:account_scope, account: insert(:account))
+      user = scope.account.user
+      assert Accounts.get_user!(scope, user.id) == user
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_user!(other_scope, user.id) end
+    end
+
+    test "create_user/2 with valid data creates a user" do
+      valid_attrs = %{
+        first_name: "some first_name",
+        middle_name: "some middle_name",
+        surname: "some surname",
+        identity_document: "some identity_document"
+      }
+
+      scope = build(:account_scope, account: insert(:account))
+
+      assert {:ok, %User{} = user} = Accounts.create_user(scope, valid_attrs)
+      assert user.first_name == "some first_name"
+      assert user.middle_name == "some middle_name"
+      assert user.surname == "some surname"
+      assert user.identity_document == "some identity_document"
+    end
+
+    test "create_user/2 with invalid data returns error changeset" do
+      scope = build(:account_scope, account: insert(:account))
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_user(scope, @invalid_attrs)
+    end
+
+    test "update_user/3 with valid data updates the user" do
+      scope = build(:account_scope, account: insert(:account))
+      user = scope.account.user
+
+      update_attrs = %{
+        first_name: "some updated first_name",
+        middle_name: "some updated middle_name",
+        surname: "some updated surname",
+        identity_document: "some updated identity_document"
+      }
+
+      assert {:ok, %User{} = user} = Accounts.update_user(scope, user, update_attrs)
+      assert user.first_name == "some updated first_name"
+      assert user.middle_name == "some updated middle_name"
+      assert user.surname == "some updated surname"
+      assert user.identity_document == "some updated identity_document"
+    end
+
+    test "update_user/3 with invalid scope raises" do
+      scope = build(:account_scope, account: insert(:account))
+      other_scope = build(:account_scope, account: insert(:account))
+      user = scope.account.user
+
+      assert_raise MatchError, fn ->
+        Accounts.update_user(other_scope, user, %{})
+      end
+    end
+
+    test "update_user/3 with invalid data returns error changeset" do
+      scope = build(:account_scope, account: insert(:account))
+      user = scope.account.user
+      assert {:error, %Ecto.Changeset{}} = Accounts.update_user(scope, user, @invalid_attrs)
+      assert user == Accounts.get_user!(scope, user.id)
+    end
+
+    test "change_user/2 returns a user changeset" do
+      account = insert(:account)
+      scope = build(:account_scope, account: account)
+      assert %Ecto.Changeset{} = Accounts.change_user(scope, account.user)
     end
   end
 end

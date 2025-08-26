@@ -16,6 +16,8 @@ defmodule ETitle.Accounts.Account do
     field :phone_number, :string
 
     timestamps(type: :utc_datetime)
+
+    belongs_to :user, ETitle.Accounts.User
   end
 
   @required_fields ~w(email phone_number type)a
@@ -33,7 +35,7 @@ defmodule ETitle.Accounts.Account do
   """
   def email_changeset(account, attrs, opts \\ []) do
     account
-    |> cast(attrs, [:email, :phone_number, :type])
+    |> cast(attrs, @required_fields ++ [:user_id])
     |> validate_required(@required_fields)
     |> validate_email(opts)
   end

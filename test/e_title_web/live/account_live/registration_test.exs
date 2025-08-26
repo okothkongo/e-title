@@ -45,8 +45,8 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
   describe "register account" do
     test "creates account but does not log in", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/accounts/register")
-
-      form = form(lv, "#registration_form", account: @valid_account_attributes)
+      valid_account_attributes = @valid_account_attributes
+      form = form(lv, "#registration_form", account: valid_account_attributes)
 
       {:ok, _lv, html} =
         form

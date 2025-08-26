@@ -38,4 +38,26 @@ defmodule ETitle.AccountsFixtures do
       set: [inserted_at: dt, authenticated_at: dt]
     )
   end
+
+  @doc """
+  Generate a unique user identity_document.
+  """
+  def unique_user_identity_document,
+    do: "some identity_document#{System.unique_integer([:positive])}"
+
+  @doc """
+  Generate a user.
+  """
+  def user_fixture(scope, attrs \\ %{}) do
+    attrs =
+      Enum.into(attrs, %{
+        first_name: "some first_name",
+        identity_document: unique_user_identity_document(),
+        middle_name: "some middle_name",
+        surname: "some surname"
+      })
+
+    {:ok, user} = ETitle.Accounts.create_user(scope, attrs)
+    user
+  end
 end
