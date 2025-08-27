@@ -7,7 +7,7 @@ defmodule ETitleWeb.UserLive.Form do
   @impl true
   def render(assigns) do
     ~H"""
-    <Layouts.app flash={@flash} current_scope={@current_scope}>
+    <Layouts.app flash={@flash}>
       <.header>
         {@page_title}
         <:subtitle>Use this form to manage user records in your database.</:subtitle>
@@ -18,9 +18,13 @@ defmodule ETitleWeb.UserLive.Form do
         <.input field={@form[:middle_name]} type="text" label="Middle name" />
         <.input field={@form[:surname]} type="text" label="Surname" />
         <.input field={@form[:identity_document]} type="text" label="Identity document" />
+        <.inputs_for :let={account_form} field={@form[:accounts]}>
+          <.input field={account_form[:email]} type="email" label="Email" />
+          <.input field={account_form[:phone_number]} type="text" label="Phone number" />
+        </.inputs_for>
         <footer>
           <.button phx-disable-with="Saving..." variant="primary">Save User</.button>
-          <.button navigate={return_path(@current_scope, @return_to, @user)}>Cancel</.button>
+          <%!-- <.button navigate={return_path(@current_scope, @return_to, @user)}>Cancel</.button> --%>
         </footer>
       </.form>
     </Layouts.app>
@@ -48,18 +52,17 @@ defmodule ETitleWeb.UserLive.Form do
   end
 
   defp apply_action(socket, :new, _params) do
-    user = %User{id: socket.assigns.current_scope.account.user_id}
+    # user = %User{id: socket.assigns.current_scope.account.user_id}
 
     socket
     |> assign(:page_title, "New User")
-    |> assign(:user, user)
-    |> assign(:form, to_form(Accounts.change_user(socket.assigns.current_scope, user)))
+    # |> assign(:user, user)
+    |> assign(:form, to_form(Accounts.change_user_and_account()))
   end
 
   @impl true
   def handle_event("validate", %{"user" => user_params}, socket) do
-    changeset =
-      Accounts.change_user(socket.assigns.current_scope, socket.assigns.user, user_params)
+    changeset = Accounts.change_user_and_account(user_params)
 
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
   end
@@ -84,20 +87,19 @@ defmodule ETitleWeb.UserLive.Form do
   end
 
   defp save_user(socket, :new, user_params) do
-    case Accounts.create_user(socket.assigns.current_scope, user_params) do
+    case Accounts.create_user_and_account(user_params) do
       {:ok, user} ->
         {:noreply,
          socket
          |> put_flash(:info, "User created successfully")
-         |> push_navigate(
-           to: return_path(socket.assigns.current_scope, socket.assigns.return_to, user)
-         )}
+         |> push_navigate(to: return_path(socket.assigns.return_to, user))}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end
   end
 
+  defp return_path("index", _user), do: ~p"/"
   defp return_path(_scope, "index", _user), do: ~p"/users"
   defp return_path(_scope, "show", user), do: ~p"/users/#{user}"
 end

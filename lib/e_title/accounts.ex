@@ -386,6 +386,12 @@ defmodule ETitle.Accounts do
     end
   end
 
+  def create_user_and_account(attrs \\ %{}) do
+    attrs
+    |> create_user_and_account_change()
+    |> Repo.insert()
+  end
+
   @doc """
   Updates a user.
 
@@ -422,5 +428,15 @@ defmodule ETitle.Accounts do
   def change_user(%Scope{} = scope, %User{} = user, attrs \\ %{}) do
     true = user.id == scope.account.user_id
     User.changeset(user, attrs, scope)
+  end
+
+  def change_user_and_account(attrs \\ %{}) do
+    %User{accounts: [%Account{}]}
+    |> User.user_and_account_changeset(attrs)
+  end
+
+  def create_user_and_account_change(attrs \\ %{}) do
+    %User{}
+    |> User.user_and_account_changeset(attrs)
   end
 end

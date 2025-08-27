@@ -21,6 +21,7 @@ defmodule ETitleWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    live "/users/new", UserLive.Form, :new
   end
 
   # Other scopes may use custom stacks.
@@ -55,7 +56,7 @@ defmodule ETitleWeb.Router do
       live "/accounts/settings", AccountLive.Settings, :edit
       live "/accounts/settings/confirm-email/:token", AccountLive.Settings, :confirm_email
       live "/users", UserLive.Index, :index
-      live "/users/new", UserLive.Form, :new
+
       live "/users/:id", UserLive.Show, :show
       live "/users/:id/edit", UserLive.Form, :edit
     end

@@ -35,7 +35,7 @@ defmodule ETitle.Accounts.Account do
   """
   def email_changeset(account, attrs, opts \\ []) do
     account
-    |> cast(attrs, @required_fields ++ [:user_id])
+    |> cast(attrs, @required_fields)
     |> validate_required(@required_fields)
     |> validate_email(opts)
   end
