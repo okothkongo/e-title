@@ -89,6 +89,8 @@ defmodule ETitleWeb.UserLive.Form do
   defp save_user(socket, :new, user_params) do
     case Accounts.create_user_and_account(user_params) do
       {:ok, user} ->
+        send_login_instructions(user)
+
         {:noreply,
          socket
          |> put_flash(:info, "User created successfully")
@@ -99,7 +101,15 @@ defmodule ETitleWeb.UserLive.Form do
     end
   end
 
-  defp return_path("index", _user), do: ~p"/"
+  defp send_login_instructions(%User{accounts: [account]}) do
+    {:ok, _} =
+      Accounts.deliver_login_instructions(
+        account,
+        &url(~p"/accounts/log-in/#{&1}")
+      )
+  end
+
+  defp return_path("index", _user), do: ~p"/accounts/log-in"
   defp return_path(_scope, "index", _user), do: ~p"/users"
   defp return_path(_scope, "show", user), do: ~p"/users/#{user}"
 end
