@@ -68,27 +68,6 @@ defmodule ETitleWeb.AccountLive.Registration do
   end
 
   @impl true
-  def handle_event("save", %{"account" => account_params}, socket) do
-    case Accounts.register_account(account_params) do
-      {:ok, account} ->
-        {:ok, _} =
-          Accounts.deliver_login_instructions(
-            account,
-            &url(~p"/accounts/log-in/#{&1}")
-          )
-
-        {:noreply,
-         socket
-         |> put_flash(
-           :info,
-           "An email was sent to #{account.email}, please access it to confirm your account."
-         )
-         |> push_navigate(to: ~p"/accounts/log-in")}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign_form(socket, changeset)}
-    end
-  end
 
   def handle_event("validate", %{"account" => account_params}, socket) do
     changeset = Accounts.change_account_email(%Account{}, account_params, validate_unique: false)

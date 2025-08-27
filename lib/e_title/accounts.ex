@@ -60,26 +60,6 @@ defmodule ETitle.Accounts do
   """
   def get_account!(id), do: Repo.get!(Account, id)
 
-  ## Account registration
-
-  @doc """
-  Registers a account.
-
-  ## Examples
-
-      iex> register_account(%{field: value})
-      {:ok, %Account{}}
-
-      iex> register_account(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def register_account(attrs) do
-    %Account{}
-    |> Account.email_changeset(attrs)
-    |> Repo.insert()
-  end
-
   ## Settings
 
   @doc """
@@ -306,5 +286,137 @@ defmodule ETitle.Accounts do
         {:ok, {account, tokens_to_expire}}
       end
     end)
+  end
+
+  alias ETitle.Accounts.User
+  alias ETitle.Accounts.Scope
+
+  @doc """
+  Subscribes to scoped notifications about any user changes.
+
+  The broadcasted messages match the pattern:
+
+    * {:created, %User{}}
+    * {:updated, %User{}}
+    * {:deleted, %User{}}
+
+  """
+  def subscribe_users(%Scope{} = scope) do
+    key = scope.account.id
+
+    Phoenix.PubSub.subscribe(ETitle.PubSub, "account:#{key}:users")
+  end
+
+  defp broadcast(%Scope{} = scope, message) do
+    key = scope.account.id
+
+    Phoenix.PubSub.broadcast(ETitle.PubSub, "account:#{key}:users", message)
+  end
+
+  defp broadcast(%User{} = user, message) do
+    key = user.accounts |> List.first() |> Map.get(:id)
+
+    Phoenix.PubSub.broadcast(ETitle.PubSub, "account:#{key}:users", message)
+  end
+
+  @doc """
+  Returns the list of users.
+
+  ## Examples
+
+      iex> list_users(scope)
+      [%User{}, ...]
+
+  """
+  def list_users(%Scope{} = scope) do
+    Repo.all_by(User, id: scope.account.user_id)
+  end
+
+  @doc """
+  Gets a single user.
+
+  Raises `Ecto.NoResultsError` if the User does not exist.
+
+  ## Examples
+
+      iex> get_user!(scope, 123)
+      %User{}
+
+      iex> get_user!(scope, 456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_user!(%Scope{} = scope, id) do
+    Repo.get_by!(User, id: id, id: scope.account.user_id)
+  end
+
+  @doc """
+  Creates a user.
+
+  ## Examples
+
+      iex> create_user(user, %{field: value})
+      {:ok, %User{}}
+
+      iex> create_user(user, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_user_and_account(attrs \\ %{}) do
+    with {:ok, user = %User{}} <-
+           attrs
+           |> create_user_and_account_change()
+           |> Repo.insert() do
+      broadcast(user, {:created, user})
+      {:ok, user}
+    end
+  end
+
+  @doc """
+  Updates a user.
+
+  ## Examples
+
+      iex> update_user(scope, user, %{field: new_value})
+      {:ok, %User{}}
+
+      iex> update_user(scope, user, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_user(%Scope{} = scope, %User{} = user, attrs) do
+    true = user.id == scope.account.user_id
+
+    with {:ok, user = %User{}} <-
+           user
+           |> User.changeset(attrs, scope)
+           |> Repo.update() do
+      broadcast(scope, {:updated, user})
+      {:ok, user}
+    end
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking user changes.
+
+  ## Examples
+
+      iex> change_user(scope, user)
+      %Ecto.Changeset{data: %User{}}
+
+  """
+  def change_user(%Scope{} = scope, %User{} = user, attrs \\ %{}) do
+    true = user.id == scope.account.user_id
+    User.changeset(user, attrs, scope)
+  end
+
+  def change_user_and_account(attrs \\ %{}) do
+    %User{accounts: [%Account{}]}
+    |> User.user_and_account_changeset(attrs)
+  end
+
+  def create_user_and_account_change(attrs \\ %{}) do
+    %User{}
+    |> User.user_and_account_changeset(attrs)
   end
 end

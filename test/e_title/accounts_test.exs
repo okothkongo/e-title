@@ -6,12 +6,7 @@ defmodule ETitle.AccountsTest do
   import ETitle.Factory
   import ETitle.AccountsFixtures
   alias ETitle.Accounts.{Account, AccountToken}
-
-  @valid_account_attributes %{
-    email: "test@example.com",
-    phone_number: "1234567890",
-    type: :citizen
-  }
+  alias ETitle.Accounts.User
 
   describe "get_account_by_email/1" do
     test "does not return the account if the email does not exist" do
@@ -56,37 +51,72 @@ defmodule ETitle.AccountsTest do
   end
 
   describe "register_account/1" do
-    test "requires email to be set" do
-      {:error, changeset} = Accounts.register_account(%{})
+    @valid_attrs %{
+      first_name: "some first_name",
+      middle_name: "some middle_name",
+      surname: "some surname",
+      identity_document: "some identity_document",
+      accounts: [%{email: "some_email@example.com", phone_number: "1234567890"}]
+    }
 
-      assert %{email: ["can't be blank"]} = errors_on(changeset)
+    test "create_user/2 with valid data creates a user" do
+      assert {:ok, %User{} = user} = Accounts.create_user_and_account(@valid_attrs)
+      assert user.first_name == "some first_name"
+      assert user.middle_name == "some middle_name"
+      assert user.surname == "some surname"
+      assert user.identity_document == "some identity_document"
+      assert [accounts] = user.accounts
+
+      assert Map.get(accounts, :email) == "some_email@example.com"
+      assert Map.get(accounts, :type) == :citizen
+    end
+
+    test "create_user/2 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Accounts.create_user_and_account(%{})
     end
 
     test "validates email when given" do
-      {:error, changeset} = Accounts.register_account(%{email: "not valid"})
+      invalid_attrs = put_in(@valid_attrs, [:accounts, Access.at(0), :email], "invalid_email")
+      {:error, changeset} = Accounts.create_user_and_account(invalid_attrs)
 
-      assert %{email: ["must have the @ sign and no spaces"]} = errors_on(changeset)
+      assert %{accounts: [%{email: ["must have the @ sign and no spaces"]}]} =
+               errors_on(changeset)
     end
 
     test "validates maximum values for email for security" do
-      too_long = String.duplicate("db", 100)
-      {:error, changeset} = Accounts.register_account(%{email: too_long})
-      assert "should be at most 160 character(s)" in errors_on(changeset).email
+      too_long = String.duplicate("tes@.com", 100)
+      invalid_attrs = put_in(@valid_attrs, [:accounts, Access.at(0), :email], too_long)
+      {:error, changeset} = Accounts.create_user_and_account(invalid_attrs)
+
+      assert %{
+               accounts: [
+                 %{
+                   email: [
+                     "should be at most 160 character(s)",
+                     "must have the @ sign and no spaces"
+                   ]
+                 }
+               ]
+             } ==
+               errors_on(changeset)
     end
 
     test "validates email uniqueness" do
-      %{email: email} = insert(:account)
-      {:error, changeset} = Accounts.register_account(%{email: email})
-      assert "has already been taken" in errors_on(changeset).email
+      %{email: email} = insert(:account, user: insert(:user))
+      invalid_attrs = put_in(@valid_attrs, [:accounts, Access.at(0), :email], email)
+      {:error, changeset} = Accounts.create_user_and_account(invalid_attrs)
+      assert %{accounts: [%{email: ["has already been taken"]}]} == errors_on(changeset)
 
       # Now try with the upper cased email too, to check that email case is ignored.
-      {:error, changeset} = Accounts.register_account(%{email: String.upcase(email)})
-      assert "has already been taken" in errors_on(changeset).email
+      invalid_attrs = put_in(@valid_attrs, [:accounts, Access.at(0), :email], email)
+      {:error, changeset} = Accounts.create_user_and_account(invalid_attrs)
+      assert %{accounts: [%{email: ["has already been taken"]}]} == errors_on(changeset)
     end
 
     test "registers accounts without password" do
-      {:ok, account} = Accounts.register_account(@valid_account_attributes)
-      assert account.email == "test@example.com"
+      {:ok, user} = Accounts.create_user_and_account(@valid_attrs)
+      assert [account] = user.accounts
+      assert account.email == "some_email@example.com"
       assert is_nil(account.hashed_password)
       assert is_nil(account.confirmed_at)
       assert is_nil(account.password)
@@ -352,10 +382,14 @@ defmodule ETitle.AccountsTest do
     end
 
     test "returns account and (deleted) token for confirmed account" do
-      account = insert(:account)
+      account = insert(:account, user: insert(:user))
       assert account.confirmed_at
       {encoded_token, _hashed_token} = generate_account_magic_link_token(account)
-      assert {:ok, {^account, []}} = Accounts.login_account_by_magic_link(encoded_token)
+      account_id = account.id
+
+      assert {:ok, {%Account{id: ^account_id}, []}} =
+               Accounts.login_account_by_magic_link(encoded_token)
+
       # one time use only
       assert {:error, :not_found} = Accounts.login_account_by_magic_link(encoded_token)
     end
@@ -402,6 +436,72 @@ defmodule ETitle.AccountsTest do
   describe "inspect/2 for the Account module" do
     test "does not include password" do
       refute inspect(%Account{password: "123456"}) =~ "password: \"123456\""
+    end
+  end
+
+  describe "users" do
+    alias ETitle.Accounts.User
+
+    import ETitle.AccountsFixtures
+
+    @invalid_attrs %{first_name: nil, middle_name: nil, surname: nil, identity_document: nil}
+
+    test "list_users/1 returns all scoped users" do
+      scope = build(:account_scope, account: insert(:account))
+      other_scope = build(:account_scope, account: insert(:account))
+      user = scope.account.user
+      other_user = other_scope.account.user
+      assert Accounts.list_users(scope) == [user]
+      assert Accounts.list_users(other_scope) == [other_user]
+    end
+
+    test "get_user!/2 returns the user with given id" do
+      scope = build(:account_scope, account: insert(:account))
+      other_scope = build(:account_scope, account: insert(:account))
+      user = scope.account.user
+      assert Accounts.get_user!(scope, user.id) == user
+      assert_raise Ecto.NoResultsError, fn -> Accounts.get_user!(other_scope, user.id) end
+    end
+
+    test "update_user/3 with valid data updates the user" do
+      scope = build(:account_scope, account: insert(:account))
+      user = scope.account.user
+
+      update_attrs = %{
+        first_name: "some updated first_name",
+        middle_name: "some updated middle_name",
+        surname: "some updated surname",
+        identity_document: "some updated identity_document"
+      }
+
+      assert {:ok, %User{} = user} = Accounts.update_user(scope, user, update_attrs)
+      assert user.first_name == "some updated first_name"
+      assert user.middle_name == "some updated middle_name"
+      assert user.surname == "some updated surname"
+      assert user.identity_document == "some updated identity_document"
+    end
+
+    test "update_user/3 with invalid scope raises" do
+      scope = build(:account_scope, account: insert(:account))
+      other_scope = build(:account_scope, account: insert(:account))
+      user = scope.account.user
+
+      assert_raise MatchError, fn ->
+        Accounts.update_user(other_scope, user, %{})
+      end
+    end
+
+    test "update_user/3 with invalid data returns error changeset" do
+      scope = build(:account_scope, account: insert(:account))
+      user = scope.account.user
+      assert {:error, %Ecto.Changeset{}} = Accounts.update_user(scope, user, @invalid_attrs)
+      assert user == Accounts.get_user!(scope, user.id)
+    end
+
+    test "change_user/2 returns a user changeset" do
+      account = insert(:account)
+      scope = build(:account_scope, account: account)
+      assert %Ecto.Changeset{} = Accounts.change_user(scope, account.user)
     end
   end
 end
