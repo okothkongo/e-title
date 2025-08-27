@@ -93,7 +93,10 @@ defmodule ETitleWeb.UserLive.Form do
 
         {:noreply,
          socket
-         |> put_flash(:info, "User created successfully")
+         |> put_flash(
+           :info,
+           "An email was sent to your email, please access it to confirm your account."
+         )
          |> push_navigate(to: return_path(socket.assigns.return_to, user))}
 
       {:error, %Ecto.Changeset{} = changeset} ->

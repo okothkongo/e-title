@@ -18,5 +18,6 @@ defmodule ETitle.Repo.Migrations.CreateUsers do
     end
 
     create index(:accounts, [:user_id])
+    create unique_index(:accounts, [:phone_number])
   end
 end

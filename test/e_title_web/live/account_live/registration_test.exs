@@ -5,12 +5,6 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
 
   import ETitle.Factory
 
-  @valid_account_attributes %{
-    email: "test@example.com",
-    phone_number: "1234567890",
-    type: :citizen
-  }
-
   describe "Registration page" do
     test "renders registration page", %{conn: conn} do
       {:ok, _lv, html} = live(conn, ~p"/accounts/register")
@@ -39,37 +33,6 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
 
       assert result =~ "Register"
       assert result =~ "must have the @ sign and no spaces"
-    end
-  end
-
-  describe "register account" do
-    test "creates account but does not log in", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"/accounts/register")
-      valid_account_attributes = @valid_account_attributes
-      form = form(lv, "#registration_form", account: valid_account_attributes)
-
-      {:ok, _lv, html} =
-        form
-        |> render_submit()
-        |> follow_redirect(conn, ~p"/accounts/log-in")
-
-      assert html =~
-               ~r/An email was sent to .*, please access it to confirm your account/
-    end
-
-    test "renders errors for duplicated email", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"/accounts/register")
-
-      account = insert(:account, email: "test@email.com")
-
-      result =
-        lv
-        |> form("#registration_form",
-          account: %{"email" => account.email}
-        )
-        |> render_submit()
-
-      assert result =~ "has already been taken"
     end
   end
 

@@ -60,26 +60,6 @@ defmodule ETitle.Accounts do
   """
   def get_account!(id), do: Repo.get!(Account, id)
 
-  ## Account registration
-
-  @doc """
-  Registers a account.
-
-  ## Examples
-
-      iex> register_account(%{field: value})
-      {:ok, %Account{}}
-
-      iex> register_account(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def register_account(attrs) do
-    %Account{}
-    |> Account.email_changeset(attrs)
-    |> Repo.insert()
-  end
-
   ## Settings
 
   @doc """
@@ -333,6 +313,12 @@ defmodule ETitle.Accounts do
     Phoenix.PubSub.broadcast(ETitle.PubSub, "account:#{key}:users", message)
   end
 
+  defp broadcast(%User{} = user, message) do
+    key = user.accounts |> List.first() |> Map.get(:id)
+
+    Phoenix.PubSub.broadcast(ETitle.PubSub, "account:#{key}:users", message)
+  end
+
   @doc """
   Returns the list of users.
 
@@ -369,27 +355,21 @@ defmodule ETitle.Accounts do
 
   ## Examples
 
-      iex> create_user(scope, %{field: value})
+      iex> create_user(user, %{field: value})
       {:ok, %User{}}
 
-      iex> create_user(scope, %{field: bad_value})
+      iex> create_user(user, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_user(%Scope{} = scope, attrs) do
+  def create_user_and_account(attrs \\ %{}) do
     with {:ok, user = %User{}} <-
-           %User{}
-           |> User.changeset(attrs, scope)
+           attrs
+           |> create_user_and_account_change()
            |> Repo.insert() do
-      broadcast(scope, {:created, user})
+      broadcast(user, {:created, user})
       {:ok, user}
     end
-  end
-
-  def create_user_and_account(attrs \\ %{}) do
-    attrs
-    |> create_user_and_account_change()
-    |> Repo.insert()
   end
 
   @doc """

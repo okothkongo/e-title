@@ -38,6 +38,7 @@ defmodule ETitle.Accounts.Account do
     |> cast(attrs, @required_fields)
     |> validate_required(@required_fields)
     |> validate_email(opts)
+    |> unique_constraint(:phone_number)
   end
 
   defp validate_email(changeset, opts) do
