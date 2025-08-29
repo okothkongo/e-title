@@ -444,8 +444,6 @@ defmodule ETitle.AccountsTest do
 
     import ETitle.AccountsFixtures
 
-
-
     test "list_users/1 returns all scoped users" do
       scope = build(:account_scope, account: insert(:account))
       other_scope = build(:account_scope, account: insert(:account))
@@ -463,10 +461,10 @@ defmodule ETitle.AccountsTest do
       assert_raise Ecto.NoResultsError, fn -> Accounts.get_user!(other_scope, user.id) end
     end
 
-    test "change_user/2 returns a user changeset" do
-      account = insert(:account)
-      scope = build(:account_scope, account: account)
-      assert %Ecto.Changeset{} = Accounts.change_user(scope, account.user)
+    test "change_user_and_account/2 returns a user changeset" do
+      user = insert(:user)
+
+      assert %Ecto.Changeset{} = Accounts.change_user_and_account(user)
     end
   end
 end

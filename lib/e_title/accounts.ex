@@ -356,35 +356,15 @@ defmodule ETitle.Accounts do
   """
   def create_user_and_account(attrs \\ %{}) do
     with {:ok, user = %User{}} <-
-           attrs
-           |> create_user_and_account_change()
+           %User{}
+           |> change_user_and_account(attrs)
            |> Repo.insert() do
       broadcast(user, {:created, user})
       {:ok, user}
     end
   end
 
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking user changes.
-
-  ## Examples
-
-      iex> change_user(scope, user)
-      %Ecto.Changeset{data: %User{}}
-
-  """
-  def change_user(%Scope{} = scope, %User{} = user, attrs \\ %{}) do
-    true = user.id == scope.account.user_id
-    User.changeset(user, attrs, scope)
-  end
-
-  def change_user_and_account(attrs \\ %{}) do
-    %User{accounts: [%Account{}]}
-    |> User.user_and_account_changeset(attrs)
-  end
-
-  def create_user_and_account_change(attrs \\ %{}) do
-    %User{}
-    |> User.user_and_account_changeset(attrs)
+  def change_user_and_account(user, attrs \\ %{}) do
+    User.user_and_account_changeset(user, attrs)
   end
 end

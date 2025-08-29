@@ -2,6 +2,7 @@ defmodule ETitleWeb.UserLive.Form do
   use ETitleWeb, :live_view
 
   alias ETitle.Accounts
+  alias ETitle.Accounts.Account
   alias ETitle.Accounts.User
 
   @impl true
@@ -44,12 +45,12 @@ defmodule ETitleWeb.UserLive.Form do
   defp apply_action(socket, :new, _params) do
     socket
     |> assign(:page_title, "New User")
-    |> assign(:form, to_form(Accounts.change_user_and_account()))
+    |> assign(:form, to_form(Accounts.change_user_and_account(%User{accounts: [%Account{}]})))
   end
 
   @impl true
   def handle_event("validate", %{"user" => user_params}, socket) do
-    changeset = Accounts.change_user_and_account(user_params)
+    changeset = Accounts.change_user_and_account(%User{accounts: [%Account{}]}, user_params)
 
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
   end
