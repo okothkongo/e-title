@@ -12,19 +12,6 @@ defmodule ETitleWeb.UserLiveTest do
     accounts: %{0 => %{email: "test@email.com", phone_number: "1111111"}}
   }
 
-  # @update_attrs %{
-  #   first_name: "some updated first_name",
-  #   middle_name: "some updated middle_name",
-  #   surname: "some updated surname",
-  #   identity_document: "some updated identity_document"
-  # }
-  # @invalid_attrs %{first_name: nil, middle_name: nil, surname: nil, identity_document: nil}
-
-  # setup context do
-  #   %{account: account, conn: conn} = register_and_log_in_account(context)
-  #   %{account: account, conn: conn, user: account.user}
-  # end
-
   describe "save user" do
     test "creates account and user but does not log in", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/users/new")

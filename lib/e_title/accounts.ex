@@ -297,20 +297,12 @@ defmodule ETitle.Accounts do
   The broadcasted messages match the pattern:
 
     * {:created, %User{}}
-    * {:updated, %User{}}
-    * {:deleted, %User{}}
 
   """
   def subscribe_users(%Scope{} = scope) do
     key = scope.account.id
 
     Phoenix.PubSub.subscribe(ETitle.PubSub, "account:#{key}:users")
-  end
-
-  defp broadcast(%Scope{} = scope, message) do
-    key = scope.account.id
-
-    Phoenix.PubSub.broadcast(ETitle.PubSub, "account:#{key}:users", message)
   end
 
   defp broadcast(%User{} = user, message) do
@@ -364,59 +356,15 @@ defmodule ETitle.Accounts do
   """
   def create_user_and_account(attrs \\ %{}) do
     with {:ok, user = %User{}} <-
-           attrs
-           |> create_user_and_account_change()
+           %User{}
+           |> change_user_and_account(attrs)
            |> Repo.insert() do
       broadcast(user, {:created, user})
       {:ok, user}
     end
   end
 
-  @doc """
-  Updates a user.
-
-  ## Examples
-
-      iex> update_user(scope, user, %{field: new_value})
-      {:ok, %User{}}
-
-      iex> update_user(scope, user, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_user(%Scope{} = scope, %User{} = user, attrs) do
-    true = user.id == scope.account.user_id
-
-    with {:ok, user = %User{}} <-
-           user
-           |> User.changeset(attrs, scope)
-           |> Repo.update() do
-      broadcast(scope, {:updated, user})
-      {:ok, user}
-    end
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking user changes.
-
-  ## Examples
-
-      iex> change_user(scope, user)
-      %Ecto.Changeset{data: %User{}}
-
-  """
-  def change_user(%Scope{} = scope, %User{} = user, attrs \\ %{}) do
-    true = user.id == scope.account.user_id
-    User.changeset(user, attrs, scope)
-  end
-
-  def change_user_and_account(attrs \\ %{}) do
-    %User{accounts: [%Account{}]}
-    |> User.user_and_account_changeset(attrs)
-  end
-
-  def create_user_and_account_change(attrs \\ %{}) do
-    %User{}
-    |> User.user_and_account_changeset(attrs)
+  def change_user_and_account(user, attrs \\ %{}) do
+    User.user_and_account_changeset(user, attrs)
   end
 end
