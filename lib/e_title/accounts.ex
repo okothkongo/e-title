@@ -297,20 +297,12 @@ defmodule ETitle.Accounts do
   The broadcasted messages match the pattern:
 
     * {:created, %User{}}
-    * {:updated, %User{}}
-    * {:deleted, %User{}}
 
   """
   def subscribe_users(%Scope{} = scope) do
     key = scope.account.id
 
     Phoenix.PubSub.subscribe(ETitle.PubSub, "account:#{key}:users")
-  end
-
-  defp broadcast(%Scope{} = scope, message) do
-    key = scope.account.id
-
-    Phoenix.PubSub.broadcast(ETitle.PubSub, "account:#{key}:users", message)
   end
 
   defp broadcast(%User{} = user, message) do
@@ -368,30 +360,6 @@ defmodule ETitle.Accounts do
            |> create_user_and_account_change()
            |> Repo.insert() do
       broadcast(user, {:created, user})
-      {:ok, user}
-    end
-  end
-
-  @doc """
-  Updates a user.
-
-  ## Examples
-
-      iex> update_user(scope, user, %{field: new_value})
-      {:ok, %User{}}
-
-      iex> update_user(scope, user, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_user(%Scope{} = scope, %User{} = user, attrs) do
-    true = user.id == scope.account.user_id
-
-    with {:ok, user = %User{}} <-
-           user
-           |> User.changeset(attrs, scope)
-           |> Repo.update() do
-      broadcast(scope, {:updated, user})
       {:ok, user}
     end
   end

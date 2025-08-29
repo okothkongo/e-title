@@ -444,7 +444,7 @@ defmodule ETitle.AccountsTest do
 
     import ETitle.AccountsFixtures
 
-    @invalid_attrs %{first_name: nil, middle_name: nil, surname: nil, identity_document: nil}
+
 
     test "list_users/1 returns all scoped users" do
       scope = build(:account_scope, account: insert(:account))
@@ -461,41 +461,6 @@ defmodule ETitle.AccountsTest do
       user = scope.account.user
       assert Accounts.get_user!(scope, user.id) == user
       assert_raise Ecto.NoResultsError, fn -> Accounts.get_user!(other_scope, user.id) end
-    end
-
-    test "update_user/3 with valid data updates the user" do
-      scope = build(:account_scope, account: insert(:account))
-      user = scope.account.user
-
-      update_attrs = %{
-        first_name: "some updated first_name",
-        middle_name: "some updated middle_name",
-        surname: "some updated surname",
-        identity_document: "some updated identity_document"
-      }
-
-      assert {:ok, %User{} = user} = Accounts.update_user(scope, user, update_attrs)
-      assert user.first_name == "some updated first_name"
-      assert user.middle_name == "some updated middle_name"
-      assert user.surname == "some updated surname"
-      assert user.identity_document == "some updated identity_document"
-    end
-
-    test "update_user/3 with invalid scope raises" do
-      scope = build(:account_scope, account: insert(:account))
-      other_scope = build(:account_scope, account: insert(:account))
-      user = scope.account.user
-
-      assert_raise MatchError, fn ->
-        Accounts.update_user(other_scope, user, %{})
-      end
-    end
-
-    test "update_user/3 with invalid data returns error changeset" do
-      scope = build(:account_scope, account: insert(:account))
-      user = scope.account.user
-      assert {:error, %Ecto.Changeset{}} = Accounts.update_user(scope, user, @invalid_attrs)
-      assert user == Accounts.get_user!(scope, user.id)
     end
 
     test "change_user/2 returns a user changeset" do
