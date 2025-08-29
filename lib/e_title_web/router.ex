@@ -55,13 +55,21 @@ defmodule ETitleWeb.Router do
       on_mount: [{ETitleWeb.AccountAuth, :require_authenticated}] do
       live "/accounts/settings", AccountLive.Settings, :edit
       live "/accounts/settings/confirm-email/:token", AccountLive.Settings, :confirm_email
-      live "/users", UserLive.Index, :index
-
       live "/users/:id", UserLive.Show, :show
       live "/users/:id/edit", UserLive.Form, :edit
     end
 
     post "/accounts/update-password", AccountSessionController, :update_password
+  end
+
+  # staff auth router
+  scope "/", ETitleWeb do
+    pipe_through [:browser, :require_authenticated_account]
+
+    live_session :require_authenticated_staff,
+      on_mount: [{ETitleWeb.AccountAuth, :require_authenticated_staff}] do
+      live "/users", UserLive.Index, :index
+    end
   end
 
   scope "/", ETitleWeb do

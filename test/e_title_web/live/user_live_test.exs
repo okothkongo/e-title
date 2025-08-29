@@ -52,66 +52,37 @@ defmodule ETitleWeb.UserLiveTest do
     end
   end
 
-  # describe "Index" do
-  #   test "lists all users", %{conn: conn, user: user} do
-  #     {:ok, _index_live, html} = live(conn, ~p"/users")
+  describe "Index" do
+    test "user is not logged in", %{conn: conn} do
+      live(conn, ~p"/users")
 
-  #     assert html =~ "Listing Users"
-  #     assert html =~ user.first_name
-  #   end
+      assert {:error,
+              {:redirect,
+               %{
+                 to: "/accounts/log-in",
+                 flash: %{"error" => "You must log in to access this page."}
+               }}} = live(conn, ~p"/users")
+    end
 
-  #   test "saves new user", %{conn: conn} do
-  #     {:ok, index_live, _html} = live(conn, ~p"/users")
+    test "lists all users if user is staff", %{conn: conn} do
+      account = insert(:account, type: :staff)
+      user = insert(:user)
+      conn = log_in_account(conn, account)
+      {:ok, _index_live, html} = live(conn, ~p"/users")
 
-  #     assert {:ok, form_live, _} =
-  #              index_live
-  #              |> element("a", "New User")
-  #              |> render_click()
-  #              |> follow_redirect(conn, ~p"/users/new")
+      assert html =~ "Listing Users"
+      assert html =~ user.first_name
+    end
 
-  #     assert render(form_live) =~ "New User"
+    test "does not lists users if not staff", %{conn: conn} do
+      account = insert(:account, type: :citizen)
 
-  #     assert form_live
-  #            |> form("#user-form", user: @invalid_attrs)
-  #            |> render_change() =~ "can&#39;t be blank"
+      conn = log_in_account(conn, account)
 
-  #     assert {:ok, index_live, _html} =
-  #              form_live
-  #              |> form("#user-form", user: @create_attrs)
-  #              |> render_submit()
-  #              |> follow_redirect(conn, ~p"/users")
-
-  #     html = render(index_live)
-  #     assert html =~ "User created successfully"
-  #     assert html =~ "some first_name"
-  #   end
-
-  #   test "updates user in listing", %{conn: conn, user: user} do
-  #     {:ok, index_live, _html} = live(conn, ~p"/users")
-
-  #     assert {:ok, form_live, _html} =
-  #              index_live
-  #              |> element("#users-#{user.id} a", "Edit")
-  #              |> render_click()
-  #              |> follow_redirect(conn, ~p"/users/#{user}/edit")
-
-  #     assert render(form_live) =~ "Edit User"
-
-  #     assert form_live
-  #            |> form("#user-form", user: @invalid_attrs)
-  #            |> render_change() =~ "can&#39;t be blank"
-
-  #     assert {:ok, index_live, _html} =
-  #              form_live
-  #              |> form("#user-form", user: @update_attrs)
-  #              |> render_submit()
-  #              |> follow_redirect(conn, ~p"/users")
-
-  #     html = render(index_live)
-  #     assert html =~ "User updated successfully"
-  #     assert html =~ "some updated first_name"
-  #   end
-  # end
+      assert {:error, {:redirect, %{to: "/", flash: %{"error" => "Unauthorized access."}}}} =
+               live(conn, ~p"/users")
+    end
+  end
 
   # describe "Show" do
   #   test "displays user", %{conn: conn, user: user} do
