@@ -212,7 +212,7 @@ defmodule ETitle.AccountsTest do
   describe "update_account_email/2" do
     setup do
       account = insert(:unconfirmed_account)
-      email = unique_account_email()
+      email = "john@example.com"
 
       token =
         extract_account_token(fn url ->

@@ -45,7 +45,7 @@ defmodule ETitleWeb.AccountLive.SettingsTest do
     end
 
     test "updates the account email", %{conn: conn, account: account} do
-      new_email = unique_account_email()
+      new_email = "john@example.com"
 
       {:ok, lv, _html} = live(conn, ~p"/accounts/settings")
 
@@ -97,7 +97,7 @@ defmodule ETitleWeb.AccountLive.SettingsTest do
     end
 
     test "updates the account password", %{conn: conn, account: account} do
-      new_password = valid_account_password()
+      new_password = "hello World!1234"
 
       {:ok, lv, _html} = live(conn, ~p"/accounts/settings")
 
@@ -164,7 +164,7 @@ defmodule ETitleWeb.AccountLive.SettingsTest do
   describe "confirm email" do
     setup %{conn: conn} do
       account = insert(:account)
-      email = unique_account_email()
+      email = "john@example.com"
 
       token =
         extract_account_token(fn url ->

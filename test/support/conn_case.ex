@@ -45,7 +45,7 @@ defmodule ETitleWeb.ConnCase do
   test context.
   """
   def register_and_log_in_account(%{conn: conn} = context) do
-    account = ETitle.AccountsFixtures.account_fixture()
+    account = ETitle.Factory.insert(:account)
     scope = ETitle.Accounts.Scope.for_account(account)
 
     opts =
