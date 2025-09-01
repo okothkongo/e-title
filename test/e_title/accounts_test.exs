@@ -5,6 +5,15 @@ defmodule ETitle.AccountsTest do
 
   import ETitle.AccountsFixtures
   alias ETitle.Accounts.{Account, AccountToken}
+  import ETitle.Factory
+
+  @user_valid_attrs %{
+    first_name: "John",
+    middle_name: "Doe",
+    surname: "Doe",
+    identity_doc_no: "1234567890",
+    accounts: [%{email: "john@example.com", phone_number: "254712345678", type: :citizen}]
+  }
 
   describe "get_account_by_email/1" do
     test "does not return the account if the email does not exist" do
@@ -12,7 +21,7 @@ defmodule ETitle.AccountsTest do
     end
 
     test "returns the account if the email exists" do
-      %{id: id} = account = account_fixture()
+      %{id: id} = account = insert(:account)
       assert %Account{id: ^id} = Accounts.get_account_by_email(account.email)
     end
   end
@@ -23,15 +32,15 @@ defmodule ETitle.AccountsTest do
     end
 
     test "does not return the account if the password is not valid" do
-      account = account_fixture() |> set_password()
+      account = insert(:account)
       refute Accounts.get_account_by_email_and_password(account.email, "invalid")
     end
 
     test "returns the account if the email and password are valid" do
-      %{id: id} = account = account_fixture() |> set_password()
+      %{id: id} = account = insert(:account)
 
       assert %Account{id: ^id} =
-               Accounts.get_account_by_email_and_password(account.email, valid_account_password())
+               Accounts.get_account_by_email_and_password(account.email, "hello World!1234")
     end
   end
 
@@ -43,47 +52,115 @@ defmodule ETitle.AccountsTest do
     end
 
     test "returns the account with the given id" do
-      %{id: id} = account = account_fixture()
+      %{id: id} = account = insert(:account)
       assert %Account{id: ^id} = Accounts.get_account!(account.id)
     end
   end
 
   describe "register_account/1" do
-    test "requires email to be set" do
-      {:error, changeset} = Accounts.register_account(%{})
+    test "registers accounts without password" do
+      {:ok, user} = Accounts.register_account(@user_valid_attrs)
+      [account] = user.accounts
+      [accounts_attrs] = @user_valid_attrs.accounts
 
-      assert %{email: ["can't be blank"]} = errors_on(changeset)
+      assert user.first_name == @user_valid_attrs.first_name
+      assert user.middle_name == @user_valid_attrs.middle_name
+      assert user.surname == @user_valid_attrs.surname
+      assert user.identity_doc_no == @user_valid_attrs.identity_doc_no
+      assert account.email == accounts_attrs.email
+      assert account.phone_number == accounts_attrs.phone_number
+
+      assert is_nil(account.hashed_password)
+      assert is_nil(account.confirmed_at)
+      assert is_nil(account.password)
+    end
+
+    test "requires email to be set" do
+      user_attrs_with_no_email =
+        update_in(@user_valid_attrs.accounts, fn accounts ->
+          Enum.map(accounts, &Map.drop(&1, [:email]))
+        end)
+
+      assert {:error, changeset} = Accounts.register_account(user_attrs_with_no_email)
+      assert %{accounts: [%{email: ["can't be blank"]}]} == errors_on(changeset)
+    end
+
+    test "requires phone_number to be set" do
+      user_attrs_with_no_phone_number =
+        update_in(@user_valid_attrs.accounts, fn accounts ->
+          Enum.map(accounts, &Map.drop(&1, [:phone_number]))
+        end)
+
+      assert {:error, changeset} = Accounts.register_account(user_attrs_with_no_phone_number)
+      assert %{accounts: [%{phone_number: ["can't be blank"]}]} == errors_on(changeset)
+    end
+
+    test "require first name to be set" do
+      user_attrs_with_no_first_name = Map.put(@user_valid_attrs, :first_name, nil)
+      assert {:error, changeset} = Accounts.register_account(user_attrs_with_no_first_name)
+      assert %{first_name: ["can't be blank"]} == errors_on(changeset)
+    end
+
+    test "require surname to be set" do
+      user_attrs_with_no_surname = Map.put(@user_valid_attrs, :surname, nil)
+      assert {:error, changeset} = Accounts.register_account(user_attrs_with_no_surname)
+      assert %{surname: ["can't be blank"]} == errors_on(changeset)
+    end
+
+    test "require identity doc no to be set" do
+      user_attrs_with_no_identity_doc_no = Map.put(@user_valid_attrs, :identity_doc_no, nil)
+      assert {:error, changeset} = Accounts.register_account(user_attrs_with_no_identity_doc_no)
+      assert %{identity_doc_no: ["can't be blank"]} == errors_on(changeset)
     end
 
     test "validates email when given" do
-      {:error, changeset} = Accounts.register_account(%{email: "not valid"})
+      {:error, changeset} =
+        @user_valid_attrs
+        |> Map.put(:accounts, [%{email: "not valid"}])
+        |> Accounts.register_account()
 
-      assert %{email: ["must have the @ sign and no spaces"]} = errors_on(changeset)
+      assert %{accounts: [%{email: ["must have the @ sign and no spaces"]}]} =
+               errors_on(changeset)
     end
 
     test "validates maximum values for email for security" do
       too_long = String.duplicate("db", 100)
-      {:error, changeset} = Accounts.register_account(%{email: too_long})
-      assert "should be at most 160 character(s)" in errors_on(changeset).email
+
+      {:error, changeset} =
+        @user_valid_attrs
+        |> update_in([:accounts, Access.at(0), :email], fn _ -> too_long end)
+        |> Accounts.register_account()
+
+      assert %{
+               accounts: [
+                 %{
+                   email: [
+                     "should be at most 160 character(s)",
+                     "must have the @ sign and no spaces"
+                   ]
+                 }
+               ]
+             } ==
+               errors_on(changeset)
     end
 
     test "validates email uniqueness" do
-      %{email: email} = account_fixture()
-      {:error, changeset} = Accounts.register_account(%{email: email})
-      assert "has already been taken" in errors_on(changeset).email
+      %{email: email} = insert(:account)
+
+      {:error, changeset} =
+        @user_valid_attrs
+        |> update_in([:accounts, Access.at(0), :email], fn _ -> email end)
+        |> Accounts.register_account()
+
+      assert %{accounts: [%{email: ["has already been taken"]}]} == errors_on(changeset)
 
       # Now try with the upper cased email too, to check that email case is ignored.
-      {:error, changeset} = Accounts.register_account(%{email: String.upcase(email)})
-      assert "has already been taken" in errors_on(changeset).email
-    end
+      {:error, changeset} =
+        @user_valid_attrs
+        |> update_in([:accounts, Access.at(0), :email], fn _ -> String.upcase(email) end)
+        |> Accounts.register_account()
 
-    test "registers accounts without password" do
-      email = unique_account_email()
-      {:ok, account} = Accounts.register_account(valid_account_attributes(email: email))
-      assert account.email == email
-      assert is_nil(account.hashed_password)
-      assert is_nil(account.confirmed_at)
-      assert is_nil(account.password)
+      assert %{accounts: [%{email: ["has already been taken"]}]} == errors_on(changeset)
     end
   end
 
@@ -109,13 +186,13 @@ defmodule ETitle.AccountsTest do
   describe "change_account_email/3" do
     test "returns a account changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_account_email(%Account{})
-      assert changeset.required == [:phone_number, :email]
+      assert changeset.required == [:type, :phone_number, :email]
     end
   end
 
   describe "deliver_account_update_email_instructions/3" do
     setup do
-      %{account: account_fixture()}
+      %{account: insert(:account)}
     end
 
     test "sends token through notification", %{account: account} do
@@ -134,7 +211,7 @@ defmodule ETitle.AccountsTest do
 
   describe "update_account_email/2" do
     setup do
-      account = unconfirmed_account_fixture()
+      account = insert(:unconfirmed_account)
       email = unique_account_email()
 
       token =
@@ -208,7 +285,7 @@ defmodule ETitle.AccountsTest do
 
   describe "update_account_password/2" do
     setup do
-      %{account: account_fixture()}
+      %{account: insert(:account)}
     end
 
     test "validates password", %{account: account} do
@@ -258,7 +335,7 @@ defmodule ETitle.AccountsTest do
 
   describe "generate_account_session_token/1" do
     setup do
-      %{account: account_fixture()}
+      %{account: insert(:account)}
     end
 
     test "generates a token", %{account: account} do
@@ -271,7 +348,7 @@ defmodule ETitle.AccountsTest do
       assert_raise Ecto.ConstraintError, fn ->
         Repo.insert!(%AccountToken{
           token: account_token.token,
-          account_id: account_fixture().id,
+          account_id: insert(:account).id,
           context: "session"
         })
       end
@@ -288,7 +365,7 @@ defmodule ETitle.AccountsTest do
 
   describe "get_account_by_session_token/1" do
     setup do
-      account = account_fixture()
+      account = insert(:account)
       token = Accounts.generate_account_session_token(account)
       %{account: account, token: token}
     end
@@ -313,7 +390,7 @@ defmodule ETitle.AccountsTest do
 
   describe "get_account_by_magic_link_token/1" do
     setup do
-      account = account_fixture()
+      account = insert(:account)
       {encoded_token, _hashed_token} = generate_account_magic_link_token(account)
       %{account: account, token: encoded_token}
     end
@@ -335,7 +412,7 @@ defmodule ETitle.AccountsTest do
 
   describe "login_account_by_magic_link/1" do
     test "confirms account and expires tokens" do
-      account = unconfirmed_account_fixture()
+      account = insert(:unconfirmed_account)
       refute account.confirmed_at
       {encoded_token, hashed_token} = generate_account_magic_link_token(account)
 
@@ -346,16 +423,18 @@ defmodule ETitle.AccountsTest do
     end
 
     test "returns account and (deleted) token for confirmed account" do
-      account = account_fixture()
+      account = insert(:account)
       assert account.confirmed_at
       {encoded_token, _hashed_token} = generate_account_magic_link_token(account)
-      assert {:ok, {^account, []}} = Accounts.login_account_by_magic_link(encoded_token)
+      assert {:ok, {logged_in_account, []}} = Accounts.login_account_by_magic_link(encoded_token)
+      assert logged_in_account.id == account.id
+
       # one time use only
       assert {:error, :not_found} = Accounts.login_account_by_magic_link(encoded_token)
     end
 
     test "raises when unconfirmed account has password set" do
-      account = unconfirmed_account_fixture()
+      account = insert(:unconfirmed_account)
       {1, nil} = Repo.update_all(Account, set: [hashed_password: "hashed"])
       {encoded_token, _hashed_token} = generate_account_magic_link_token(account)
 
@@ -367,7 +446,7 @@ defmodule ETitle.AccountsTest do
 
   describe "delete_account_session_token/1" do
     test "deletes the token" do
-      account = account_fixture()
+      account = insert(:account)
       token = Accounts.generate_account_session_token(account)
       assert Accounts.delete_account_session_token(token) == :ok
       refute Accounts.get_account_by_session_token(token)
@@ -376,7 +455,7 @@ defmodule ETitle.AccountsTest do
 
   describe "deliver_login_instructions/2" do
     setup do
-      %{account: unconfirmed_account_fixture()}
+      %{account: insert(:unconfirmed_account)}
     end
 
     test "sends token through notification", %{account: account} do

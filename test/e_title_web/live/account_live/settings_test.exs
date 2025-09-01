@@ -4,12 +4,13 @@ defmodule ETitleWeb.AccountLive.SettingsTest do
   alias ETitle.Accounts
   import Phoenix.LiveViewTest
   import ETitle.AccountsFixtures
+  import ETitle.Factory
 
   describe "Settings page" do
     test "renders settings page", %{conn: conn} do
       {:ok, _lv, html} =
         conn
-        |> log_in_account(account_fixture())
+        |> log_in_account(insert(:account))
         |> live(~p"/accounts/settings")
 
       assert html =~ "Change Email"
@@ -27,7 +28,7 @@ defmodule ETitleWeb.AccountLive.SettingsTest do
     test "redirects if account is not in sudo mode", %{conn: conn} do
       {:ok, conn} =
         conn
-        |> log_in_account(account_fixture(),
+        |> log_in_account(insert(:account),
           token_authenticated_at: DateTime.add(DateTime.utc_now(:second), -11, :minute)
         )
         |> live(~p"/accounts/settings")
@@ -39,7 +40,7 @@ defmodule ETitleWeb.AccountLive.SettingsTest do
 
   describe "update email form" do
     setup %{conn: conn} do
-      account = account_fixture()
+      account = insert(:account)
       %{conn: log_in_account(conn, account), account: account}
     end
 
@@ -91,7 +92,7 @@ defmodule ETitleWeb.AccountLive.SettingsTest do
 
   describe "update password form" do
     setup %{conn: conn} do
-      account = account_fixture()
+      account = insert(:account)
       %{conn: log_in_account(conn, account), account: account}
     end
 
@@ -162,7 +163,7 @@ defmodule ETitleWeb.AccountLive.SettingsTest do
 
   describe "confirm email" do
     setup %{conn: conn} do
-      account = account_fixture()
+      account = insert(:account)
       email = unique_account_email()
 
       token =

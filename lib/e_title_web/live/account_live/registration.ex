@@ -2,7 +2,6 @@ defmodule ETitleWeb.AccountLive.Registration do
   use ETitleWeb, :live_view
 
   alias ETitle.Accounts
-  alias ETitle.Accounts.Account
 
   @impl true
   def render(assigns) do
@@ -60,16 +59,15 @@ defmodule ETitleWeb.AccountLive.Registration do
               autocomplete="tel"
               required
             />
-
           </.inputs_for>
-                   <.input
-              field={@form[:identity_doc_no]}
-              type="text"
-              label="Identity Document Number"
-              placeholder="XXXXXXXXX"
-              autocomplete="tel"
-              required
-            />
+          <.input
+            field={@form[:identity_doc_no]}
+            type="text"
+            label="Identity Document Number"
+            placeholder="XXXXXXXXX"
+            autocomplete="tel"
+            required
+          />
           <.button phx-disable-with="Creating account..." class="btn btn-primary w-full mt-4">
             Create an account
           </.button>
@@ -93,9 +91,10 @@ defmodule ETitleWeb.AccountLive.Registration do
 
   @impl true
   def handle_event("save", %{"account" => account_params}, socket) do
-    case Accounts.register_account(account_params)do
+    case Accounts.register_account(account_params) do
       {:ok, user} ->
         account = user.accounts |> List.first()
+
         {:ok, _} =
           Accounts.deliver_login_instructions(
             account,

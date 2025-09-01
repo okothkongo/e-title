@@ -32,6 +32,7 @@ defmodule ETitle.Accounts.Account do
     |> cast(attrs, [:email, :phone_number])
     |> validate_email(opts)
     |> validate_phone_number()
+    |> validate_required([:type])
   end
 
   defp validate_email(changeset, opts) do

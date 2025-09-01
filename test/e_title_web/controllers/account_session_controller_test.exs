@@ -2,10 +2,11 @@ defmodule ETitleWeb.AccountSessionControllerTest do
   use ETitleWeb.ConnCase, async: true
 
   import ETitle.AccountsFixtures
+  import ETitle.Factory
   alias ETitle.Accounts
 
   setup do
-    %{unconfirmed_account: unconfirmed_account_fixture(), account: account_fixture()}
+    %{unconfirmed_account: insert(:unconfirmed_account), account: insert(:account)}
   end
 
   describe "POST /accounts/log-in - email and password" do

@@ -2,7 +2,8 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
   use ETitleWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
-  import ETitle.AccountsFixtures
+  import ETitle.Factory
+  alias ETitle.Accounts.User
 
   describe "Registration page" do
     test "renders registration page", %{conn: conn} do
@@ -15,7 +16,7 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
     test "redirects if already logged in", %{conn: conn} do
       result =
         conn
-        |> log_in_account(account_fixture())
+        |> log_in_account(insert(:account))
         |> live(~p"/accounts/register")
         |> follow_redirect(conn, ~p"/")
 
@@ -28,22 +29,34 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
       result =
         lv
         |> element("#registration_form")
-        |> render_change(account: %{"email" => "with spaces", "phone_number" => "invalid"})
+        |> render_change(
+          account: %{
+            first_name: "",
+            middle_name: "",
+            surname: "",
+            identity_doc_no: "",
+            accounts: %{0 => %{email: "", phone_number: ""}}
+          }
+        )
 
       assert result =~ "Register"
-      assert result =~ "must have the @ sign and no spaces"
-      assert result =~ "must be a valid Kenyan phone number starting with 254"
+      assert ETitle.Repo.all(User) == []
     end
   end
 
   describe "register account" do
+    @user_valid_attrs %{
+      first_name: "John",
+      middle_name: "Doe",
+      surname: "Doe",
+      identity_doc_no: "1234567890",
+      accounts: %{0 => %{email: "john@example.com", phone_number: "254712345678"}}
+    }
     test "creates account but does not log in", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/accounts/register")
 
-      email = unique_account_email()
-
       form =
-        form(lv, "#registration_form", account: %{email: email, phone_number: "254712345678"})
+        form(lv, "#registration_form", account: @user_valid_attrs)
 
       {:ok, _lv, html} =
         render_submit(form)
@@ -51,17 +64,22 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
 
       assert html =~
                ~r/An email was sent to .*, please access it to confirm your account/
+
+      assert [user] = ETitle.Repo.all(User)
+      assert user.first_name == "John"
+      assert user.middle_name == "Doe"
+      assert user.surname == "Doe"
     end
 
     test "renders errors for duplicated email", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/accounts/register")
 
-      account = account_fixture(%{email: "test@email.com"})
+      insert(:account, email: "john@example.com")
 
       result =
         lv
         |> form("#registration_form",
-          account: %{"email" => account.email}
+          account: @user_valid_attrs
         )
         |> render_submit()
 

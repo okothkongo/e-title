@@ -2,7 +2,7 @@ defmodule ETitleWeb.AccountLive.LoginTest do
   use ETitleWeb.ConnCase, async: true
 
   import Phoenix.LiveViewTest
-  import ETitle.AccountsFixtures
+  import ETitle.Factory
 
   describe "login page" do
     test "renders login page", %{conn: conn} do
@@ -16,7 +16,7 @@ defmodule ETitleWeb.AccountLive.LoginTest do
 
   describe "account login - magic link" do
     test "sends magic link email when account exists", %{conn: conn} do
-      account = account_fixture()
+      account = insert(:account)
 
       {:ok, lv, _html} = live(conn, ~p"/accounts/log-in")
 
@@ -45,13 +45,13 @@ defmodule ETitleWeb.AccountLive.LoginTest do
 
   describe "account login - password" do
     test "redirects if account logs in with valid credentials", %{conn: conn} do
-      account = account_fixture() |> set_password()
+      account = insert(:account)
 
       {:ok, lv, _html} = live(conn, ~p"/accounts/log-in")
 
       form =
         form(lv, "#login_form_password",
-          account: %{email: account.email, password: valid_account_password(), remember_me: true}
+          account: %{email: account.email, password: "hello World!1234", remember_me: true}
         )
 
       conn = submit_form(form, conn)
@@ -91,7 +91,7 @@ defmodule ETitleWeb.AccountLive.LoginTest do
 
   describe "re-authentication (sudo mode)" do
     setup %{conn: conn} do
-      account = account_fixture()
+      account = insert(:account)
       %{account: account, conn: log_in_account(conn, account)}
     end
 
