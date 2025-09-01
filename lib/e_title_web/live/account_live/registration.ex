@@ -24,24 +24,52 @@ defmodule ETitleWeb.AccountLive.Registration do
 
         <.form for={@form} id="registration_form" phx-submit="save" phx-change="validate">
           <.input
-            field={@form[:email]}
-            type="email"
-            label="Email"
-            autocomplete="username"
+            field={@form[:first_name]}
+            type="text"
+            label="First Name"
+            autocomplete="first_name"
             required
-            phx-mounted={JS.focus()}
           />
-
           <.input
-            field={@form[:phone_number]}
-            type="tel"
-            label="Phone Number"
-            placeholder="254XXXXXXXXX"
-            autocomplete="tel"
+            field={@form[:middle_name]}
+            type="text"
+            label="Middle Name"
+            autocomplete="middle_name"
+          />
+          <.input
+            field={@form[:surname]}
+            type="text"
+            label="Surname"
+            autocomplete="surname"
             required
           />
-          <p class="text-sm text-gray-500 mt-1">Format: 254XXXXXXXXX (e.g., 254712345678)</p>
+          <.inputs_for :let={account_form} field={@form[:accounts]}>
+            <.input
+              field={account_form[:email]}
+              type="email"
+              label="Email"
+              autocomplete="username"
+              required
+            />
 
+            <.input
+              field={account_form[:phone_number]}
+              type="tel"
+              label="Phone Number"
+              placeholder="254XXXXXXXXX"
+              autocomplete="tel"
+              required
+            />
+
+          </.inputs_for>
+                   <.input
+              field={@form[:identity_doc_no]}
+              type="text"
+              label="Identity Document Number"
+              placeholder="XXXXXXXXX"
+              autocomplete="tel"
+              required
+            />
           <.button phx-disable-with="Creating account..." class="btn btn-primary w-full mt-4">
             Create an account
           </.button>
@@ -58,15 +86,16 @@ defmodule ETitleWeb.AccountLive.Registration do
   end
 
   def mount(_params, _session, socket) do
-    changeset = Accounts.change_account_email(%Account{}, %{}, validate_unique: false)
+    changeset = Accounts.change_user_and_account()
 
     {:ok, assign_form(socket, changeset), temporary_assigns: [form: nil]}
   end
 
   @impl true
   def handle_event("save", %{"account" => account_params}, socket) do
-    case Accounts.register_account(account_params) do
-      {:ok, account} ->
+    case Accounts.register_account(account_params)do
+      {:ok, user} ->
+        account = user.accounts |> List.first()
         {:ok, _} =
           Accounts.deliver_login_instructions(
             account,
@@ -87,7 +116,7 @@ defmodule ETitleWeb.AccountLive.Registration do
   end
 
   def handle_event("validate", %{"account" => account_params}, socket) do
-    changeset = Accounts.change_account_email(%Account{}, account_params, validate_unique: false)
+    changeset = Accounts.change_user_and_account(account_params)
     {:noreply, assign_form(socket, Map.put(changeset, :action, :validate))}
   end
 

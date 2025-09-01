@@ -8,6 +8,7 @@ defmodule ETitle.Accounts do
 
   alias ETitle.Accounts.{Account, AccountToken, AccountNotifier}
 
+  alias ETitle.Accounts.User
   ## Database getters
 
   @doc """
@@ -75,9 +76,13 @@ defmodule ETitle.Accounts do
 
   """
   def register_account(attrs) do
-    %Account{}
-    |> Account.email_changeset(attrs)
+    %User{}
+    |> User.registration_changeset(attrs)
     |> Repo.insert()
+  end
+
+  def change_user_and_account(attrs \\ %{}) do
+    User.registration_changeset(%User{accounts: [%Account{}]}, attrs)
   end
 
   ## Settings

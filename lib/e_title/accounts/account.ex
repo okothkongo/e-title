@@ -12,7 +12,7 @@ defmodule ETitle.Accounts.Account do
     field :type, Ecto.Enum, values: @account_types, default: :citizen
     field :confirmed_at, :utc_datetime
     field :authenticated_at, :utc_datetime, virtual: true
-
+    belongs_to :user, ETitle.Accounts.User
     timestamps(type: :utc_datetime)
   end
 
