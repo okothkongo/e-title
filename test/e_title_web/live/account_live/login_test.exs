@@ -57,10 +57,7 @@ defmodule ETitleWeb.AccountLive.LoginTest do
           account: %{email: account.email, password: "hello World!1234", remember_me: true}
         )
 
-      {:ok, _lv, html} =
-        form
-        |> render_submit()
-        |> follow_redirect(conn, ~p"/")
+      conn = submit_form(form, conn)
 
       assert redirected_to(conn) == ~p"/"
     end
