@@ -1,4 +1,7 @@
 defmodule ETitle.Factory do
+  @moduledoc """
+    Handles factory data.
+  """
   use ExMachina.Ecto, repo: ETitle.Repo
 
   def user_factory do

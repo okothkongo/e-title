@@ -1,4 +1,7 @@
 defmodule ETitle.Accounts.User do
+  @moduledoc """
+    Handles user data.
+  """
   use Ecto.Schema
   import Ecto.Changeset
   alias ETitle.Accounts.Account

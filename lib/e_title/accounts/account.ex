@@ -1,4 +1,8 @@
 defmodule ETitle.Accounts.Account do
+  @moduledoc """
+    Handles account data.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 

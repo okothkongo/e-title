@@ -20,8 +20,10 @@ defmodule ETitleWeb.AccountLive.LoginTest do
 
       {:ok, lv, _html} = live(conn, ~p"/accounts/log-in")
 
+      form = form(lv, "#login_form_magic", account: %{email: account.email})
+
       {:ok, _lv, html} =
-        form(lv, "#login_form_magic", account: %{email: account.email})
+        form
         |> render_submit()
         |> follow_redirect(conn, ~p"/accounts/log-in")
 
@@ -33,9 +35,10 @@ defmodule ETitleWeb.AccountLive.LoginTest do
 
     test "does not disclose if account is registered", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/accounts/log-in")
+      form = form(lv, "#login_form_magic", account: %{email: "idonotexist@example.com"})
 
       {:ok, _lv, html} =
-        form(lv, "#login_form_magic", account: %{email: "idonotexist@example.com"})
+        form
         |> render_submit()
         |> follow_redirect(conn, ~p"/accounts/log-in")
 
@@ -54,7 +57,10 @@ defmodule ETitleWeb.AccountLive.LoginTest do
           account: %{email: account.email, password: "hello World!1234", remember_me: true}
         )
 
-      conn = submit_form(form, conn)
+      {:ok, _lv, html} =
+        form
+        |> render_submit()
+        |> follow_redirect(conn, ~p"/")
 
       assert redirected_to(conn) == ~p"/"
     end
