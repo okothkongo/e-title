@@ -17,7 +17,7 @@ defmodule ETitleWeb.Router do
   scope "/", ETitleWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", HomeLive
   end
 
   # Other scopes may use custom stacks.
