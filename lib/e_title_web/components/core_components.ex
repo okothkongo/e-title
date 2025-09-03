@@ -56,64 +56,196 @@ defmodule ETitleWeb.CoreComponents do
       id={@id}
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
-      class="toast toast-top toast-end z-50"
+      class="fixed top-4 right-4 z-50 max-w-sm w-full"
       {@rest}
     >
       <div class={[
-        "alert w-80 sm:w-96 max-w-80 sm:max-w-96 text-wrap",
-        @kind == :info && "alert-info",
-        @kind == :error && "alert-error"
+        "bg-white rounded-lg shadow-xl border-l-4 p-4 transform transition-all duration-300 ease-out",
+        @kind == :info && "border-blue-500 bg-blue-50",
+        @kind == :error && "border-red-500 bg-red-50"
       ]}>
-        <.icon :if={@kind == :info} name="hero-information-circle" class="size-5 shrink-0" />
-        <.icon :if={@kind == :error} name="hero-exclamation-circle" class="size-5 shrink-0" />
-        <div>
-          <p :if={@title} class="font-semibold">{@title}</p>
-          <p>{msg}</p>
+        <div class="flex items-start space-x-3">
+          <.icon
+            :if={@kind == :info}
+            name="hero-information-circle"
+            class="size-5 shrink-0 text-blue-500 mt-0.5"
+          />
+          <.icon
+            :if={@kind == :error}
+            name="hero-exclamation-circle"
+            class="size-5 shrink-0 text-red-500 mt-0.5"
+          />
+          <div class="flex-1 min-w-0">
+            <p :if={@title} class="font-semibold text-gray-900 mb-1">{@title}</p>
+            <p class={[
+              "text-sm leading-relaxed",
+              @kind == :info && "text-blue-800",
+              @kind == :error && "text-red-800"
+            ]}>
+              {msg}
+            </p>
+          </div>
+          <button
+            type="button"
+            class="group self-start cursor-pointer p-1 rounded-full hover:bg-gray-100 transition-colors duration-150"
+            aria-label={gettext("close")}
+          >
+            <.icon name="hero-x-mark" class="size-4 text-gray-400 group-hover:text-gray-600" />
+          </button>
         </div>
-        <div class="flex-1" />
-        <button type="button" class="group self-start cursor-pointer" aria-label={gettext("close")}>
-          <.icon name="hero-x-mark" class="size-5 opacity-40 group-hover:opacity-70" />
-        </button>
       </div>
     </div>
     """
   end
 
   @doc """
-  Renders a button with navigation support.
+  Renders a e with navigation support.
+
+  ## Variants
+  - `primary`: Green gradient button with shadow and hover effects
+  - `secondary`: White button with green border and hover effects
+  - `danger`: Red gradient button for destructive actions
+  - `outline`: Transparent button with gray border and green hover
+  - `ghost`: Minimal button with subtle hover effects
+
+  ## Sizes
+  - `sm`: Small button (px-4 py-2 text-sm)
+  - `md`: Medium button (px-6 py-3 text-base) - default
+  - `lg`: Large button (px-8 py-4 text-lg)
 
   ## Examples
 
       <.button>Send!</.button>
-      <.button phx-click="go" variant="primary">Send!</.button>
+      <.button phx-click="go" variant="primary" size="lg">Send!</.button>
       <.button navigate={~p"/"}>Home</.button>
+      <.button variant="danger" size="sm">Delete</.button>
+      <.button variant="outline">Cancel</.button>
+      <.button variant="ghost">Skip</.button>
+      <.button loading={true} variant="primary">Processing...</.button>
+      <.button disabled={true} variant="primary">Disabled</.button>
   """
   attr :rest, :global, include: ~w(href navigate patch method download name value disabled)
   attr :class, :string
-  attr :variant, :string, values: ~w(primary)
+  attr :variant, :string, values: ~w(primary secondary danger outline ghost)
+  attr :size, :string, values: ~w(sm md lg), default: "md"
+  attr :loading, :boolean, default: false
   slot :inner_block, required: true
 
   def button(%{rest: rest} = assigns) do
-    variants = %{"primary" => "btn-primary", nil => "btn-primary btn-soft"}
+    variants = %{
+      "primary" =>
+        "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl disabled:shadow-none transform hover:scale-105 disabled:scale-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed",
+      "secondary" =>
+        "bg-white border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white disabled:border-gray-300 disabled:text-gray-400 font-semibold transition-all duration-300 shadow-md hover:shadow-lg disabled:shadow-none transform hover:scale-105 disabled:scale-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed",
+      "danger" =>
+        "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl disabled:shadow-none transform hover:scale-105 disabled:scale-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed",
+      "outline" =>
+        "bg-transparent border-2 border-gray-300 text-gray-700 hover:border-green-500 hover:text-green-600 disabled:border-gray-200 disabled:text-gray-400 font-semibold transition-all duration-300 shadow-sm hover:shadow-md disabled:shadow-none transform hover:scale-105 disabled:scale-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed",
+      "ghost" =>
+        "bg-transparent text-gray-600 hover:text-green-600 hover:bg-green-50 disabled:text-gray-400 disabled:hover:bg-transparent font-semibold transition-all duration-300 transform hover:scale-105 disabled:scale-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed",
+      nil =>
+        "bg-white border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white disabled:border-gray-300 disabled:text-gray-400 font-semibold transition-all duration-300 shadow-md hover:shadow-lg disabled:shadow-none transform hover:scale-105 disabled:scale-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed"
+    }
+
+    sizes = %{
+      "sm" => "px-4 py-2 text-sm rounded-md",
+      "md" => "px-6 py-3 text-base rounded-lg",
+      "lg" => "px-8 py-4 text-lg rounded-xl"
+    }
 
     assigns =
       assign_new(assigns, :class, fn ->
-        ["btn", Map.fetch!(variants, assigns[:variant])]
+        variant_class = Map.fetch!(variants, assigns[:variant])
+        size_class = Map.fetch!(sizes, assigns[:size])
+        "#{variant_class} #{size_class}"
       end)
 
     if rest[:href] || rest[:navigate] || rest[:patch] do
       ~H"""
       <.link class={@class} {@rest}>
-        {render_slot(@inner_block)}
+        <div class="flex items-center justify-center space-x-2">
+          <div
+            :if={@loading}
+            class="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"
+          >
+          </div>
+          <span>{render_slot(@inner_block)}</span>
+        </div>
       </.link>
       """
     else
       ~H"""
       <button class={@class} {@rest}>
-        {render_slot(@inner_block)}
+        <div class="flex items-center justify-center space-x-2">
+          <div
+            :if={@loading}
+            class="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"
+          >
+          </div>
+          <span>{render_slot(@inner_block)}</span>
+        </div>
       </button>
       """
     end
+  end
+
+  @doc """
+  Renders an icon button - a button with just an icon.
+
+  ## Examples
+
+      <.icon_button icon="hero-heart" variant="ghost" />
+      <.icon_button icon="hero-trash" variant="danger" size="sm" />
+  """
+  attr :icon, :string, required: true
+  attr :variant, :string, values: ~w(primary secondary danger outline ghost), default: "ghost"
+  attr :size, :string, values: ~w(sm md lg), default: "md"
+  attr :class, :string
+  attr :rest, :global
+
+  def icon_button(assigns) do
+    size_classes = %{
+      "sm" => "p-2",
+      "md" => "p-3",
+      "lg" => "p-4"
+    }
+
+    icon_sizes = %{
+      "sm" => "size-4",
+      "md" => "size-5",
+      "lg" => "size-6"
+    }
+
+    base_classes =
+      "rounded-lg font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+
+    variant_classes = %{
+      "primary" =>
+        "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95",
+      "secondary" =>
+        "bg-white border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95",
+      "danger" =>
+        "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95",
+      "outline" =>
+        "bg-transparent border-2 border-gray-300 text-gray-700 hover:border-green-500 hover:text-green-600 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95",
+      "ghost" =>
+        "bg-transparent text-gray-600 hover:text-green-600 hover:bg-green-50 transform hover:scale-105 active:scale-95"
+    }
+
+    assigns =
+      assign_new(assigns, :class, fn ->
+        size_class = Map.fetch!(size_classes, assigns[:size])
+        variant_class = Map.fetch!(variant_classes, assigns[:variant])
+        "#{base_classes} #{size_class} #{variant_class}"
+      end)
+
+    assigns = assign(assigns, :icon_class, Map.fetch!(icon_sizes, assigns[:size]))
+
+    ~H"""
+    <button class={@class} {@rest}>
+      <.icon name={@icon} class={@icon_class} />
+    </button>
+    """
   end
 
   @doc """
@@ -185,19 +317,34 @@ defmodule ETitleWeb.CoreComponents do
       end)
 
     ~H"""
-    <div class="fieldset mb-2">
-      <label>
+    <div class="fieldset mb-6">
+      <label class="flex items-center space-x-3 cursor-pointer group">
         <input type="hidden" name={@name} value="false" disabled={@rest[:disabled]} />
-        <span class="label">
+        <div class="relative">
           <input
             type="checkbox"
             id={@id}
             name={@name}
             value="true"
             checked={@checked}
-            class={@class || "checkbox checkbox-sm"}
+            class={
+              @class ||
+                "w-5 h-5 text-green-600 bg-white border-2 border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:border-green-500 transition-all duration-200 hover:border-green-400"
+            }
             {@rest}
-          />{@label}
+          />
+          <div class="absolute inset-0 w-5 h-5 bg-green-600 rounded opacity-0 transition-opacity duration-200 pointer-events-none {if @checked, do: 'opacity-100', else: ''}">
+            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fill-rule="evenodd"
+                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+        </div>
+        <span class="text-sm font-medium text-gray-700 group-hover:text-green-600 transition-colors duration-200">
+          {@label}
         </span>
       </label>
       <.error :for={msg <- @errors}>{msg}</.error>
@@ -207,13 +354,18 @@ defmodule ETitleWeb.CoreComponents do
 
   def input(%{type: "select"} = assigns) do
     ~H"""
-    <div class="fieldset mb-2">
+    <div class="fieldset mb-6">
       <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="block text-sm font-medium text-gray-700 mb-2">{@label}</span>
         <select
           id={@id}
           name={@name}
-          class={[@class || "w-full select", @errors != [] && (@error_class || "select-error")]}
+          class={[
+            @class ||
+              "w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:outline-none",
+            @errors != [] &&
+              (@error_class || "border-red-500 focus:ring-red-500 focus:border-red-500")
+          ]}
           multiple={@multiple}
           {@rest}
         >
@@ -228,15 +380,17 @@ defmodule ETitleWeb.CoreComponents do
 
   def input(%{type: "textarea"} = assigns) do
     ~H"""
-    <div class="fieldset mb-2">
+    <div class="fieldset mb-6">
       <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="block text-sm font-medium text-gray-700 mb-2">{@label}</span>
         <textarea
           id={@id}
           name={@name}
           class={[
-            @class || "w-full textarea",
-            @errors != [] && (@error_class || "textarea-error")
+            @class ||
+              "w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white shadow-sm hover:shadow-md resize-none focus:outline-none",
+            @errors != [] &&
+              (@error_class || "border-red-500 focus:ring-red-500 focus:border-red-500")
           ]}
           {@rest}
         >{Phoenix.HTML.Form.normalize_value("textarea", @value)}</textarea>
@@ -249,17 +403,19 @@ defmodule ETitleWeb.CoreComponents do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div class="fieldset mb-2">
+    <div class="fieldset mb-6">
       <label>
-        <span :if={@label} class="label mb-1">{@label}</span>
+        <span :if={@label} class="block text-sm font-medium text-gray-700 mb-2">{@label}</span>
         <input
           type={@type}
           name={@name}
           id={@id}
           value={Phoenix.HTML.Form.normalize_value(@type, @value)}
           class={[
-            @class || "w-full input",
-            @errors != [] && (@error_class || "input-error")
+            @class ||
+              "w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white shadow-sm hover:shadow-md focus:outline-none",
+            @errors != [] &&
+              (@error_class || "border-red-500 focus:ring-red-500 focus:border-red-500")
           ]}
           {@rest}
         />
@@ -272,8 +428,8 @@ defmodule ETitleWeb.CoreComponents do
   # Helper used by inputs to generate form errors
   defp error(assigns) do
     ~H"""
-    <p class="mt-1.5 flex gap-2 items-center text-sm text-error">
-      <.icon name="hero-exclamation-circle" class="size-5" />
+    <p class="mt-3 flex gap-2 items-center text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-200">
+      <.icon name="hero-exclamation-circle" class="size-4 text-red-500" />
       {render_slot(@inner_block)}
     </p>
     """
@@ -288,12 +444,15 @@ defmodule ETitleWeb.CoreComponents do
 
   def header(assigns) do
     ~H"""
-    <header class={[@actions != [] && "flex items-center justify-between gap-6", "pb-4"]}>
+    <header class={[
+      @actions != [] && "flex items-center justify-between gap-6",
+      "pb-6 mb-8 border-b border-gray-200"
+    ]}>
       <div>
-        <h1 class="text-lg font-semibold leading-8">
+        <h1 class="text-2xl font-bold text-gray-900 leading-8 mb-2">
           {render_slot(@inner_block)}
         </h1>
-        <p :if={@subtitle != []} class="text-sm text-base-content/70">
+        <p :if={@subtitle != []} class="text-base text-gray-600 leading-relaxed">
           {render_slot(@subtitle)}
         </p>
       </div>
@@ -334,34 +493,42 @@ defmodule ETitleWeb.CoreComponents do
       end
 
     ~H"""
-    <table class="table table-zebra">
-      <thead>
-        <tr>
-          <th :for={col <- @col}>{col[:label]}</th>
-          <th :if={@action != []}>
-            <span class="sr-only">{gettext("Actions")}</span>
-          </th>
-        </tr>
-      </thead>
-      <tbody id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
-        <tr :for={row <- @rows} id={@row_id && @row_id.(row)}>
-          <td
-            :for={col <- @col}
-            phx-click={@row_click && @row_click.(row)}
-            class={@row_click && "hover:cursor-pointer"}
+    <div class="overflow-hidden rounded-xl shadow-lg border border-gray-200">
+      <table class="w-full bg-white">
+        <thead class="bg-gradient-to-r from-green-600 to-green-700 text-white">
+          <tr>
+            <th :for={col <- @col} class="px-6 py-4 text-left text-sm font-semibold tracking-wide">
+              {col[:label]}
+            </th>
+            <th :if={@action != []} class="px-6 py-4 text-left text-sm font-semibold tracking-wide">
+              <span class="sr-only">{gettext("Actions")}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody id={@id} phx-update={is_struct(@rows, Phoenix.LiveView.LiveStream) && "stream"}>
+          <tr
+            :for={row <- @rows}
+            id={@row_id && @row_id.(row)}
+            class="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150"
           >
-            {render_slot(col, @row_item.(row))}
-          </td>
-          <td :if={@action != []} class="w-0 font-semibold">
-            <div class="flex gap-4">
-              <%= for action <- @action do %>
-                {render_slot(action, @row_item.(row))}
-              <% end %>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <td
+              :for={col <- @col}
+              phx-click={@row_click && @row_click.(row)}
+              class={[@row_click && "hover:cursor-pointer", "px-6 py-4 text-sm text-gray-700"]}
+            >
+              {render_slot(col, @row_item.(row))}
+            </td>
+            <td :if={@action != []} class="px-6 py-4 text-sm text-gray-700">
+              <div class="flex gap-3">
+                <%= for action <- @action do %>
+                  {render_slot(action, @row_item.(row))}
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     """
   end
 
@@ -381,11 +548,14 @@ defmodule ETitleWeb.CoreComponents do
 
   def list(assigns) do
     ~H"""
-    <ul class="list">
-      <li :for={item <- @item} class="list-row">
-        <div class="list-col-grow">
-          <div class="font-bold">{item.title}</div>
-          <div>{render_slot(item)}</div>
+    <ul class="space-y-4">
+      <li
+        :for={item <- @item}
+        class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow duration-200"
+      >
+        <div class="space-y-2">
+          <div class="text-sm font-semibold text-green-600 uppercase tracking-wide">{item.title}</div>
+          <div class="text-gray-700 leading-relaxed">{render_slot(item)}</div>
         </div>
       </li>
     </ul>
@@ -415,7 +585,7 @@ defmodule ETitleWeb.CoreComponents do
 
   def icon(%{name: "hero-" <> _} = assigns) do
     ~H"""
-    <span class={[@name, @class]} />
+    <span class={[@name, @class, "inline-block"]} />
     """
   end
 
