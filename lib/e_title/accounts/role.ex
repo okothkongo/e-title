@@ -1,4 +1,7 @@
 defmodule ETitle.Accounts.Role do
+  @moduledoc """
+    Handles role data.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 
