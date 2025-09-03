@@ -94,18 +94,7 @@ defmodule ETitleWeb.AccountLive.Registration do
     case Accounts.register_account(account_params) do
       {:ok, user} ->
         account = user.accounts |> List.first()
-        role = Accounts.get_role_by_name("user")
-
-        {:ok, _} =
-          Accounts.deliver_login_instructions(
-            account,
-            &url(~p"/accounts/log-in/#{&1}")
-          )
-
-        Accounts.create_account_role(%{
-          account_id: account.id,
-          role_id: role.id
-        })
+        send_login_instructions_and_create_account_role(account)
 
         {:noreply,
          socket
@@ -128,5 +117,16 @@ defmodule ETitleWeb.AccountLive.Registration do
   defp assign_form(socket, %Ecto.Changeset{} = changeset) do
     form = to_form(changeset, as: "account")
     assign(socket, form: form)
+  end
+
+  def send_login_instructions_and_create_account_role(account) do
+    {:ok, _} =
+      Accounts.deliver_login_instructions(
+        account,
+        &url(~p"/accounts/log-in/#{&1}")
+      )
+
+    role = Accounts.get_role_by_name("user")
+    Accounts.create_account_role(%{account_id: account.id, role_id: role.id})
   end
 end
