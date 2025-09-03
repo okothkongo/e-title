@@ -5,7 +5,7 @@ defmodule ETitle.Locations.County do
   schema "counties" do
     field :name, :string
     field :code, :string
-    field :account_id, :id
+    has_many :sub_counties, ETitle.Locations.SubCounty
 
     timestamps(type: :utc_datetime)
   end
@@ -17,5 +17,6 @@ defmodule ETitle.Locations.County do
     |> validate_required([:name, :code])
     |> unique_constraint(:code)
     |> unique_constraint(:name)
+    |> cast_assoc(:sub_counties, with: &ETitle.Locations.SubCounty.changeset/2, required: true)
   end
 end
