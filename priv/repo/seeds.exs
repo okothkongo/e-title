@@ -151,24 +151,22 @@ counties =
   counties_file_path
   |> File.read!()
   |> Jason.decode!()
-  |> IO.inspect()
-  |> Enum.map(fn %{"name" => name, "code" => code, "sub_counties" => sub_counties} ->
-    code =
+  |> Enum.reduce([], fn %{"name" => name, "code" => code, "sub_counties" => sub_counties}, acc ->
+    normalized_code =
       case Integer.digits(code) do
         [_, _] -> "#{code}"
         _ -> "0#{code}"
       end
 
-    %{
+    county = %{
       name: name,
-      code: code,
-      sub_counties:
-        Enum.map(sub_counties, fn sub_county_name ->
-          %{name: sub_county_name}
-        end)
+      code: normalized_code,
+      sub_counties: Enum.map(sub_counties, &%{name: &1})
     }
+
+    [county | acc]
   end)
-  |> IO.inspect()
+  |> Enum.reverse()
 
 for county_attrs <- counties do
   county_changeset = ETitle.Locations.County.changeset(%ETitle.Locations.County{}, county_attrs)

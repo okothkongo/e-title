@@ -1,4 +1,7 @@
 defmodule ETitle.Locations.SubCounty do
+  @moduledoc """
+    Handles sub-county data.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

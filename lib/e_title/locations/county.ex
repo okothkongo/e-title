@@ -1,4 +1,7 @@
 defmodule ETitle.Locations.County do
+  @moduledoc """
+    Handles county data.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 
