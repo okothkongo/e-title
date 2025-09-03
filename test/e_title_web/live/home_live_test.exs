@@ -1,4 +1,4 @@
-defmodule ETitleWeb.HomePageTest do
+defmodule ETitleWeb.HomeLiveTest do
   use ETitleWeb.ConnCase
 
   import Phoenix.LiveViewTest
