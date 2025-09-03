@@ -32,12 +32,12 @@ defmodule ETitleWeb.HomeLive do
                   Secure, transparent, and efficient land title management for the modern era.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-                  <button class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold transition-colors shadow-lg hover:shadow-xl">
+                  <.button variant="primary" class="w-full sm:w-auto text-base sm:text-lg">
                     Register Your Land
-                  </button>
-                  <button class="w-full sm:w-auto border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-base sm:text-lg font-semibold transition-colors">
+                  </.button>
+                  <.button variant="secondary" class="w-full sm:w-auto text-base sm:text-lg">
                     Learn More
-                  </button>
+                  </.button>
                 </div>
               </div>
               
@@ -309,12 +309,13 @@ defmodule ETitleWeb.HomeLive do
                         required
                       ></textarea>
                     </div>
-                    <button
+                    <.button
                       type="submit"
-                      class="w-full bg-green-600 hover:bg-green-700 text-white py-3 sm:py-4 px-4 rounded-md font-semibold transition-colors text-sm sm:text-base"
+                      variant="primary"
+                      class="w-full text-sm sm:text-base"
                     >
                       Send Message
-                    </button>
+                    </.button>
                   </form>
                 </div>
                 

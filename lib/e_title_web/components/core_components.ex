@@ -126,43 +126,52 @@ defmodule ETitleWeb.CoreComponents do
   """
   attr :rest, :global, include: ~w(href navigate patch method download name value disabled)
   attr :class, :string
-  attr :variant, :string, values: ~w(primary secondary danger outline ghost)
+  attr :variant, :string, values: ~w(primary secondary danger outline ghost), default: "primary"
   attr :size, :string, values: ~w(sm md lg), default: "md"
   attr :loading, :boolean, default: false
   slot :inner_block, required: true
 
   def button(%{rest: rest} = assigns) do
-    variants = %{
-      "primary" =>
-        "bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl disabled:shadow-none transform hover:scale-105 disabled:scale-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed",
-      "secondary" =>
-        "bg-white border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white disabled:border-gray-300 disabled:text-gray-400 font-semibold transition-all duration-300 shadow-md hover:shadow-lg disabled:shadow-none transform hover:scale-105 disabled:scale-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed",
-      "danger" =>
-        "bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold transition-all duration-300 shadow-lg hover:shadow-xl disabled:shadow-none transform hover:scale-105 disabled:scale-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed",
-      "outline" =>
-        "bg-transparent border-2 border-gray-300 text-gray-700 hover:border-green-500 hover:text-green-600 disabled:border-gray-200 disabled:text-gray-400 font-semibold transition-all duration-300 shadow-sm hover:shadow-md disabled:shadow-none transform hover:scale-105 disabled:scale-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed",
-      "ghost" =>
-        "bg-transparent text-gray-600 hover:text-green-600 hover:bg-green-50 disabled:text-gray-400 disabled:hover:bg-transparent font-semibold transition-all duration-300 transform hover:scale-105 disabled:scale-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed",
-      nil =>
-        "bg-white border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white disabled:border-gray-300 disabled:text-gray-400 font-semibold transition-all duration-300 shadow-md hover:shadow-lg disabled:shadow-none transform hover:scale-105 disabled:scale-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:scale-95 disabled:cursor-not-allowed"
-    }
+    # Use inline styles to ensure they work
+    base_styles =
+      "display: inline-block; font-weight: 600; cursor: pointer; user-select: none; border: none; outline: none; transition: all 0.3s ease;"
 
-    sizes = %{
-      "sm" => "px-4 py-2 text-sm rounded-md",
-      "md" => "px-6 py-3 text-base rounded-lg",
-      "lg" => "px-8 py-4 text-lg rounded-xl"
-    }
+    variant_styles =
+      case assigns[:variant] do
+        "primary" ->
+          "background-color: #059669; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);"
+
+        "secondary" ->
+          "background-color: white; border: 2px solid #059669; color: #059669; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);"
+
+        "danger" ->
+          "background-color: #dc2626; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);"
+
+        "outline" ->
+          "background-color: transparent; border: 2px solid #d1d5db; color: #374151; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);"
+
+        "ghost" ->
+          "background-color: transparent; color: #4b5563; border: none; box-shadow: none;"
+
+        _ ->
+          "background-color: #059669; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);"
+      end
+
+    size_styles =
+      case assigns[:size] do
+        "sm" -> "padding: 0.5rem 1rem; font-size: 0.875rem; border-radius: 0.375rem;"
+        "lg" -> "padding: 1rem 2rem; font-size: 1.125rem; border-radius: 0.75rem;"
+        _ -> "padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 0.5rem;"
+      end
 
     assigns =
-      assign_new(assigns, :class, fn ->
-        variant_class = Map.fetch!(variants, assigns[:variant])
-        size_class = Map.fetch!(sizes, assigns[:size])
-        "#{variant_class} #{size_class}"
+      assign_new(assigns, :style, fn ->
+        "#{base_styles} #{variant_styles} #{size_styles}"
       end)
 
     if rest[:href] || rest[:navigate] || rest[:patch] do
       ~H"""
-      <.link class={@class} {@rest}>
+      <.link style={@style} {@rest}>
         <div class="flex items-center justify-center space-x-2">
           <div
             :if={@loading}
@@ -175,7 +184,7 @@ defmodule ETitleWeb.CoreComponents do
       """
     else
       ~H"""
-      <button class={@class} {@rest}>
+      <button style={@style} {@rest}>
         <div class="flex items-center justify-center space-x-2">
           <div
             :if={@loading}
