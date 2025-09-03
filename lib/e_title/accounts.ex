@@ -54,14 +54,14 @@ defmodule ETitle.Accounts do
 
   ## Examples
 
-      iex> get_account!(123)
+      iex> get_account(123)
       %Account{}
 
-      iex> get_account!(456)
-      ** (Ecto.NoResultsError)
+      iex> get_account(456)
+      nil
 
   """
-  def get_account!(id), do: Repo.get!(Account, id)
+  def get_account(id), do: Repo.get(Account, id)
 
   ## Account registration
 
@@ -95,6 +95,10 @@ defmodule ETitle.Accounts do
 
   def get_role_by_name(name) do
     Repo.get_by(Role, name: name)
+  end
+
+  def get_role(id) do
+    Repo.get(Role, id)
   end
 
   ## Settings

@@ -103,7 +103,7 @@ defmodule ETitleWeb.AccountSessionControllerTest do
       assert redirected_to(conn) == ~p"/"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Account confirmed successfully."
 
-      assert Accounts.get_account!(account.id).confirmed_at
+      assert Accounts.get_account(account.id).confirmed_at
 
       # Now do a logged in request and assert on the menu
       conn = get(conn, ~p"/")

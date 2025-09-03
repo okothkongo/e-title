@@ -5,6 +5,7 @@ defmodule ETitle.AccountsTest do
 
   import ETitle.AccountsFixtures
   alias ETitle.Accounts.{Account, AccountToken}
+  alias ETitle.Accounts.AccountRole
   import ETitle.Factory
 
   @user_valid_attrs %{
@@ -44,16 +45,14 @@ defmodule ETitle.AccountsTest do
     end
   end
 
-  describe "get_account!/1" do
-    test "raises if id is invalid" do
-      assert_raise Ecto.NoResultsError, fn ->
-        Accounts.get_account!(-1)
-      end
+  describe "get_account/1" do
+    test "returns nil if id is invalid" do
+      assert is_nil(Accounts.get_account(-1))
     end
 
     test "returns the account with the given id" do
       %{id: id} = account = insert(:account)
-      assert %Account{id: ^id} = Accounts.get_account!(account.id)
+      assert %Account{id: ^id} = Accounts.get_account(account.id)
     end
   end
 
@@ -502,6 +501,62 @@ defmodule ETitle.AccountsTest do
     test "invalid attrs" do
       assert {:error, changeset} = Accounts.create_account_role(%{account_id: nil, role_id: nil})
       assert %{account_id: ["can't be blank"], role_id: ["can't be blank"]} = errors_on(changeset)
+    end
+  end
+
+  describe "get_role/1" do
+    test "returns nil if id is invalid" do
+      assert is_nil(Accounts.get_role(-1))
+    end
+
+    test "returns the role with the given id" do
+      %{id: id} = role = insert(:role)
+      assert %ETitle.Accounts.Role{id: ^id} = Accounts.get_role(role.id)
+    end
+  end
+
+  describe "create_account_role/1" do
+    @professional_roles AccountRole.get_professional_roles()
+    @staff_roles AccountRole.get_staff_roles()
+
+    @account_roles %{
+      professional: @professional_roles,
+      staff: @staff_roles,
+      citizen: ["user"]
+    }
+
+    for {account_type, role_names} <- @account_roles,
+        role_name <- role_names do
+      test "#{role_name} role is valid for #{account_type} account type" do
+        account_type = unquote(account_type)
+        role_name = unquote(role_name)
+        account = insert(:account, type: account_type)
+        role = insert(:role, name: role_name)
+
+        assert {:ok, account_role} =
+                 Accounts.create_account_role(%{account_id: account.id, role_id: role.id})
+
+        assert account_role.account_id == account.id
+        assert account_role.role_id == role.id
+      end
+    end
+
+    test "no account and role exists" do
+      assert_raise Ecto.ConstraintError, fn ->
+        Accounts.create_account_role(%{account_id: -1, role_id: -1})
+      end
+    end
+
+    test "mismatch account and role" do
+      account = insert(:account, type: :citizen)
+      role = insert(:role, name: "admin")
+
+      assert {:error, changeset} =
+               Accounts.create_account_role(%{account_id: account.id, role_id: role.id})
+
+      error_message = "Role #{role.name} is not valid for account type #{account.type}"
+
+      assert %{role_id: [^error_message]} = errors_on(changeset)
     end
   end
 end
