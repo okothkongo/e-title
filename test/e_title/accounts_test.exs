@@ -5,7 +5,6 @@ defmodule ETitle.AccountsTest do
 
   import ETitle.AccountsFixtures
   alias ETitle.Accounts.{Account, AccountToken}
-  alias ETitle.Accounts.AccountRole
   import ETitle.Factory
 
   @user_valid_attrs %{

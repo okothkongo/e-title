@@ -76,7 +76,8 @@ defmodule ETitle.MixProject do
       {:bandit, "~> 1.5"},
       {:excoveralls, "~> 0.18", only: :test},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:ex_machina, "~> 2.8.0", only: :test}
+      {:ex_machina, "~> 2.8.0", only: :test},
+      {:faker, "~> 0.18", only: :dev}
     ]
   end
 
