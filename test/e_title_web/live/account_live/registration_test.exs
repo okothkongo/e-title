@@ -53,6 +53,7 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
       accounts: %{0 => %{email: "john@example.com", phone_number: "254712345678"}}
     }
     test "creates account but does not log in", %{conn: conn} do
+      insert(:role)
       {:ok, lv, _html} = live(conn, ~p"/accounts/register")
 
       form =

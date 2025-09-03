@@ -5,6 +5,7 @@ defmodule ETitle.AccountsTest do
 
   import ETitle.AccountsFixtures
   alias ETitle.Accounts.{Account, AccountToken}
+  alias ETitle.Accounts.AccountRole
   import ETitle.Factory
 
   @user_valid_attrs %{
@@ -475,6 +476,33 @@ defmodule ETitle.AccountsTest do
   describe "inspect/2 for the Account module" do
     test "does not include password" do
       refute inspect(%Account{password: "123456"}) =~ "password: \"123456\""
+    end
+  end
+
+  describe "create account_role/1" do
+    setup do
+      account = insert(:account)
+      role = insert(:role)
+      %{account: account, role: role}
+    end
+
+    test "creates a new account role", %{account: account, role: role} do
+      assert {:ok, account_role} =
+               Accounts.create_account_role(%{account_id: account.id, role_id: role.id})
+
+      assert account_role.account_id == account.id
+      assert account_role.role_id == role.id
+    end
+
+    test "no account and role exists" do
+      assert_raise Ecto.ConstraintError, fn ->
+        Accounts.create_account_role(%{account_id: -1, role_id: -1})
+      end
+    end
+
+    test "invalid attrs" do
+      assert {:error, changeset} = Accounts.create_account_role(%{account_id: nil, role_id: nil})
+      assert %{account_id: ["can't be blank"], role_id: ["can't be blank"]} = errors_on(changeset)
     end
   end
 end

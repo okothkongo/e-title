@@ -94,12 +94,18 @@ defmodule ETitleWeb.AccountLive.Registration do
     case Accounts.register_account(account_params) do
       {:ok, user} ->
         account = user.accounts |> List.first()
+        role = Accounts.get_role_by_name("user")
 
         {:ok, _} =
           Accounts.deliver_login_instructions(
             account,
             &url(~p"/accounts/log-in/#{&1}")
           )
+
+        Accounts.create_account_role(%{
+          account_id: account.id,
+          role_id: role.id
+        })
 
         {:noreply,
          socket

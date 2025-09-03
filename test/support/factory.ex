@@ -31,4 +31,10 @@ defmodule ETitle.Factory do
       }
     )
   end
+
+  def role_factory do
+    %ETitle.Accounts.Role{
+      name: "user"
+    }
+  end
 end

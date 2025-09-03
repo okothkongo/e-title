@@ -9,6 +9,8 @@ defmodule ETitle.Accounts do
   alias ETitle.Accounts.{Account, AccountToken, AccountNotifier}
 
   alias ETitle.Accounts.User
+  alias ETitle.Accounts.Role
+  alias ETitle.Accounts.AccountRole
   ## Database getters
 
   @doc """
@@ -83,6 +85,16 @@ defmodule ETitle.Accounts do
 
   def change_user_and_account(attrs \\ %{}) do
     User.registration_changeset(%User{accounts: [%Account{}]}, attrs)
+  end
+
+  def create_account_role(attrs) do
+    %AccountRole{}
+    |> AccountRole.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def get_role_by_name(name) do
+    Repo.get_by(Role, name: name)
   end
 
   ## Settings

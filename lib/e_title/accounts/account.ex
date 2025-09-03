@@ -17,6 +17,7 @@ defmodule ETitle.Accounts.Account do
     field :confirmed_at, :utc_datetime
     field :authenticated_at, :utc_datetime, virtual: true
     belongs_to :user, ETitle.Accounts.User
+    has_one :account_role, ETitle.Accounts.AccountRole
     timestamps(type: :utc_datetime)
   end
 
