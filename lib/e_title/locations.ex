@@ -9,37 +9,6 @@ defmodule ETitle.Locations do
   alias ETitle.Locations.Registry
 
   @doc """
-  Returns the list of registries.
-
-  ## Examples
-
-      iex> list_registries(scope)
-      [%Registry{}, ...]
-
-  """
-  def list_registries do
-    Repo.all(Registry)
-  end
-
-  @doc """
-  Gets a single registry.
-
-  Raises `Ecto.NoResultsError` if the Registry does not exist.
-
-  ## Examples
-
-      iex> get_registry!(scope, 123)
-      %Registry{}
-
-      iex> get_registry!(scope, 456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_registry!(id) do
-    Repo.get!(Registry, id)
-  end
-
-  @doc """
   Creates a registry.
 
   ## Examples
@@ -58,40 +27,6 @@ defmodule ETitle.Locations do
   end
 
   @doc """
-  Updates a registry.
-
-  ## Examples
-
-      iex> update_registry(scope, registry, %{field: new_value})
-      {:ok, %Registry{}}
-
-      iex> update_registry(scope, registry, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_registry(%Registry{} = registry, attrs) do
-    registry
-    |> Registry.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a registry.
-
-  ## Examples
-
-      iex> delete_registry(scope, registry)
-      {:ok, %Registry{}}
-
-      iex> delete_registry(scope, registry)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_registry(%Registry{} = registry) do
-    Repo.delete(registry)
-  end
-
-  @doc """
   Returns an `%Ecto.Changeset{}` for tracking registry changes.
 
   ## Examples
@@ -102,5 +37,13 @@ defmodule ETitle.Locations do
   """
   def change_registry(%Registry{} = registry, attrs \\ %{}) do
     Registry.changeset(registry, attrs)
+  end
+
+  def list_counties do
+    Repo.all(ETitle.Locations.County)
+  end
+
+  def list_sub_counties_by_county_id(county_id) do
+    Repo.all(from s in ETitle.Locations.SubCounty, where: s.county_id == ^county_id)
   end
 end

@@ -2,107 +2,55 @@ defmodule ETitle.LocationsTest do
   use ETitle.DataCase
 
   alias ETitle.Locations
+  alias ETitle.Locations.Registry
+  import ETitle.Factory
 
-  describe "registries" do
-    alias ETitle.Locations.Registry
-
-    import ETitle.AccountsFixtures, only: [account_scope_fixture: 0]
-    import ETitle.LocationsFixtures
-
+  describe "create_registry/2 " do
     @invalid_attrs %{name: nil, phone_number: nil, email: nil}
 
-    test "list_registries/1 returns all scoped registries" do
-      scope = account_scope_fixture()
-      other_scope = account_scope_fixture()
-      registry = registry_fixture(scope)
-      other_registry = registry_fixture(other_scope)
-      assert Locations.list_registries(scope) == [registry]
-      assert Locations.list_registries(other_scope) == [other_registry]
-    end
+    test "with valid data creates a registry" do
+      county = insert(:county)
+      sub_county = insert(:sub_county, county: county)
 
-    test "get_registry!/2 returns the registry with given id" do
-      scope = account_scope_fixture()
-      registry = registry_fixture(scope)
-      other_scope = account_scope_fixture()
-      assert Locations.get_registry!(scope, registry.id) == registry
+      valid_attrs = %{
+        name: "some name",
+        phone_number: "some phone_number",
+        email: "some email",
+        county_id: county.id,
+        sub_county_id: sub_county.id
+      }
 
-      assert_raise Ecto.NoResultsError, fn ->
-        Locations.get_registry!(other_scope, registry.id)
-      end
-    end
-
-    test "create_registry/2 with valid data creates a registry" do
-      valid_attrs = %{name: "some name", phone_number: "some phone_number", email: "some email"}
-      scope = account_scope_fixture()
-
-      assert {:ok, %Registry{} = registry} = Locations.create_registry(scope, valid_attrs)
+      assert {:ok, %Registry{} = registry} = Locations.create_registry(valid_attrs)
       assert registry.name == "some name"
       assert registry.phone_number == "some phone_number"
       assert registry.email == "some email"
-      assert registry.account_id == scope.account.id
     end
 
-    test "create_registry/2 with invalid data returns error changeset" do
-      scope = account_scope_fixture()
-      assert {:error, %Ecto.Changeset{}} = Locations.create_registry(scope, @invalid_attrs)
-    end
-
-    test "update_registry/3 with valid data updates the registry" do
-      scope = account_scope_fixture()
-      registry = registry_fixture(scope)
-
-      update_attrs = %{
-        name: "some updated name",
-        phone_number: "some updated phone_number",
-        email: "some updated email"
-      }
-
-      assert {:ok, %Registry{} = registry} =
-               Locations.update_registry(scope, registry, update_attrs)
-
-      assert registry.name == "some updated name"
-      assert registry.phone_number == "some updated phone_number"
-      assert registry.email == "some updated email"
-    end
-
-    test "update_registry/3 with invalid scope raises" do
-      scope = account_scope_fixture()
-      other_scope = account_scope_fixture()
-      registry = registry_fixture(scope)
-
-      assert_raise MatchError, fn ->
-        Locations.update_registry(other_scope, registry, %{})
-      end
-    end
-
-    test "update_registry/3 with invalid data returns error changeset" do
-      scope = account_scope_fixture()
-      registry = registry_fixture(scope)
-
-      assert {:error, %Ecto.Changeset{}} =
-               Locations.update_registry(scope, registry, @invalid_attrs)
-
-      assert registry == Locations.get_registry!(scope, registry.id)
-    end
-
-    test "delete_registry/2 deletes the registry" do
-      scope = account_scope_fixture()
-      registry = registry_fixture(scope)
-      assert {:ok, %Registry{}} = Locations.delete_registry(scope, registry)
-      assert_raise Ecto.NoResultsError, fn -> Locations.get_registry!(scope, registry.id) end
-    end
-
-    test "delete_registry/2 with invalid scope raises" do
-      scope = account_scope_fixture()
-      other_scope = account_scope_fixture()
-      registry = registry_fixture(scope)
-      assert_raise MatchError, fn -> Locations.delete_registry(other_scope, registry) end
+    test "with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Locations.create_registry(@invalid_attrs)
     end
 
     test "change_registry/2 returns a registry changeset" do
-      scope = account_scope_fixture()
-      registry = registry_fixture(scope)
-      assert %Ecto.Changeset{} = Locations.change_registry(scope, registry)
+      registry = insert(:registry)
+      assert %Ecto.Changeset{} = Locations.change_registry(registry)
     end
+  end
+
+  test "list_counties/0 returns all counties" do
+    county = insert(:county)
+    assert Locations.list_counties() == [county]
+  end
+
+  test "list_sub_counties_by_county_id/1 returns all sub counties for a county" do
+    county = insert(:county)
+
+    sub_county1 = insert(:sub_county, county: county)
+    sub_county2 = insert(:sub_county, county: county)
+    _sub_county3 = insert(:sub_county)
+
+    assert county.id |> Locations.list_sub_counties_by_county_id() |> Repo.preload(:county) == [
+             sub_county1,
+             sub_county2
+           ]
   end
 end
