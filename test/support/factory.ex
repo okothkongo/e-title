@@ -2,6 +2,7 @@ defmodule ETitle.Factory do
   @moduledoc """
     Handles factory data.
   """
+  alias ETitle.Accounts.AccountRole
   use ExMachina.Ecto, repo: ETitle.Repo
 
   def user_factory do
@@ -35,6 +36,13 @@ defmodule ETitle.Factory do
   def role_factory do
     %ETitle.Accounts.Role{
       name: "user"
+    }
+  end
+
+  def account_role_factory do
+    %AccountRole{
+      account: build(:account),
+      role: build(:role)
     }
   end
 

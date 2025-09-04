@@ -11,6 +11,7 @@
 # and so on) as they will fail if something goes wrong.
 
 alias ETitle.Repo
+alias ETitle.Accounts.User
 
 for role_name <-
       ~w[user lawyer land_registrar surveyor land_registry_clerk land_board_chair land_board_clerk admin] do
@@ -19,9 +20,25 @@ for role_name <-
   end
 end
 
+admin_role = ETitle.Accounts.get_role_by_name("admin")
+
+admin_attrs = %{
+  first_name: "John",
+  surname: "Admin",
+  identity_doc_no: "22222222",
+  accounts: [%{email: "etitle@admin.com", type: :staff, phone_number: "254000000000"}]
+}
+
+{:ok, %{accounts: [account]}} = ETitle.Accounts.register_account(admin_attrs)
+
+Repo.insert!(%ETitle.Accounts.AccountRole{
+  account_id: account.id,
+  role_id: admin_role.id
+})
+
 users =
   for _ <- 1..80 do
-    Repo.insert!(%ETitle.Accounts.User{
+    Repo.insert!(%User{
       first_name: Faker.Person.first_name(),
       middle_name: Faker.Person.name(),
       surname: Faker.Person.last_name(),
@@ -39,7 +56,7 @@ citizen_accounts =
       user_id: user.id,
       email: Faker.Internet.email(),
       type: :citizen,
-      phone_number: "#{Enum.random(254_000_000_000..254_999_999_999)}"
+      phone_number: "#{Enum.random(254_000_000_001..254_999_999_999)}"
     })
   end
 
@@ -49,7 +66,7 @@ professional_accounts =
       user_id: user.id,
       email: Faker.Internet.email(),
       type: :professional,
-      phone_number: "#{Enum.random(254_000_000_000..254_999_999_999)}"
+      phone_number: "#{Enum.random(254_000_000_0001..254_999_999_999)}"
     })
   end
 
@@ -59,7 +76,7 @@ staff_accounts =
       user_id: user.id,
       email: Faker.Internet.email(),
       type: :staff,
-      phone_number: "#{Enum.random(254_000_000_000..254_999_999_999)}"
+      phone_number: "#{Enum.random(254_000_000_001..254_999_999_999)}"
     })
   end
 
@@ -171,4 +188,12 @@ counties =
 for county_attrs <- counties do
   county_changeset = ETitle.Locations.County.changeset(%ETitle.Locations.County{}, county_attrs)
   Repo.insert!(county_changeset)
+
+  # registrar
+  # registry_clerk
+  # board_chair
+  # board_clerk
+  # lawyer
+  # survery
+  # user
 end

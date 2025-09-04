@@ -101,6 +101,10 @@ defmodule ETitle.Accounts do
     Repo.get(Role, id)
   end
 
+  def get_user(id) do
+    Repo.get(User, id)
+  end
+
   ## Settings
 
   @doc """
@@ -327,5 +331,15 @@ defmodule ETitle.Accounts do
         {:ok, {account, tokens_to_expire}}
       end
     end)
+  end
+
+  def is_admin?(%Account{id: id}) do
+    query =
+      from role in Role,
+        join: account_role in AccountRole,
+        on: account_role.role_id == role.id,
+        where: account_role.account_id == ^id and role.name == "admin"
+
+    Repo.exists?(query)
   end
 end

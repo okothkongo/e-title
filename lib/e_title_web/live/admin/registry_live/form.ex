@@ -1,4 +1,4 @@
-defmodule ETitleWeb.RegistryLive.Form do
+defmodule ETitleWeb.Admin.RegistryLive.Form do
   use ETitleWeb, :live_view
 
   alias ETitle.Locations
@@ -82,13 +82,11 @@ defmodule ETitleWeb.RegistryLive.Form do
 
   defp save_registry(socket, :new, registry_params) do
     case Locations.create_registry(registry_params) do
-      {:ok, registry} ->
+      {:ok, _registry} ->
         {:noreply,
          socket
          |> put_flash(:info, "Registry created successfully")
-         |> push_navigate(
-           to: return_path(socket.assigns.current_scope, socket.assigns.return_to, registry)
-         )}
+         |> push_navigate(to: ~p"/admin/dashboard")}
 
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
