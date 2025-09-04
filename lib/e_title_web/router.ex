@@ -20,7 +20,16 @@ defmodule ETitleWeb.Router do
   scope "/", ETitleWeb do
     pipe_through :browser
 
-    live "/", HomeLive
+    live_session :current_account,
+      on_mount: [{ETitleWeb.AccountAuth, :mount_current_scope}] do
+      live "/", HomeLive
+      live "/accounts/register", AccountLive.Registration, :new
+      live "/accounts/log-in", AccountLive.Login, :new
+      live "/accounts/log-in/:token", AccountLive.Confirmation, :new
+    end
+
+    post "/accounts/log-in", AccountSessionController, :create
+    delete "/accounts/log-out", AccountSessionController, :delete
   end
 
   # Other scopes may use custom stacks.
@@ -57,19 +66,5 @@ defmodule ETitleWeb.Router do
     end
 
     post "/accounts/update-password", AccountSessionController, :update_password
-  end
-
-  scope "/", ETitleWeb do
-    pipe_through [:browser]
-
-    live_session :current_account,
-      on_mount: [{ETitleWeb.AccountAuth, :mount_current_scope}] do
-      live "/accounts/register", AccountLive.Registration, :new
-      live "/accounts/log-in", AccountLive.Login, :new
-      live "/accounts/log-in/:token", AccountLive.Confirmation, :new
-    end
-
-    post "/accounts/log-in", AccountSessionController, :create
-    delete "/accounts/log-out", AccountSessionController, :delete
   end
 end

@@ -68,7 +68,7 @@ defmodule ETitleWeb.AccountLive.Registration do
             autocomplete="tel"
             required
           />
-          <.button phx-disable-with="Creating account..." class="btn btn-primary w-full mt-4">
+          <.button phx-disable-with="Creating account..." variant="primary" class="w-full mt-4">
             Create an account
           </.button>
         </.form>
