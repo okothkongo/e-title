@@ -9,7 +9,7 @@ defmodule ETitle.Locations.County do
     field :name, :string
     field :code, :string
     has_many :sub_counties, ETitle.Locations.SubCounty
-
+    has_many :registries, ETitle.Locations.Registry
     timestamps(type: :utc_datetime)
   end
 

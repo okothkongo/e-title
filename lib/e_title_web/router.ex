@@ -26,6 +26,11 @@ defmodule ETitleWeb.Router do
       live "/accounts/register", AccountLive.Registration, :new
       live "/accounts/log-in", AccountLive.Login, :new
       live "/accounts/log-in/:token", AccountLive.Confirmation, :new
+
+      live "/registries", RegistryLive.Index, :index
+      live "/registries/new", RegistryLive.Form, :new
+      live "/registries/:id", RegistryLive.Show, :show
+      live "/registries/:id/edit", RegistryLive.Form, :edit
     end
 
     post "/accounts/log-in", AccountSessionController, :create
