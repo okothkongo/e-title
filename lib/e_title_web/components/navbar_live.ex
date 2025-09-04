@@ -41,54 +41,54 @@ defmodule ETitleWeb.NavbarLive do
           
     <!-- Desktop Navigation -->
           <div class="hidden lg:flex items-center space-x-6 xl:space-x-8">
-            <a
-              href="/"
+            <.link
+              href={~p"/"}
               class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-green-50 hover:scale-105"
             >
               Home
-            </a>
-            <a
-              href="/#about"
+            </.link>
+            <.link
+              href={~p"/#about"}
               class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-green-50 hover:scale-105"
             >
               About Us
-            </a>
-            <a
-              href="/#contact"
+            </.link>
+            <.link
+              href={~p"/#contact"}
               class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-green-50 hover:scale-105"
             >
               Contact Us
-            </a>
+            </.link>
 
             <%= if @current_scope && @current_scope.account do %>
               <!-- Authenticated user links -->
-              <a
-                href="/accounts/settings"
+              <.link
+                href={~p"/accounts/settings"}
                 class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Settings
-              </a>
-              <a
-                href="/accounts/log_out"
-                data-method="delete"
-                class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-4 xl:px-6 py-2 rounded-lg text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+              </.link>
+              <.link
+                href={~p"/accounts/log-out"}
+                method="delete"
+                class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-4 xl:px-6 py-2 rounded-lg text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 inline-block cursor-pointer"
               >
                 Logout
-              </a>
+              </.link>
             <% else %>
               <!-- Unauthenticated user links -->
-              <a
-                href="/accounts/register"
+              <.link
+                href={~p"/accounts/register"}
                 class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-green-50 hover:scale-105"
               >
                 Register
-              </a>
-              <a
-                href="/accounts/log_in"
+              </.link>
+              <.link
+                href={~p"/accounts/log-in"}
                 class="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-4 xl:px-6 py-2 rounded-lg text-sm font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
               >
                 Login
-              </a>
+              </.link>
             <% end %>
           </div>
           
@@ -165,15 +165,15 @@ defmodule ETitleWeb.NavbarLive do
               >
                 Settings
               </a>
-              <a
-                href="/accounts/log_out"
-                data-method="delete"
+              <.link
+                href={~p"/accounts/log-out"}
+                method="delete"
                 phx-click="close_mobile_menu"
                 phx-target={@myself}
                 class="block px-3 py-2 text-base font-medium bg-red-600 text-white hover:bg-red-700 rounded-md transition-colors text-center"
               >
                 Logout
-              </a>
+              </.link>
             <% else %>
               <!-- Unauthenticated user mobile links -->
               <a
