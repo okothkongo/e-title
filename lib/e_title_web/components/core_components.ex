@@ -132,70 +132,78 @@ defmodule ETitleWeb.CoreComponents do
   slot :inner_block, required: true
 
   def button(%{rest: rest} = assigns) do
-    # Use inline styles to ensure they work
     base_styles =
-      "display: inline-block; font-weight: 600; cursor: pointer; user-select: none; border: none; outline: none; transition: all 0.3s ease;"
+      "display: inline-block; font-weight: 600; cursor: pointer; user-select: none; " <>
+        "border: none; outline: none; transition: all 0.3s ease;"
 
-    variant_styles =
-      case assigns[:variant] do
-        "primary" ->
-          "background-color: #059669; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);"
-
-        "secondary" ->
-          "background-color: white; border: 2px solid #059669; color: #059669; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);"
-
-        "danger" ->
-          "background-color: #dc2626; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);"
-
-        "outline" ->
-          "background-color: transparent; border: 2px solid #d1d5db; color: #374151; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);"
-
-        "ghost" ->
-          "background-color: transparent; color: #4b5563; border: none; box-shadow: none;"
-
-        _ ->
-          "background-color: #059669; color: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);"
-      end
-
-    size_styles =
-      case assigns[:size] do
-        "sm" -> "padding: 0.5rem 1rem; font-size: 0.875rem; border-radius: 0.375rem;"
-        "lg" -> "padding: 1rem 2rem; font-size: 1.125rem; border-radius: 0.75rem;"
-        _ -> "padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 0.5rem;"
-      end
+    variant_styles = button_variant(assigns[:variant])
+    size_styles = button_size(assigns[:size])
 
     assigns =
       assign_new(assigns, :style, fn ->
         "#{base_styles} #{variant_styles} #{size_styles}"
       end)
 
+    render_button(assigns, rest)
+  end
+
+  defp button_variant("primary"),
+    do:
+      "background-color: #059669; color: white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);"
+
+  defp button_variant("secondary"),
+    do:
+      "background-color: white; border: 2px solid #059669; color: #059669; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);"
+
+  defp button_variant("danger"),
+    do:
+      "background-color: #dc2626; color: white; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);"
+
+  defp button_variant("outline"),
+    do:
+      "background-color: transparent; border: 2px solid #d1d5db; color: #374151; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);"
+
+  defp button_variant("ghost"),
+    do: "background-color: transparent; color: #4b5563; border: none; box-shadow: none;"
+
+  defp button_variant(_),
+    do: button_variant("primary")
+
+  defp button_size("sm"),
+    do: "padding: 0.5rem 1rem; font-size: 0.875rem; border-radius: 0.375rem;"
+
+  defp button_size("lg"), do: "padding: 1rem 2rem; font-size: 1.125rem; border-radius: 0.75rem;"
+  defp button_size(_), do: "padding: 0.75rem 1.5rem; font-size: 1rem; border-radius: 0.5rem;"
+
+  defp render_button(assigns, rest) do
     if rest[:href] || rest[:navigate] || rest[:patch] do
       ~H"""
       <.link style={@style} {@rest}>
-        <div class="flex items-center justify-center space-x-2">
-          <div
-            :if={@loading}
-            class="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"
-          >
-          </div>
-          <span>{render_slot(@inner_block)}</span>
-        </div>
+        {render_button_content(@loading, @inner_block)}
       </.link>
       """
     else
       ~H"""
       <button style={@style} {@rest}>
-        <div class="flex items-center justify-center space-x-2">
-          <div
-            :if={@loading}
-            class="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"
-          >
-          </div>
-          <span>{render_slot(@inner_block)}</span>
-        </div>
+        {render_button_content(@loading, @inner_block)}
       </button>
       """
     end
+  end
+
+  defp render_button_content(loading, inner_block) do
+    assigns = %{loading: loading, inner_block: inner_block}
+
+    ~H"""
+    <div class="flex items-center justify-center space-x-2">
+      <div
+        :if={@loading}
+        class="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent"
+      >
+      </div>
+      <span>{render_slot(@inner_block)}</span>
+    </div>
+    """
   end
 
   @doc """
