@@ -7,7 +7,6 @@ defmodule ETitleWeb.RegistryLiveTest do
   @create_attrs %{name: "some name", phone_number: "some phone_number", email: "some email"}
 
   @invalid_attrs %{name: nil, phone_number: nil, email: nil}
-
   test "saves new registry", %{conn: conn} do
     county = insert(:county)
     sub_county = insert(:sub_county, county: county)
@@ -15,21 +14,26 @@ defmodule ETitleWeb.RegistryLiveTest do
     _ = insert(:account_role, account: admin_account, role: insert(:role, name: "admin"))
     conn = log_in_account(conn, admin_account)
 
-    valid_attrs = Map.merge(@create_attrs, %{county_id: county.id, sub_county_id: sub_county.id})
-    {:ok, index_live, _html} = live(conn, ~p"/admin/registries/new")
+    {:ok, lv, _html} = live(conn, ~p"/admin/registries/new")
 
-    assert index_live
+    # invalid case
+    assert lv
            |> form("#registry-form", registry: @invalid_attrs)
            |> render_change() =~ "can&#39;t be blank"
 
-    assert {:ok, index_live, _html} =
-             index_live
-             |> form("#registry-form", registry: valid_attrs)
-             |> render_submit()
-             |> follow_redirect(conn, ~p"/admin/dashboard")
+    lv
+    |> element("#registry-form select[name=\"registry[county_id]\"]")
+    |> render_change(%{"registry" => %{"county_id" => county.id}})
 
-    html = render(index_live)
+    valid_attrs = Map.merge(@create_attrs, %{county_id: county.id, sub_county_id: sub_county.id})
+
+    {:ok, _lv, html} =
+      lv
+      |> form("#registry-form", registry: valid_attrs)
+      |> render_submit()
+      |> follow_redirect(conn, ~p"/admin/dashboard")
+
     assert html =~ "Registry created successfully"
-    assert html =~ "some name"
+    assert ETitle.Repo.get_by(ETitle.Locations.Registry, email: "some email")
   end
 end
