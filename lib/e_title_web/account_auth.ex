@@ -233,6 +233,21 @@ defmodule ETitleWeb.AccountAuth do
     end
   end
 
+  def on_mount(:require_authenticated_admin, _params, session, socket) do
+    socket = mount_current_scope(socket, session)
+
+    if admin?(socket.assigns.current_scope) do
+      {:cont, socket}
+    else
+      socket =
+        socket
+        |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
+        |> Phoenix.LiveView.redirect(to: ~p"/accounts/log-in")
+
+      {:halt, socket}
+    end
+  end
+
   def on_mount(:require_sudo_mode, _params, session, socket) do
     socket = mount_current_scope(socket, session)
 
@@ -282,9 +297,32 @@ defmodule ETitleWeb.AccountAuth do
     end
   end
 
+  @doc """
+  Plug for routes that require the account to be authenticated.
+  """
+  def require_authenticated_admin_account(conn, _opts) do
+    if admin?(conn.assigns.current_scope) do
+      conn
+    else
+      conn
+      |> put_flash(:error, "Unathorized Access")
+      |> maybe_store_return_to()
+      |> redirect(to: ~p"/")
+      |> halt()
+    end
+  end
+
   defp maybe_store_return_to(%{method: "GET"} = conn) do
     put_session(conn, :account_return_to, current_path(conn))
   end
 
   defp maybe_store_return_to(conn), do: conn
+
+  defp admin?(nil), do: false
+
+  defp admin?(%{account: account}) do
+    Accounts.admin?(account)
+  end
+
+  defp admin?(_), do: false
 end

@@ -8,13 +8,15 @@ defmodule ETitle.Locations.SubCounty do
   schema "sub_counties" do
     field :name, :string
     belongs_to :county, ETitle.Locations.County
+    has_many :registries, ETitle.Locations.Registry
+
     timestamps(type: :utc_datetime)
   end
 
   @doc false
   def changeset(sub_county, attrs) do
     sub_county
-    |> cast(attrs, [:name])
+    |> cast(attrs, [:name, :county_id])
     |> validate_required([:name])
     |> unique_constraint([:county_id, :name])
   end

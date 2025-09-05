@@ -12,6 +12,33 @@ defmodule ETitleWeb.Layouts do
   embed_templates "layouts/*"
 
   @doc """
+   Renders the dashboard layout with sidebar navigation.
+
+   This layout is specifically designed for the dashboard and includes
+   a sidebar navigation and main content area.
+
+   ## Examples
+
+      <Layouts.dashboard flash={@flash}>
+        <h1>Dashboard Content</h1>
+      </Layouts.dashboard>
+
+  """
+  attr :flash, :map, required: true, doc: "the map of flash messages"
+  attr :current_scope, :map, default: nil, doc: "the current scope"
+
+  slot :inner_block, required: true
+
+  def dashboard(assigns) do
+    ~H"""
+    <div class="min-h-full bg-gray-100">
+      {render_slot(@inner_block)}
+    </div>
+    <.flash_group flash={@flash} />
+    """
+  end
+
+  @doc """
   Renders your app layout.
 
   This function is typically invoked from every template,

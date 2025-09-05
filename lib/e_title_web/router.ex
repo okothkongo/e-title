@@ -67,4 +67,18 @@ defmodule ETitleWeb.Router do
 
     post "/accounts/update-password", AccountSessionController, :update_password
   end
+
+  ## Admin routes
+
+  scope "/admin", ETitleWeb.Admin, as: :admin do
+    pipe_through [:browser, :require_authenticated_admin_account]
+
+    live_session :require_authenticated_admin_account,
+      on_mount: [
+        {ETitleWeb.AccountAuth, :require_authenticated_admin}
+      ] do
+      live "/dashboard", DashboardLive, :index
+      live "/registries/new", RegistryLive.Form, :new
+    end
+  end
 end
