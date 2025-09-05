@@ -333,7 +333,7 @@ defmodule ETitle.Accounts do
     end)
   end
 
-  def is_admin?(%Account{id: id}) do
+  def admin?(%Account{id: id}) do
     query =
       from role in Role,
         join: account_role in AccountRole,

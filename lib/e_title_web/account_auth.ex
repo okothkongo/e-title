@@ -236,7 +236,7 @@ defmodule ETitleWeb.AccountAuth do
   def on_mount(:require_authenticated_admin, _params, session, socket) do
     socket = mount_current_scope(socket, session)
 
-    if is_admin?(socket.assigns.current_scope) do
+    if admin?(socket.assigns.current_scope) do
       {:cont, socket}
     else
       socket =
@@ -301,7 +301,7 @@ defmodule ETitleWeb.AccountAuth do
   Plug for routes that require the account to be authenticated.
   """
   def require_authenticated_admin_account(conn, _opts) do
-    if is_admin?(conn.assigns.current_scope) do
+    if admin?(conn.assigns.current_scope) do
       conn
     else
       conn
@@ -318,11 +318,11 @@ defmodule ETitleWeb.AccountAuth do
 
   defp maybe_store_return_to(conn), do: conn
 
-  defp is_admin?(nil), do: false
+  defp admin?(nil), do: false
 
-  defp is_admin?(%{account: account}) do
-    Accounts.is_admin?(account)
+  defp admin?(%{account: account}) do
+    Accounts.admin?(account)
   end
 
-  defp is_admin?(_), do: false
+  defp admin?(_), do: false
 end

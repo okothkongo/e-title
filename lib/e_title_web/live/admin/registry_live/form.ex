@@ -95,7 +95,7 @@ defmodule ETitleWeb.Admin.RegistryLive.Form do
 
   defp return_path(_scope, "index", _registry), do: ~p"/"
 
-  defp list_county_options() do
+  defp list_county_options do
     ETitle.Locations.list_counties()
     |> Enum.map(&{&1.name, &1.id})
   end

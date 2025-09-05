@@ -1,4 +1,7 @@
 defmodule ETitle.Locations.Registry do
+  @moduledoc """
+  The Registry schema.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 
