@@ -295,4 +295,122 @@ defmodule ETitleWeb.Layouts do
     </footer>
     """
   end
+
+  def unauthenticated_navbar(assigns) do
+    ~H"""
+    <nav class="bg-white/95 backdrop-blur-md shadow-xl border-b border-gray-200/50 fixed w-full top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <!-- Logo -->
+          <div class="flex items-center">
+            <div class="flex-shrink-0 flex items-center">
+              <svg
+                class="h-6 w-6 sm:h-8 sm:w-8 text-green-600 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
+              <span class="text-lg sm:text-2xl font-bold text-green-800">E-Title</span>
+            </div>
+          </div>
+          
+    <!-- Desktop Navigation -->
+          <div class="hidden lg:flex items-center space-x-6 xl:space-x-8">
+            <.link
+              href={~p"/"}
+              class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg text-sm font-medium"
+            >
+              Home
+            </.link>
+            <.link
+              href={~p"/#about"}
+              class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg text-sm font-medium"
+            >
+              About
+            </.link>
+            <.link
+              href={~p"/#contact"}
+              class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg text-sm font-medium"
+            >
+              Contact
+            </.link>
+            <.link
+              href={~p"/accounts/register"}
+              class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg text-sm font-medium"
+            >
+              Register
+            </.link>
+            <.link
+              href={~p"/accounts/log-in"}
+              class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
+            >
+              Login
+            </.link>
+          </div>
+          
+    <!-- Mobile Menu Button -->
+          <div class="lg:hidden">
+            <button
+              phx-click={JS.toggle_class("hidden", to: "#mobile-menu")}
+              class="text-gray-700 hover:text-green-600 p-2"
+            >
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+    <!-- Mobile Menu -->
+      <div
+        id="mobile-menu"
+        class="hidden lg:hidden px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200"
+      >
+        <.link
+          href="/"
+          class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-green-50"
+        >
+          Home
+        </.link>
+        <.link
+          href="/#about"
+          class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-green-50"
+        >
+          About
+        </.link>
+        <.link
+          href="/#contact"
+          class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-green-50"
+        >
+          Contact
+        </.link>
+        <.link
+          href={~p"/accounts/register"}
+          class="block px-3 py-2 text-gray-700 hover:bg-green-50 rounded-md"
+        >
+          Register
+        </.link>
+        <.link
+          href={~p"/accounts/log-in"}
+          class="block px-3 py-2 bg-green-600 text-white rounded-md text-center"
+        >
+          Login
+        </.link>
+      </div>
+    </nav>
+    """
+  end
 end
