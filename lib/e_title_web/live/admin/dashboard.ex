@@ -198,10 +198,10 @@ defmodule ETitleWeb.Admin.DashboardLive do
             <div aria-hidden="true" class="w-14 shrink-0"></div>
           </div>
         </div>
-        
+
     <!-- Static sidebar for desktop -->
         <div class="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-          <div class="flex grow flex-col overflow-y-auto bg-green-700 pt-5 pb-4">
+          <div class="flex grow flex-col overflow-y-auto bg-green-800 pt-5 pb-4">
             <div class="flex shrink-0 items-center px-4">
               <svg
                 class="h-8 w-auto text-green-300"
@@ -226,7 +226,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
                 <a
                   href="#"
                   aria-current="page"
-                  class="group flex items-center rounded-md bg-green-800 px-2 py-2 text-sm/6 font-medium text-white"
+                  class="group flex items-center rounded-md bg-green-900 px-2 py-2 text-sm/6 font-medium text-white"
                 >
                   <.icon name="hero-home" class="mr-4 size-6 shrink-0 text-green-200" /> Dashboard
                 </a>
@@ -304,7 +304,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
               <span class="sr-only">Open sidebar</span>
               <.icon name="hero-bars-3" class="size-6" />
             </button>
-            
+
     <!-- Search bar -->
             <div class="flex flex-1 justify-between px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
               <div class="flex flex-1">
@@ -331,7 +331,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
                   <span class="sr-only">View notifications</span>
                   <.icon name="hero-bell" class="size-6" />
                 </button>
-                
+
     <!-- Profile dropdown -->
                 <div class="relative ml-3">
                   <button
@@ -353,7 +353,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
               </div>
             </div>
           </div>
-          
+
     <!-- Main content -->
           <main class="flex-1 pb-8">
             <!-- Page header -->
@@ -408,7 +408,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
                     </button>
                     <button
                       type="button"
-                      class="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                      class="inline-flex items-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
                     >
                       Search Title
                     </button>
@@ -416,7 +416,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
                 </div>
               </div>
             </div>
-            
+
     <!-- Overview cards -->
             <div class="mt-8">
               <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -451,7 +451,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
                       </div>
                     </div>
                   </div>
-                  
+
     <!-- Pending Approvals Card -->
                   <div class="overflow-hidden rounded-lg bg-white shadow-sm">
                     <div class="p-5">
@@ -481,7 +481,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
                       </div>
                     </div>
                   </div>
-                  
+
     <!-- Completed This Month Card -->
                   <div class="overflow-hidden rounded-lg bg-white shadow-sm">
                     <div class="p-5">
@@ -511,7 +511,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
                       </div>
                     </div>
                   </div>
-                  
+
     <!-- Total Revenue Card -->
                   <div class="overflow-hidden rounded-lg bg-white shadow-sm">
                     <div class="p-5">
@@ -541,12 +541,12 @@ defmodule ETitleWeb.Admin.DashboardLive do
                   </div>
                 </div>
               </div>
-              
+
     <!-- Recent Activity -->
               <h2 class="mx-auto mt-8 max-w-6xl px-4 text-lg/6 font-medium text-gray-900 sm:px-6 lg:px-8">
                 Recent Activity
               </h2>
-              
+
     <!-- Activity table -->
               <div class="mt-2">
                 <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
