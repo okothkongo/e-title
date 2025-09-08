@@ -1,4 +1,4 @@
-defmodule ETitleWeb.HomeLive do
+defmodule ETitleWeb.HomeLive.Page do
   use ETitleWeb, :live_view
 
   alias ETitleWeb.Layouts

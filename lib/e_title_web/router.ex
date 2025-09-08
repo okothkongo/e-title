@@ -22,7 +22,7 @@ defmodule ETitleWeb.Router do
 
     live_session :current_account,
       on_mount: [{ETitleWeb.AccountAuth, :mount_current_scope}] do
-      live "/", HomeLive
+      live "/", HomeLive.Page
       live "/accounts/register", AccountLive.Registration, :new
       live "/accounts/log-in", AccountLive.Login, :new
       live "/accounts/log-in/:token", AccountLive.Confirmation, :new
