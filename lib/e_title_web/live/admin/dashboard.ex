@@ -325,12 +325,19 @@ defmodule ETitleWeb.Admin.DashboardLive do
                     <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                       Your Profile
                     </a>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <.link
+                      href={~p"/accounts/settings"}
+                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
                       Settings
-                    </a>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    </.link>
+                    <.link
+                      href={~p"/accounts/log-out"}
+                      method="delete"
+                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
                       Sign out
-                    </a>
+                    </.link>
                   </div>
                 </div>
               </div>

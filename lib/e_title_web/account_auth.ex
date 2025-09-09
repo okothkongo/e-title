@@ -280,7 +280,7 @@ defmodule ETitleWeb.AccountAuth do
     ~p"/accounts/settings"
   end
 
-  def signed_in_path(_), do: ~p"/"
+  def signed_in_path(_), do: ~p"/admin/dashboard"
 
   @doc """
   Plug for routes that require the account to be authenticated.
