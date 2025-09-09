@@ -13,6 +13,16 @@ defmodule ETitleWeb.Router do
     plug :fetch_current_scope_for_account
   end
 
+  pipeline :authenticated do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, html: {ETitleWeb.Layouts, :auth}
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+    plug :fetch_current_scope_for_account
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -57,7 +67,7 @@ defmodule ETitleWeb.Router do
   ## Authentication routes
 
   scope "/", ETitleWeb do
-    pipe_through [:browser, :require_authenticated_account]
+    pipe_through [:authenticated, :require_authenticated_account]
 
     live_session :require_authenticated_account,
       on_mount: [{ETitleWeb.AccountAuth, :require_authenticated}] do
@@ -71,7 +81,7 @@ defmodule ETitleWeb.Router do
   ## Admin routes
 
   scope "/admin", ETitleWeb.Admin, as: :admin do
-    pipe_through [:browser, :require_authenticated_admin_account]
+    pipe_through [:authenticated, :require_authenticated_admin_account]
 
     live_session :require_authenticated_admin_account,
       on_mount: [
