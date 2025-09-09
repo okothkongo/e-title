@@ -40,7 +40,7 @@ defmodule ETitleWeb.AccountAuth do
 
     conn
     |> create_or_extend_session(account, params)
-    |> redirect(to: account_return_to || signed_in_path(conn))
+    |> redirect(to: account_return_to || redirect_to_dashboard(account) || signed_in_path(conn))
   end
 
   @doc """
@@ -280,7 +280,11 @@ defmodule ETitleWeb.AccountAuth do
     ~p"/accounts/settings"
   end
 
-  def signed_in_path(_), do: ~p"/admin/dashboard"
+  def signed_in_path(_), do: ~p"/"
+
+  def redirect_to_dashboard(account) do
+    if Accounts.admin?(account), do: ~p"/admin/dashboard", else: ~p"/dashboard"
+  end
 
   @doc """
   Plug for routes that require the account to be authenticated.

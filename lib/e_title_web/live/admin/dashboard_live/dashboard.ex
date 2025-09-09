@@ -1,4 +1,4 @@
-defmodule ETitleWeb.Admin.DashboardLive do
+defmodule ETitleWeb.Admin.DashboardLive.Dashboard do
   use ETitleWeb, :live_view
   alias ETitle.Accounts
 
@@ -94,7 +94,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
         <!-- Off-canvas menu for mobile -->
 
         <div class="flex flex-1 flex-col lg:pl-64">
-          
+
     <!-- Main content -->
           <main class="flex-1 pb-8">
             <!-- Page header -->
@@ -157,7 +157,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
                 </div>
               </div>
             </div>
-            
+
     <!-- Overview cards -->
             <div class="mt-8">
               <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -192,7 +192,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
                       </div>
                     </div>
                   </div>
-                  
+
     <!-- Pending Approvals Card -->
                   <div class="overflow-hidden rounded-lg bg-white shadow-sm">
                     <div class="p-5">
@@ -222,7 +222,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
                       </div>
                     </div>
                   </div>
-                  
+
     <!-- Completed This Month Card -->
                   <div class="overflow-hidden rounded-lg bg-white shadow-sm">
                     <div class="p-5">
@@ -252,7 +252,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
                       </div>
                     </div>
                   </div>
-                  
+
     <!-- Total Revenue Card -->
                   <div class="overflow-hidden rounded-lg bg-white shadow-sm">
                     <div class="p-5">
@@ -282,12 +282,12 @@ defmodule ETitleWeb.Admin.DashboardLive do
                   </div>
                 </div>
               </div>
-              
+
     <!-- Recent Activity -->
               <h2 class="mx-auto mt-8 max-w-6xl px-4 text-lg/6 font-medium text-gray-900 sm:px-6 lg:px-8">
                 Recent Activity
               </h2>
-              
+
     <!-- Activity table -->
               <div class="mt-2">
                 <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">

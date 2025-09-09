@@ -1,4 +1,5 @@
 defmodule ETitleWeb.Router do
+  alias ETitleWeb.Admin.DashboardLive.Dashboard
   use ETitleWeb, :router
 
   import ETitleWeb.AccountAuth
@@ -87,7 +88,7 @@ defmodule ETitleWeb.Router do
       on_mount: [
         {ETitleWeb.AccountAuth, :require_authenticated_admin}
       ] do
-      live "/dashboard", DashboardLive, :index
+      live "/dashboard", DashboardLive.Dashboard, :index
       live "/registries/new", RegistryLive.Form, :new
     end
   end
