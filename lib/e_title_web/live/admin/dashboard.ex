@@ -67,7 +67,12 @@ defmodule ETitleWeb.Admin.DashboardLive do
       ]
     }
 
-    {:ok, assign(socket, dashboard_data: dashboard_data, mobile_menu_open: false)}
+    {:ok,
+     assign(socket,
+       dashboard_data: dashboard_data,
+       mobile_menu_open: false,
+       profile_menu_open: false
+     )}
   end
 
   def handle_event("toggle_mobile_menu", _params, socket) do
@@ -76,6 +81,10 @@ defmodule ETitleWeb.Admin.DashboardLive do
 
   def handle_event("close_mobile_menu", _params, socket) do
     {:noreply, assign(socket, mobile_menu_open: false)}
+  end
+
+  def handle_event("toggle_profile_menu", _params, socket) do
+    {:noreply, assign(socket, profile_menu_open: !socket.assigns[:profile_menu_open])}
   end
 
   def render(assigns) do
@@ -201,7 +210,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
         
     <!-- Static sidebar for desktop -->
         <div class="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-          <div class="flex grow flex-col overflow-y-auto bg-green-800 pt-5 pb-4">
+          <div class="flex grow flex-col overflow-y-auto bg-green-800 pt-5">
             <div class="flex shrink-0 items-center px-4">
               <svg
                 class="h-8 w-auto text-green-300"
@@ -290,69 +299,46 @@ defmodule ETitleWeb.Admin.DashboardLive do
                 </div>
               </div>
             </nav>
-          </div>
-        </div>
-
-        <div class="flex flex-1 flex-col lg:pl-64">
-          <!-- Top navigation bar -->
-          <div class="flex h-16 shrink-0 border-b border-gray-200 bg-white lg:border-none">
-            <button
-              type="button"
-              phx-click="toggle_mobile_menu"
-              class="border-r border-gray-200 px-4 text-gray-400 focus:ring-2 focus:ring-green-500 focus:outline-hidden focus:ring-inset lg:hidden"
-            >
-              <span class="sr-only">Open sidebar</span>
-              <.icon name="hero-bars-3" class="size-6" />
-            </button>
-            
-    <!-- Search bar -->
-            <div class="flex flex-1 justify-between px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
-              <div class="flex flex-1">
-                <form action="#" method="GET" class="grid flex-1 grid-cols-1">
-                  <input
-                    type="search"
-                    name="search"
-                    placeholder="Search transactions"
-                    aria-label="Search"
-                    class="col-start-1 row-start-1 block size-full bg-white pl-8 text-base text-gray-900 outline-hidden placeholder:text-gray-400 sm:text-sm/6"
-                  />
-                  <.icon
-                    name="hero-magnifying-glass"
-                    class="pointer-events-none col-start-1 row-start-1 size-5 self-center text-gray-400"
-                  />
-                </form>
-              </div>
-              <div class="ml-4 flex items-center md:ml-6">
+            <!-- Profile dropdown -->
+            <div class="border-t border-green-700 p-4">
+              <div class="relative">
                 <button
                   type="button"
-                  class="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-hidden"
+                  phx-click="toggle_profile_menu"
+                  class="flex w-full items-center gap-x-4 px-2 py-2 text-sm/6 font-semibold text-white hover:bg-green-600 hover:text-white rounded-md"
                 >
-                  <span class="absolute -inset-1.5"></span>
-                  <span class="sr-only">View notifications</span>
-                  <.icon name="hero-bell" class="size-6" />
+                  <img
+                    src={@dashboard_data.user.avatar}
+                    alt={@dashboard_data.user.name}
+                    class="size-8 rounded-full bg-gray-800 outline -outline-offset-1 outline-white/10"
+                  />
+                  <span class="sr-only">Your profile</span>
+                  <span aria-hidden="true" class="flex-1 text-left">{@dashboard_data.user.name}</span>
+                  <.icon name="hero-chevron-up-down" class="size-5 text-green-200" />
                 </button>
-                
-    <!-- Profile dropdown -->
-                <div class="relative ml-3">
-                  <button
-                    type="button"
-                    class="relative flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-hidden focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 lg:rounded-md lg:p-2 lg:hover:bg-gray-50"
-                  >
-                    <span class="absolute -inset-1.5 lg:hidden"></span>
-                    <img src={@dashboard_data.user.avatar} alt="" class="size-8 rounded-full" />
-                    <span class="ml-3 hidden text-sm font-medium text-gray-700 lg:block">
-                      <span class="sr-only">Open user menu for </span>
-                      {@dashboard_data.user.name}
-                    </span>
-                    <.icon
-                      name="hero-chevron-down"
-                      class="ml-1 hidden size-5 shrink-0 text-gray-400 lg:block"
-                    />
-                  </button>
+
+                <div
+                  :if={@profile_menu_open}
+                  class="absolute bottom-full left-0 z-10 mb-2 w-full overflow-hidden rounded-md bg-white shadow-lg"
+                >
+                  <div class="py-1">
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Your Profile
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Settings
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      Sign out
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="flex flex-1 flex-col lg:pl-64">
           
     <!-- Main content -->
           <main class="flex-1 pb-8">

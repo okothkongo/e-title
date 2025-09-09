@@ -121,8 +121,12 @@
     </style>
   </head>
   <body>
-    <.unauthenticated_navbar current_scope={@current_scope} />
-    {@inner_content}
-    <.footer />
+    <%= if @current_scope do %>
+      {@inner_content}
+    <% else %>
+      <.unauthenticated_navbar current_scope={@current_scope} />
+      {@inner_content}
+      <.footer />
+    <% end %>
   </body>
 </html>
