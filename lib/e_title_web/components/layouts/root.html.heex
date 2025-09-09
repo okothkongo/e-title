@@ -122,6 +122,7 @@
   </head>
   <body>
     <%= if @current_scope do %>
+      <.authenticated_navbar current_scope={@current_scope} />
       {@inner_content}
     <% else %>
       <.unauthenticated_navbar current_scope={@current_scope} />
