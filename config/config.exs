@@ -10,7 +10,7 @@ import Config
 config :e_title, :scopes,
   account: [
     default: true,
-    module: ETitle.Accounts.Scope,
+    module: ETitle.Accounts.Schemas.Scope,
     assign_key: :current_scope,
     access_path: [:account, :id],
     schema_key: :account_id,

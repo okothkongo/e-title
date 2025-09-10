@@ -3,7 +3,7 @@ defmodule ETitleWeb.AccountAuthTest do
 
   alias Phoenix.LiveView
   alias ETitle.Accounts
-  alias ETitle.Accounts.Scope
+  alias ETitle.Accounts.Schemas.Scope
   alias ETitleWeb.AccountAuth
 
   import ETitle.AccountsFixtures

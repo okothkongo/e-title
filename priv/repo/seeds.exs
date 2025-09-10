@@ -11,12 +11,16 @@
 # and so on) as they will fail if something goes wrong.
 
 alias ETitle.Repo
-alias ETitle.Accounts.User
+alias ETitle.Accounts.Schemas.Account
+alias ETitle.Accounts.Schemas.AccountRole
+alias ETitle.Accounts.Schemas.Role
+alias ETitle.Accounts.Schemas.User
+alias ETitle.Locations.Schemas.County
 
 for role_name <-
       ~w[user lawyer land_registrar surveyor land_registry_clerk land_board_chair land_board_clerk admin] do
-  unless Repo.get_by(ETitle.Accounts.Role, name: role_name) do
-    Repo.insert!(%ETitle.Accounts.Role{name: role_name})
+  unless Repo.get_by(Role, name: role_name) do
+    Repo.insert!(%Role{name: role_name})
   end
 end
 
@@ -31,7 +35,7 @@ admin_attrs = %{
 
 {:ok, %{accounts: [account]}} = ETitle.Accounts.register_account(admin_attrs)
 
-Repo.insert!(%ETitle.Accounts.AccountRole{
+Repo.insert!(%AccountRole{
   account_id: account.id,
   role_id: admin_role.id
 })
@@ -52,7 +56,7 @@ users =
 
 citizen_accounts =
   for user <- citizen_users do
-    Repo.insert!(%ETitle.Accounts.Account{
+    Repo.insert!(%Account{
       user_id: user.id,
       email: Faker.Internet.email(),
       type: :citizen,
@@ -62,7 +66,7 @@ citizen_accounts =
 
 professional_accounts =
   for user <- professional_users do
-    Repo.insert!(%ETitle.Accounts.Account{
+    Repo.insert!(%Account{
       user_id: user.id,
       email: Faker.Internet.email(),
       type: :professional,
@@ -72,7 +76,7 @@ professional_accounts =
 
 staff_accounts =
   for user <- staff_users do
-    Repo.insert!(%ETitle.Accounts.Account{
+    Repo.insert!(%Account{
       user_id: user.id,
       email: Faker.Internet.email(),
       type: :staff,
@@ -81,10 +85,10 @@ staff_accounts =
   end
 
 # #citizen
-user_role = Repo.get_by(ETitle.Accounts.Role, name: "user")
+user_role = Repo.get_by(Role, name: "user")
 
 for citizen <- citizen_accounts do
-  Repo.insert!(%ETitle.Accounts.AccountRole{
+  Repo.insert!(%AccountRole{
     account_id: citizen.id,
     role_id: user_role.id
   })
@@ -94,18 +98,18 @@ end
 
 {lawyers_accounts, surveyors_accounts} = Enum.split(professional_accounts, 2)
 
-lawyer_role = Repo.get_by(ETitle.Accounts.Role, name: "lawyer")
-surveyor_role = Repo.get_by(ETitle.Accounts.Role, name: "surveyor")
+lawyer_role = Repo.get_by(Role, name: "lawyer")
+surveyor_role = Repo.get_by(Role, name: "surveyor")
 
 for lawyer <- lawyers_accounts do
-  Repo.insert!(%ETitle.Accounts.AccountRole{
+  Repo.insert!(%AccountRole{
     account_id: lawyer.id,
     role_id: lawyer_role.id
   })
 end
 
 for surveyor <- surveyors_accounts do
-  Repo.insert!(%ETitle.Accounts.AccountRole{
+  Repo.insert!(%AccountRole{
     account_id: surveyor.id,
     role_id: surveyor_role.id
   })
@@ -113,48 +117,48 @@ end
 
 # staff
 
-land_registrar_role = ETitle.Repo.get_by(ETitle.Accounts.Role, name: "land_registrar")
+land_registrar_role = ETitle.Repo.get_by(Role, name: "land_registrar")
 
-land_registry_clerk_role = ETitle.Repo.get_by(ETitle.Accounts.Role, name: "land_registry_clerk")
+land_registry_clerk_role = ETitle.Repo.get_by(Role, name: "land_registry_clerk")
 
-land_board_chair_role = ETitle.Repo.get_by(ETitle.Accounts.Role, name: "land_board_chair")
+land_board_chair_role = ETitle.Repo.get_by(Role, name: "land_board_chair")
 
-land_board_clerk_role = ETitle.Repo.get_by(ETitle.Accounts.Role, name: "land_board_clerk")
-admin_role = ETitle.Repo.get_by(ETitle.Accounts.Role, name: "admin")
+land_board_clerk_role = ETitle.Repo.get_by(Role, name: "land_board_clerk")
+admin_role = ETitle.Repo.get_by(Role, name: "admin")
 
 [land_registrar, land_registry_clerk, land_board_chair, land_board_clerk, admin] =
   Enum.chunk_every(staff_accounts, 4)
 
 for land_registrar <- land_registrar do
-  Repo.insert!(%ETitle.Accounts.AccountRole{
+  Repo.insert!(%AccountRole{
     account_id: land_registrar.id,
     role_id: land_registrar_role.id
   })
 end
 
 for land_registry_clerk <- land_registry_clerk do
-  Repo.insert!(%ETitle.Accounts.AccountRole{
+  Repo.insert!(%AccountRole{
     account_id: land_registry_clerk.id,
     role_id: land_registry_clerk_role.id
   })
 end
 
 for land_board_chair <- land_board_chair do
-  Repo.insert!(%ETitle.Accounts.AccountRole{
+  Repo.insert!(%AccountRole{
     account_id: land_board_chair.id,
     role_id: land_board_chair_role.id
   })
 end
 
 for land_board_clerk <- land_board_clerk do
-  Repo.insert!(%ETitle.Accounts.AccountRole{
+  Repo.insert!(%AccountRole{
     account_id: land_board_clerk.id,
     role_id: land_board_clerk_role.id
   })
 end
 
 for admin <- admin do
-  Repo.insert!(%ETitle.Accounts.AccountRole{
+  Repo.insert!(%AccountRole{
     account_id: admin.id,
     role_id: admin_role.id
   })
@@ -186,7 +190,7 @@ counties =
   |> Enum.reverse()
 
 for county_attrs <- counties do
-  county_changeset = ETitle.Locations.County.changeset(%ETitle.Locations.County{}, county_attrs)
+  county_changeset = County.changeset(%County{}, county_attrs)
   Repo.insert!(county_changeset)
 
   # registrar

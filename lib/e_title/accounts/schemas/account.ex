@@ -1,10 +1,13 @@
-defmodule ETitle.Accounts.Account do
+defmodule ETitle.Accounts.Schemas.Account do
   @moduledoc """
     Handles account data.
   """
 
   use Ecto.Schema
   import Ecto.Changeset
+
+  alias ETitle.Accounts.Schemas.AccountRole
+  alias ETitle.Accounts.Schemas.User
 
   @account_types ~w(citizen staff professional)a
 
@@ -16,8 +19,8 @@ defmodule ETitle.Accounts.Account do
     field :type, Ecto.Enum, values: @account_types, default: :citizen
     field :confirmed_at, :utc_datetime
     field :authenticated_at, :utc_datetime, virtual: true
-    belongs_to :user, ETitle.Accounts.User
-    has_one :account_role, ETitle.Accounts.AccountRole
+    belongs_to :user, User
+    has_one :account_role, AccountRole
     timestamps(type: :utc_datetime)
   end
 
@@ -139,7 +142,7 @@ defmodule ETitle.Accounts.Account do
   If there is no account or the account doesn't have a password, we call
   `Bcrypt.no_user_verify/0` to avoid timing attacks.
   """
-  def valid_password?(%ETitle.Accounts.Account{hashed_password: hashed_password}, password)
+  def valid_password?(%__MODULE__{hashed_password: hashed_password}, password)
       when is_binary(hashed_password) and byte_size(password) > 0 do
     Bcrypt.verify_pass(password, hashed_password)
   end

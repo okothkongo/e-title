@@ -1,10 +1,10 @@
-defmodule ETitle.Accounts.User do
+defmodule ETitle.Accounts.Schemas.User do
   @moduledoc """
     Handles user data.
   """
   use Ecto.Schema
   import Ecto.Changeset
-  alias ETitle.Accounts.Account
+  alias ETitle.Accounts.Schemas.Account
 
   schema "users" do
     field :first_name, :string
@@ -21,7 +21,10 @@ defmodule ETitle.Accounts.User do
   def registration_changeset(user, attrs) do
     user
     |> cast(attrs, [:first_name, :middle_name, :surname, :identity_doc_no])
-    |> cast_assoc(:accounts, with: &ETitle.Accounts.Account.email_changeset/2, required: true)
+    |> cast_assoc(:accounts,
+      with: &Account.email_changeset/2,
+      required: true
+    )
     |> validate_required([:first_name, :surname, :identity_doc_no])
     |> unique_constraint(:identity_doc_no)
   end

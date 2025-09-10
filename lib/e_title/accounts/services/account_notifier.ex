@@ -1,11 +1,11 @@
-defmodule ETitle.Accounts.AccountNotifier do
+defmodule ETitle.Accounts.Services.AccountNotifier do
   @moduledoc """
     Handles account notifications.
   """
   import Swoosh.Email
 
   alias ETitle.Mailer
-  alias ETitle.Accounts.Account
+  alias ETitle.Accounts.Schemas.Account
 
   # Delivers the email using the application mailer.
   defp deliver(recipient, subject, body) do

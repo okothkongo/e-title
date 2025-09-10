@@ -1,4 +1,4 @@
-defmodule ETitle.Accounts.Scope do
+defmodule ETitle.Accounts.Schemas.Scope do
   @moduledoc """
   Defines the scope of the caller to be used throughout the app.
 
@@ -16,7 +16,7 @@ defmodule ETitle.Accounts.Scope do
   growing application requirements.
   """
 
-  alias ETitle.Accounts.Account
+  alias ETitle.Accounts.Schemas.Account
 
   defstruct account: nil
 

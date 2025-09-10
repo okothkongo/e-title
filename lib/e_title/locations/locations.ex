@@ -6,7 +6,9 @@ defmodule ETitle.Locations do
   import Ecto.Query, warn: false
   alias ETitle.Repo
 
-  alias ETitle.Locations.Registry
+  alias ETitle.Locations.Schemas.County
+  alias ETitle.Locations.Schemas.Registry
+  alias ETitle.Locations.Schemas.SubCounty
 
   @doc """
   Creates a registry.
@@ -40,10 +42,10 @@ defmodule ETitle.Locations do
   end
 
   def list_counties do
-    Repo.all(ETitle.Locations.County)
+    Repo.all(County)
   end
 
   def list_sub_counties_by_county_id(county_id) do
-    Repo.all(from s in ETitle.Locations.SubCounty, where: s.county_id == ^county_id)
+    Repo.all(from s in SubCounty, where: s.county_id == ^county_id)
   end
 end

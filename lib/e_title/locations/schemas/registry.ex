@@ -1,16 +1,18 @@
-defmodule ETitle.Locations.Registry do
+defmodule ETitle.Locations.Schemas.Registry do
   @moduledoc """
   The Registry schema.
   """
   use Ecto.Schema
   import Ecto.Changeset
+  alias ETitle.Locations.Schemas.County
+  alias ETitle.Locations.Schemas.SubCounty
 
   schema "registries" do
     field :name, :string
     field :phone_number, :string
     field :email, :string
-    belongs_to :county, ETitle.Locations.County
-    belongs_to :sub_county, ETitle.Locations.SubCounty
+    belongs_to :county, County
+    belongs_to :sub_county, SubCounty
     timestamps(type: :utc_datetime)
   end
 

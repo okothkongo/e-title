@@ -2,11 +2,18 @@ defmodule ETitle.Factory do
   @moduledoc """
     Handles factory data.
   """
-  alias ETitle.Accounts.AccountRole
+
   use ExMachina.Ecto, repo: ETitle.Repo
+  alias ETitle.Accounts.Schemas.Account
+  alias ETitle.Accounts.Schemas.AccountRole
+  alias ETitle.Accounts.Schemas.Role
+  alias ETitle.Accounts.Schemas.User
+  alias ETitle.Locations.Schemas.County
+  alias ETitle.Locations.Schemas.Registry
+  alias ETitle.Locations.Schemas.SubCounty
 
   def user_factory do
-    %ETitle.Accounts.User{
+    %User{
       first_name: "John",
       middle_name: "Doe",
       surname: "Doe",
@@ -15,7 +22,7 @@ defmodule ETitle.Factory do
   end
 
   def unconfirmed_account_factory do
-    %ETitle.Accounts.Account{
+    %Account{
       email: sequence("email", &"#{&1}@example.com"),
       phone_number: sequence("phone_number", &"2547#{String.pad_leading(to_string(&1), 8, "0")}"),
       type: :citizen,
@@ -34,7 +41,7 @@ defmodule ETitle.Factory do
   end
 
   def role_factory do
-    %ETitle.Accounts.Role{
+    %Role{
       name: "user"
     }
   end
@@ -47,21 +54,21 @@ defmodule ETitle.Factory do
   end
 
   def county_factory do
-    %ETitle.Locations.County{
+    %County{
       name: sequence("county_name", &"County #{&1}"),
       code: "#{System.unique_integer([:positive])}"
     }
   end
 
   def sub_county_factory do
-    %ETitle.Locations.SubCounty{
+    %SubCounty{
       name: sequence("sub_county_name", &"Sub County #{&1}"),
       county: build(:county)
     }
   end
 
   def registry_factory do
-    %ETitle.Locations.Registry{
+    %Registry{
       name: sequence("registry_name", &"Registry #{&1}"),
       phone_number:
         sequence("registry_phone_number", &"2547#{String.pad_leading(to_string(&1), 8, "0")}"),
