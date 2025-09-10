@@ -1,4 +1,4 @@
-defmodule ETitleWeb.Admin.DashboardLive do
+defmodule ETitleWeb.User.DashboardLive.Dashboard do
   use ETitleWeb, :live_view
   alias ETitle.Accounts
 
@@ -67,7 +67,12 @@ defmodule ETitleWeb.Admin.DashboardLive do
       ]
     }
 
-    {:ok, assign(socket, dashboard_data: dashboard_data, mobile_menu_open: false)}
+    {:ok,
+     assign(socket,
+       dashboard_data: dashboard_data,
+       mobile_menu_open: false,
+       profile_menu_open: false
+     )}
   end
 
   def handle_event("toggle_mobile_menu", _params, socket) do
@@ -78,281 +83,17 @@ defmodule ETitleWeb.Admin.DashboardLive do
     {:noreply, assign(socket, mobile_menu_open: false)}
   end
 
+  def handle_event("toggle_profile_menu", _params, socket) do
+    {:noreply, assign(socket, profile_menu_open: !socket.assigns[:profile_menu_open])}
+  end
+
   def render(assigns) do
     ~H"""
     <Layouts.dashboard flash={@flash} current_scope={@current_scope}>
       <div class="min-h-full">
         <!-- Off-canvas menu for mobile -->
-        <div
-          role="dialog"
-          aria-modal="true"
-          class={["relative z-40 lg:hidden", if(@mobile_menu_open, do: "block", else: "hidden")]}
-        >
-          <div aria-hidden="true" class="fixed inset-0 bg-gray-600/75"></div>
-          <div class="fixed inset-0 z-40 flex">
-            <div class="relative flex w-full max-w-xs flex-1 flex-col bg-green-700 pt-5 pb-4">
-              <div class="absolute top-0 right-0 -mr-12 pt-2">
-                <button
-                  type="button"
-                  phx-click="close_mobile_menu"
-                  class="relative ml-1 flex size-10 items-center justify-center rounded-full focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset"
-                >
-                  <span class="absolute -inset-0.5"></span>
-                  <span class="sr-only">Close sidebar</span>
-                  <.icon name="hero-x-mark" class="size-6 text-white" />
-                </button>
-              </div>
-
-              <div class="flex shrink-0 items-center px-4">
-                <svg
-                  class="h-8 w-auto text-green-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                  />
-                </svg>
-                <span class="ml-2 text-xl font-bold text-white">E-Title</span>
-              </div>
-
-              <nav
-                aria-label="Sidebar"
-                class="mt-5 h-full shrink-0 divide-y divide-green-800 overflow-y-auto"
-              >
-                <div class="space-y-1 px-2">
-                  <a
-                    href="#"
-                    aria-current="page"
-                    class="group flex items-center rounded-md bg-green-800 px-2 py-2 text-base font-medium text-white"
-                  >
-                    <.icon name="hero-home" class="mr-4 size-6 shrink-0 text-green-200" /> Dashboard
-                  </a>
-                  <a
-                    href="#"
-                    class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                  >
-                    <.icon name="hero-document-text" class="mr-4 size-6 shrink-0 text-green-200" />
-                    Registrations
-                  </a>
-                  <a
-                    href="#"
-                    class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                  >
-                    <.icon name="hero-magnifying-glass" class="mr-4 size-6 shrink-0 text-green-200" />
-                    Search
-                  </a>
-                  <a
-                    href="#"
-                    class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                  >
-                    <.icon
-                      name="hero-arrow-right-arrow-left"
-                      class="mr-4 size-6 shrink-0 text-green-200"
-                    /> Transfers
-                  </a>
-                  <a
-                    href="#"
-                    class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                  >
-                    <.icon name="hero-shield-check" class="mr-4 size-6 shrink-0 text-green-200" />
-                    Verification
-                  </a>
-                  <a
-                    href="#"
-                    class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                  >
-                    <.icon name="hero-chart-bar" class="mr-4 size-6 shrink-0 text-green-200" />
-                    Reports
-                  </a>
-                </div>
-                <div class="mt-6 pt-6">
-                  <div class="space-y-1 px-2">
-                    <a
-                      href="#"
-                      class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                    >
-                      <.icon name="hero-cog-6-tooth" class="mr-4 size-6 text-green-200" /> Settings
-                    </a>
-                    <a
-                      href="#"
-                      class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                    >
-                      <.icon name="hero-question-mark-circle" class="mr-4 size-6 text-green-200" />
-                      Help
-                    </a>
-                    <a
-                      href="#"
-                      class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                    >
-                      <.icon name="hero-shield-check" class="mr-4 size-6 text-green-200" /> Privacy
-                    </a>
-                  </div>
-                </div>
-              </nav>
-            </div>
-            <div aria-hidden="true" class="w-14 shrink-0"></div>
-          </div>
-        </div>
-        
-    <!-- Static sidebar for desktop -->
-        <div class="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-          <div class="flex grow flex-col overflow-y-auto bg-green-700 pt-5 pb-4">
-            <div class="flex shrink-0 items-center px-4">
-              <svg
-                class="h-8 w-auto text-green-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                />
-              </svg>
-              <span class="ml-2 text-xl font-bold text-white">E-Title</span>
-            </div>
-            <nav
-              aria-label="Sidebar"
-              class="mt-5 flex flex-1 flex-col divide-y divide-green-800 overflow-y-auto"
-            >
-              <div class="space-y-1 px-2">
-                <a
-                  href="#"
-                  aria-current="page"
-                  class="group flex items-center rounded-md bg-green-800 px-2 py-2 text-sm/6 font-medium text-white"
-                >
-                  <.icon name="hero-home" class="mr-4 size-6 shrink-0 text-green-200" /> Dashboard
-                </a>
-                <a
-                  href="#"
-                  class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                >
-                  <.icon name="hero-document-text" class="mr-4 size-6 shrink-0 text-green-200" />
-                  Registrations
-                </a>
-                <a
-                  href="#"
-                  class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                >
-                  <.icon name="hero-magnifying-glass" class="mr-4 size-6 shrink-0 text-green-200" />
-                  Search
-                </a>
-                <a
-                  href="#"
-                  class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                >
-                  <.icon
-                    name="hero-arrow-right-arrow-left"
-                    class="mr-4 size-6 shrink-0 text-green-200"
-                  /> Transfers
-                </a>
-                <a
-                  href="#"
-                  class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                >
-                  <.icon name="hero-shield-check" class="mr-4 size-6 shrink-0 text-green-200" />
-                  Verification
-                </a>
-                <a
-                  href="#"
-                  class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                >
-                  <.icon name="hero-chart-bar" class="mr-4 size-6 shrink-0 text-green-200" /> Reports
-                </a>
-              </div>
-              <div class="mt-6 pt-6">
-                <div class="space-y-1 px-2">
-                  <a
-                    href="#"
-                    class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                  >
-                    <.icon name="hero-cog-6-tooth" class="mr-4 size-6 text-green-200" /> Settings
-                  </a>
-                  <a
-                    href="#"
-                    class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                  >
-                    <.icon name="hero-question-mark-circle" class="mr-4 size-6 text-green-200" /> Help
-                  </a>
-                  <a
-                    href="#"
-                    class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
-                  >
-                    <.icon name="hero-shield-check" class="mr-4 size-6 text-green-200" /> Privacy
-                  </a>
-                </div>
-              </div>
-            </nav>
-          </div>
-        </div>
 
         <div class="flex flex-1 flex-col lg:pl-64">
-          <!-- Top navigation bar -->
-          <div class="flex h-16 shrink-0 border-b border-gray-200 bg-white lg:border-none">
-            <button
-              type="button"
-              phx-click="toggle_mobile_menu"
-              class="border-r border-gray-200 px-4 text-gray-400 focus:ring-2 focus:ring-green-500 focus:outline-hidden focus:ring-inset lg:hidden"
-            >
-              <span class="sr-only">Open sidebar</span>
-              <.icon name="hero-bars-3" class="size-6" />
-            </button>
-            
-    <!-- Search bar -->
-            <div class="flex flex-1 justify-between px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8">
-              <div class="flex flex-1">
-                <form action="#" method="GET" class="grid flex-1 grid-cols-1">
-                  <input
-                    type="search"
-                    name="search"
-                    placeholder="Search transactions"
-                    aria-label="Search"
-                    class="col-start-1 row-start-1 block size-full bg-white pl-8 text-base text-gray-900 outline-hidden placeholder:text-gray-400 sm:text-sm/6"
-                  />
-                  <.icon
-                    name="hero-magnifying-glass"
-                    class="pointer-events-none col-start-1 row-start-1 size-5 self-center text-gray-400"
-                  />
-                </form>
-              </div>
-              <div class="ml-4 flex items-center md:ml-6">
-                <button
-                  type="button"
-                  class="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-hidden"
-                >
-                  <span class="absolute -inset-1.5"></span>
-                  <span class="sr-only">View notifications</span>
-                  <.icon name="hero-bell" class="size-6" />
-                </button>
-                
-    <!-- Profile dropdown -->
-                <div class="relative ml-3">
-                  <button
-                    type="button"
-                    class="relative flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-hidden focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 lg:rounded-md lg:p-2 lg:hover:bg-gray-50"
-                  >
-                    <span class="absolute -inset-1.5 lg:hidden"></span>
-                    <img src={@dashboard_data.user.avatar} alt="" class="size-8 rounded-full" />
-                    <span class="ml-3 hidden text-sm font-medium text-gray-700 lg:block">
-                      <span class="sr-only">Open user menu for </span>
-                      {@dashboard_data.user.name}
-                    </span>
-                    <.icon
-                      name="hero-chevron-down"
-                      class="ml-1 hidden size-5 shrink-0 text-gray-400 lg:block"
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
           
     <!-- Main content -->
           <main class="flex-1 pb-8">
@@ -408,7 +149,7 @@ defmodule ETitleWeb.Admin.DashboardLive do
                     </button>
                     <button
                       type="button"
-                      class="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                      class="inline-flex items-center rounded-md bg-green-700 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
                     >
                       Search Title
                     </button>

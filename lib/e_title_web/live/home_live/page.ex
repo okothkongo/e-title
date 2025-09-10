@@ -1,4 +1,4 @@
-defmodule ETitleWeb.HomeLive do
+defmodule ETitleWeb.HomeLive.Page do
   use ETitleWeb, :live_view
 
   alias ETitleWeb.Layouts
@@ -9,8 +9,6 @@ defmodule ETitleWeb.HomeLive do
 
   def render(assigns) do
     ~H"""
-    <.live_component module={ETitleWeb.NavbarLive} id="navbar" current_scope={@current_scope} />
-
     <main class="min-h-screen bg-gradient-to-b from-green-50 to-green-100 pt-20 pb-32">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div>
@@ -464,7 +462,6 @@ defmodule ETitleWeb.HomeLive do
       </div>
     </main>
 
-    <Layouts.footer />
     <Layouts.flash_group flash={@flash} />
     """
   end

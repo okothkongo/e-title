@@ -62,8 +62,6 @@ defmodule ETitleWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <.live_component module={ETitleWeb.NavbarLive} id="navbar" current_scope={@current_scope} />
-
     <main class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 pt-20 pb-32">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 sm:p-8 lg:p-12 my-8">
@@ -71,8 +69,6 @@ defmodule ETitleWeb.Layouts do
         </div>
       </div>
     </main>
-
-    <.footer />
     <.flash_group flash={@flash} />
     """
   end
@@ -294,5 +290,385 @@ defmodule ETitleWeb.Layouts do
       </div>
     </footer>
     """
+  end
+
+  def unauthenticated_navbar(assigns) do
+    ~H"""
+    <nav class="bg-white/95 backdrop-blur-md shadow-xl border-b border-gray-200/50 fixed w-full top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <!-- Logo -->
+          <div class="flex items-center">
+            <div class="flex-shrink-0 flex items-center">
+              <svg
+                class="h-6 w-6 sm:h-8 sm:w-8 text-green-600 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
+              <span class="text-lg sm:text-2xl font-bold text-green-800">E-Title</span>
+            </div>
+          </div>
+          
+    <!-- Desktop Navigation -->
+          <div class="hidden lg:flex items-center space-x-6 xl:space-x-8">
+            <.link
+              href={~p"/"}
+              class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg text-sm font-medium"
+            >
+              Home
+            </.link>
+            <.link
+              href={~p"/#about"}
+              class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg text-sm font-medium"
+            >
+              About
+            </.link>
+            <.link
+              href={~p"/#contact"}
+              class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg text-sm font-medium"
+            >
+              Contact
+            </.link>
+            <.link
+              href={~p"/accounts/register"}
+              class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-lg text-sm font-medium"
+            >
+              Register
+            </.link>
+            <.link
+              href={~p"/accounts/log-in"}
+              class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
+            >
+              Login
+            </.link>
+          </div>
+          
+    <!-- Mobile Menu Button -->
+          <div class="lg:hidden">
+            <button
+              phx-click={JS.toggle_class("hidden", to: "#mobile-menu")}
+              class="text-gray-700 hover:text-green-600 p-2"
+            >
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+    <!-- Mobile Menu -->
+      <div
+        id="mobile-menu"
+        class="hidden lg:hidden px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200"
+      >
+        <.link
+          href="/"
+          class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-green-50"
+        >
+          Home
+        </.link>
+        <.link
+          href="/#about"
+          class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-green-50"
+        >
+          About
+        </.link>
+        <.link
+          href="/#contact"
+          class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-green-50"
+        >
+          Contact
+        </.link>
+        <.link
+          href={~p"/accounts/register"}
+          class="block px-3 py-2 text-gray-700 hover:bg-green-50 rounded-md"
+        >
+          Register
+        </.link>
+        <.link
+          href={~p"/accounts/log-in"}
+          class="block px-3 py-2 bg-green-600 text-white rounded-md text-center"
+        >
+          Login
+        </.link>
+      </div>
+    </nav>
+    """
+  end
+
+  def authenticated_navbar(assigns) do
+    ~H"""
+    <div
+      role="dialog"
+      aria-modal="true"
+      class={["relative z-40 lg:hidden", if(false, do: "block", else: "hidden")]}
+    >
+      <div aria-hidden="true" class="fixed inset-0 bg-gray-600/75"></div>
+      <div class="fixed inset-0 z-40 flex">
+        <div class="relative flex w-full max-w-xs flex-1 flex-col bg-green-700 pt-5 pb-4">
+          <div class="absolute top-0 right-0 -mr-12 pt-2">
+            <button
+              type="button"
+              phx-click="close_mobile_menu"
+              class="relative ml-1 flex size-10 items-center justify-center rounded-full focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset"
+            >
+              <span class="absolute -inset-0.5"></span>
+              <span class="sr-only">Close sidebar</span>
+              <.icon name="hero-x-mark" class="size-6 text-white" />
+            </button>
+          </div>
+
+          <div class="flex shrink-0 items-center px-4">
+            <svg
+              class="h-8 w-auto text-green-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              />
+            </svg>
+            <span class="ml-2 text-xl font-bold text-white">E-Title</span>
+          </div>
+
+          <nav
+            aria-label="Sidebar"
+            class="mt-5 h-full shrink-0 divide-y divide-green-800 overflow-y-auto"
+          >
+            <div class="space-y-1 px-2">
+              <a
+                href="#"
+                aria-current="page"
+                class="group flex items-center rounded-md bg-green-800 px-2 py-2 text-base font-medium text-white"
+              >
+                <.icon name="hero-home" class="mr-4 size-6 shrink-0 text-green-200" /> Dashboard
+              </a>
+              <a
+                href="#"
+                class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
+              >
+                <.icon name="hero-document-text" class="mr-4 size-6 shrink-0 text-green-200" />
+                Registrations
+              </a>
+              <a
+                href="#"
+                class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
+              >
+                <.icon name="hero-magnifying-glass" class="mr-4 size-6 shrink-0 text-green-200" />
+                Search
+              </a>
+              <a
+                href="#"
+                class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
+              >
+                <.icon
+                  name="hero-arrow-right-arrow-left"
+                  class="mr-4 size-6 shrink-0 text-green-200"
+                /> Transfers
+              </a>
+              <a
+                href="#"
+                class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
+              >
+                <.icon name="hero-shield-check" class="mr-4 size-6 shrink-0 text-green-200" />
+                Verification
+              </a>
+              <a
+                href="#"
+                class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
+              >
+                <.icon name="hero-chart-bar" class="mr-4 size-6 shrink-0 text-green-200" /> Reports
+              </a>
+            </div>
+            <div class="mt-6 pt-6">
+              <div class="space-y-1 px-2">
+                <a
+                  href="#"
+                  class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
+                >
+                  <.icon name="hero-cog-6-tooth" class="mr-4 size-6 text-green-200" /> Settings
+                </a>
+                <a
+                  href="#"
+                  class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
+                >
+                  <.icon name="hero-question-mark-circle" class="mr-4 size-6 text-green-200" /> Help
+                </a>
+                <a
+                  href="#"
+                  class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
+                >
+                  <.icon name="hero-shield-check" class="mr-4 size-6 text-green-200" /> Privacy
+                </a>
+              </div>
+            </div>
+          </nav>
+        </div>
+        <div aria-hidden="true" class="w-14 shrink-0"></div>
+      </div>
+    </div>
+
+    <!-- Static sidebar for desktop -->
+    <div class="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
+      <div class="flex grow flex-col overflow-y-auto bg-green-800 pt-5">
+        <div class="flex shrink-0 items-center px-4">
+          <svg
+            class="h-8 w-auto text-green-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+            />
+          </svg>
+          <span class="ml-2 text-xl font-bold text-white">E-Title</span>
+        </div>
+        <nav
+          aria-label="Sidebar"
+          class="mt-5 flex flex-1 flex-col divide-y divide-green-800 overflow-y-auto"
+        >
+          <div class="space-y-1 px-2">
+            <a
+              href="#"
+              aria-current="page"
+              class="group flex items-center rounded-md bg-green-900 px-2 py-2 text-sm/6 font-medium text-white"
+            >
+              <.icon name="hero-home" class="mr-4 size-6 shrink-0 text-green-200" /> Dashboard
+            </a>
+            <a
+              href="#"
+              class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
+            >
+              <.icon name="hero-document-text" class="mr-4 size-6 shrink-0 text-green-200" />
+              Registrations
+            </a>
+            <a
+              href="#"
+              class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
+            >
+              <.icon name="hero-magnifying-glass" class="mr-4 size-6 shrink-0 text-green-200" />
+              Search
+            </a>
+            <a
+              href="#"
+              class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
+            >
+              <.icon
+                name="hero-arrow-right-arrow-left"
+                class="mr-4 size-6 shrink-0 text-green-200"
+              /> Transfers
+            </a>
+            <a
+              href="#"
+              class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
+            >
+              <.icon name="hero-shield-check" class="mr-4 size-6 shrink-0 text-green-200" />
+              Verification
+            </a>
+            <a
+              href="#"
+              class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
+            >
+              <.icon name="hero-chart-bar" class="mr-4 size-6 shrink-0 text-green-200" /> Reports
+            </a>
+          </div>
+          <div class="mt-6 pt-6">
+            <div class="space-y-1 px-2">
+              <a
+                href="#"
+                class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
+              >
+                <.icon name="hero-cog-6-tooth" class="mr-4 size-6 text-green-200" /> Settings
+              </a>
+              <a
+                href="#"
+                class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
+              >
+                <.icon name="hero-question-mark-circle" class="mr-4 size-6 text-green-200" /> Help
+              </a>
+              <a
+                href="#"
+                class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
+              >
+                <.icon name="hero-shield-check" class="mr-4 size-6 text-green-200" /> Privacy
+              </a>
+            </div>
+          </div>
+        </nav>
+        <!-- Profile dropdown -->
+        <div class="border-t border-green-700 p-4">
+          <div class="relative">
+            <button
+              type="button"
+              phx-click="toggle_profile_menu"
+              class="flex w-full items-center gap-x-4 px-2 py-2 text-sm/6 font-semibold text-white hover:bg-green-600 hover:text-white rounded-md"
+            >
+              <img
+                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                alt={get_user_name(@current_scope.account.user_id)}
+                class="size-8 rounded-full bg-gray-800 outline -outline-offset-1 outline-white/10"
+              />
+              <span class="sr-only">Your profile</span>
+              <span aria-hidden="true" class="flex-1 text-left">
+                {get_user_name(@current_scope.account.user_id)}
+              </span>
+              <.icon name="hero-chevron-up-down" class="size-5 text-green-200" />
+            </button>
+
+            <div
+              :if={true}
+              class="absolute bottom-full left-0 z-10 mb-2 w-full overflow-hidden rounded-md bg-white shadow-lg"
+            >
+              <div class="py-1">
+                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Your Profile
+                </a>
+                <.link
+                  href={~p"/accounts/settings"}
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Settings
+                </.link>
+                <.link
+                  href={~p"/accounts/log-out"}
+                  method="delete"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Sign out
+                </.link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    """
+  end
+
+  defp get_user_name(user_id) do
+    user = ETitle.Accounts.get_user(user_id)
+    "#{user.first_name} #{user.surname}"
   end
 end
