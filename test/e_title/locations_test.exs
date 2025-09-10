@@ -1,9 +1,9 @@
 defmodule ETitle.LocationsTest do
   use ETitle.DataCase
+  import ETitle.Factory
 
   alias ETitle.Locations
-  alias ETitle.Locations.Registry
-  import ETitle.Factory
+  alias ETitle.Locations.Schemas.Registry
 
   describe "create_registry/2 " do
     @invalid_attrs %{name: nil, phone_number: nil, email: nil}

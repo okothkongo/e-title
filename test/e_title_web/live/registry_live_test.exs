@@ -4,6 +4,8 @@ defmodule ETitleWeb.RegistryLiveTest do
   import Phoenix.LiveViewTest
   import ETitle.Factory
 
+  alias ETitle.Locations.Schemas.Registry
+
   @create_attrs %{name: "some name", phone_number: "some phone_number", email: "some email"}
 
   @invalid_attrs %{name: nil, phone_number: nil, email: nil}
@@ -34,6 +36,6 @@ defmodule ETitleWeb.RegistryLiveTest do
       |> follow_redirect(conn, ~p"/admin/dashboard")
 
     assert html =~ "Registry created successfully"
-    assert ETitle.Repo.get_by(ETitle.Locations.Registry, email: "some email")
+    assert ETitle.Repo.get_by(Registry, email: "some email")
   end
 end

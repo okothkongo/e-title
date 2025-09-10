@@ -1,15 +1,17 @@
-defmodule ETitle.Locations.County do
+defmodule ETitle.Locations.Schemas.County do
   @moduledoc """
     Handles county data.
   """
   use Ecto.Schema
   import Ecto.Changeset
+  alias ETitle.Locations.Schemas.Registry
+  alias ETitle.Locations.Schemas.SubCounty
 
   schema "counties" do
     field :name, :string
     field :code, :string
-    has_many :sub_counties, ETitle.Locations.SubCounty
-    has_many :registries, ETitle.Locations.Registry
+    has_many :sub_counties, SubCounty
+    has_many :registries, Registry
     timestamps(type: :utc_datetime)
   end
 
@@ -20,6 +22,6 @@ defmodule ETitle.Locations.County do
     |> validate_required([:name, :code])
     |> unique_constraint(:code)
     |> unique_constraint(:name)
-    |> cast_assoc(:sub_counties, with: &ETitle.Locations.SubCounty.changeset/2, required: true)
+    |> cast_assoc(:sub_counties, with: &SubCounty.changeset/2, required: true)
   end
 end

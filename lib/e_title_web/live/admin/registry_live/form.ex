@@ -2,7 +2,7 @@ defmodule ETitleWeb.Admin.RegistryLive.Form do
   use ETitleWeb, :live_view
 
   alias ETitle.Locations
-  alias ETitle.Locations.Registry
+  alias ETitle.Locations.Schemas.Registry
 
   @impl true
   def render(assigns) do

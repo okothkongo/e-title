@@ -15,6 +15,7 @@ alias ETitle.Accounts.Schemas.Account
 alias ETitle.Accounts.Schemas.AccountRole
 alias ETitle.Accounts.Schemas.Role
 alias ETitle.Accounts.Schemas.User
+alias ETitle.Locations.Schemas.County
 
 for role_name <-
       ~w[user lawyer land_registrar surveyor land_registry_clerk land_board_chair land_board_clerk admin] do
@@ -189,7 +190,7 @@ counties =
   |> Enum.reverse()
 
 for county_attrs <- counties do
-  county_changeset = ETitle.Locations.County.changeset(%ETitle.Locations.County{}, county_attrs)
+  county_changeset = County.changeset(%County{}, county_attrs)
   Repo.insert!(county_changeset)
 
   # registrar
