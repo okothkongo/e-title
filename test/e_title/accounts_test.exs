@@ -561,4 +561,9 @@ defmodule ETitle.AccountsTest do
       assert %{role_id: [^error_message]} = errors_on(changeset)
     end
   end
+
+  test "list_users/0 returns all users" do
+    user = insert(:user)
+    assert Accounts.list_users() == [user]
+  end
 end

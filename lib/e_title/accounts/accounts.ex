@@ -343,4 +343,10 @@ defmodule ETitle.Accounts do
 
     Repo.exists?(query)
   end
+
+  def admin?(_), do: false
+
+  def list_users do
+    Repo.all(User)
+  end
 end
