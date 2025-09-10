@@ -1,5 +1,4 @@
 defmodule ETitleWeb.Router do
-  alias ETitleWeb.Admin.DashboardLive.Dashboard
   use ETitleWeb, :router
 
   import ETitleWeb.AccountAuth
@@ -90,6 +89,18 @@ defmodule ETitleWeb.Router do
       ] do
       live "/dashboard", DashboardLive.Dashboard, :index
       live "/registries/new", RegistryLive.Form, :new
+    end
+  end
+
+  # non admin routes
+  scope "/user" do
+    pipe_through [:authenticated, :require_authenticated_non_admin_account]
+
+    live_session :require_authenticated_non_admin_account,
+      on_mount: [
+        {ETitleWeb.AccountAuth, :require_authenticated_non_admin}
+      ] do
+      live "/dashboard", ETitleWeb.User.DashboardLive.Dashboard, :index
     end
   end
 end

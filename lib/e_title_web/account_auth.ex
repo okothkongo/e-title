@@ -40,7 +40,7 @@ defmodule ETitleWeb.AccountAuth do
 
     conn
     |> create_or_extend_session(account, params)
-    |> redirect(to: account_return_to || redirect_to_dashboard(account) || signed_in_path(conn))
+    |> redirect(to: account_return_to || signed_in_path(conn, account))
   end
 
   @doc """
@@ -248,6 +248,21 @@ defmodule ETitleWeb.AccountAuth do
     end
   end
 
+  def on_mount(:require_authenticated_non_admin, _params, session, socket) do
+    socket = mount_current_scope(socket, session)
+
+    if !admin?(socket.assigns.current_scope) do
+      {:cont, socket}
+    else
+      socket =
+        socket
+        |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
+        |> Phoenix.LiveView.redirect(to: ~p"/accounts/log-in")
+
+      {:halt, socket}
+    end
+  end
+
   def on_mount(:require_sudo_mode, _params, session, socket) do
     socket = mount_current_scope(socket, session)
 
@@ -275,15 +290,16 @@ defmodule ETitleWeb.AccountAuth do
   end
 
   @doc "Returns the path to redirect to after log in."
-  # the account was already logged in, redirect to settings
-  def signed_in_path(%Plug.Conn{assigns: %{current_scope: %Scope{account: %Accounts.Account{}}}}) do
+  # the account was already logged in, redirect to the appropriate dashboard
+  def signed_in_path(
+        %Plug.Conn{assigns: %{current_scope: %Scope{account: %Accounts.Account{}}}},
+        _account
+      ) do
     ~p"/accounts/settings"
   end
 
-  def signed_in_path(_), do: ~p"/"
-
-  def redirect_to_dashboard(account) do
-    if Accounts.admin?(account), do: ~p"/admin/dashboard", else: ~p"/dashboard"
+  def signed_in_path(_conn, account) do
+    if Accounts.admin?(account), do: ~p"/admin/dashboard", else: ~p"/user/dashboard"
   end
 
   @doc """
@@ -306,6 +322,18 @@ defmodule ETitleWeb.AccountAuth do
   """
   def require_authenticated_admin_account(conn, _opts) do
     if admin?(conn.assigns.current_scope) do
+      conn
+    else
+      conn
+      |> put_flash(:error, "Unathorized Access")
+      |> maybe_store_return_to()
+      |> redirect(to: ~p"/")
+      |> halt()
+    end
+  end
+
+  def require_authenticated_non_admin_account(conn, _opts) do
+    if !admin?(conn.assigns.current_scope) do
       conn
     else
       conn

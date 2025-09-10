@@ -19,12 +19,12 @@ defmodule ETitleWeb.AccountSessionControllerTest do
         })
 
       assert get_session(conn, :account_token)
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/user/dashboard"
 
       # Now do a logged in request and assert on the menu
-      conn = get(conn, ~p"/")
+      conn = get(conn, ~p"/user/dashboard")
       response = html_response(conn, 200)
-      assert response =~ account.email
+      assert response =~ account.user.first_name
       assert response =~ ~p"/accounts/settings"
       assert response =~ ~p"/accounts/log-out"
     end
@@ -40,7 +40,7 @@ defmodule ETitleWeb.AccountSessionControllerTest do
         })
 
       assert conn.resp_cookies["_e_title_web_account_remember_me"]
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/user/dashboard"
     end
 
     test "logs the account in with return to", %{conn: conn, account: account} do
@@ -79,12 +79,12 @@ defmodule ETitleWeb.AccountSessionControllerTest do
         })
 
       assert get_session(conn, :account_token)
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/user/dashboard"
 
       # Now do a logged in request and assert on the menu
-      conn = get(conn, ~p"/")
+      conn = get(conn, ~p"/user/dashboard")
       response = html_response(conn, 200)
-      assert response =~ account.email
+      assert response =~ account.user.first_name
       assert response =~ ~p"/accounts/settings"
       assert response =~ ~p"/accounts/log-out"
     end
@@ -100,15 +100,15 @@ defmodule ETitleWeb.AccountSessionControllerTest do
         })
 
       assert get_session(conn, :account_token)
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/user/dashboard"
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~ "Account confirmed successfully."
 
       assert Accounts.get_account(account.id).confirmed_at
 
       # Now do a logged in request and assert on the menu
-      conn = get(conn, ~p"/")
+      conn = get(conn, ~p"/user/dashboard")
       response = html_response(conn, 200)
-      assert response =~ account.email
+      assert response =~ account.user.first_name
       assert response =~ ~p"/accounts/settings"
       assert response =~ ~p"/accounts/log-out"
     end

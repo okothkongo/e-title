@@ -4,6 +4,7 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
   import Phoenix.LiveViewTest
   import ETitle.Factory
   alias ETitle.Accounts.User
+  alias ETitle.Accounts.Scope
 
   describe "Registration page" do
     test "renders registration page", %{conn: conn} do
@@ -14,13 +15,23 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
     end
 
     test "redirects if already logged in", %{conn: conn} do
+      account = insert(:account)
+
       result =
         conn
-        |> log_in_account(insert(:account))
+        |> log_in_account(account)
         |> live(~p"/accounts/register")
-        |> follow_redirect(conn, ~p"/")
 
-      assert {:ok, _conn} = result
+      assert {:error, {:redirect, %{to: "/user/dashboard", flash: %{}}}} == result
+      # assert redirected to dashboard
+
+      {:ok, _lv, html} =
+        conn
+        # still logged in
+        |> log_in_account(account)
+        |> live(~p"/user/dashboard")
+
+      assert html =~ "Dashboard"
     end
 
     test "renders errors for invalid data", %{conn: conn} do

@@ -1,4 +1,4 @@
-defmodule ETitleWeb.Admin.DashboardLive.Dashboard do
+defmodule ETitleWeb.User.DashboardLive.Dashboard do
   use ETitleWeb, :live_view
   alias ETitle.Accounts
 

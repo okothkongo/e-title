@@ -80,7 +80,7 @@ defmodule ETitleWeb.AccountLive.Registration do
   @impl true
   def mount(_params, _session, %{assigns: %{current_scope: %{account: account}}} = socket)
       when not is_nil(account) do
-    {:ok, redirect(socket, to: ETitleWeb.AccountAuth.signed_in_path(socket))}
+    {:ok, redirect(socket, to: ETitleWeb.AccountAuth.signed_in_path(socket, account))}
   end
 
   def mount(_params, _session, socket) do
