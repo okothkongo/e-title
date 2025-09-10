@@ -2,11 +2,15 @@ defmodule ETitle.Factory do
   @moduledoc """
     Handles factory data.
   """
-  alias ETitle.Accounts.AccountRole
+
   use ExMachina.Ecto, repo: ETitle.Repo
+  alias ETitle.Accounts.Schemas.Account
+  alias ETitle.Accounts.Schemas.AccountRole
+  alias ETitle.Accounts.Schemas.Role
+  alias ETitle.Accounts.Schemas.User
 
   def user_factory do
-    %ETitle.Accounts.User{
+    %User{
       first_name: "John",
       middle_name: "Doe",
       surname: "Doe",
@@ -15,7 +19,7 @@ defmodule ETitle.Factory do
   end
 
   def unconfirmed_account_factory do
-    %ETitle.Accounts.Account{
+    %Account{
       email: sequence("email", &"#{&1}@example.com"),
       phone_number: sequence("phone_number", &"2547#{String.pad_leading(to_string(&1), 8, "0")}"),
       type: :citizen,
@@ -34,7 +38,7 @@ defmodule ETitle.Factory do
   end
 
   def role_factory do
-    %ETitle.Accounts.Role{
+    %Role{
       name: "user"
     }
   end

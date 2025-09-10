@@ -1,14 +1,16 @@
-defmodule ETitle.Accounts.AccountRole do
+defmodule ETitle.Accounts.Schemas.AccountRole do
   @moduledoc """
     Handles account role data.
   """
   use Ecto.Schema
   import Ecto.Changeset
   alias ETitle.Accounts
+  alias ETitle.Accounts.Schemas.Account
+  alias ETitle.Accounts.Schemas.Role
 
   schema "account_roles" do
-    belongs_to :account, ETitle.Accounts.Account
-    belongs_to :role, ETitle.Accounts.Role
+    belongs_to :account, Account
+    belongs_to :role, Role
     timestamps(type: :utc_datetime)
   end
 

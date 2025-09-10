@@ -4,13 +4,14 @@ defmodule ETitle.Accounts do
   """
 
   import Ecto.Query, warn: false
+
   alias ETitle.Repo
-
-  alias ETitle.Accounts.{Account, AccountToken, AccountNotifier}
-
-  alias ETitle.Accounts.User
-  alias ETitle.Accounts.Role
-  alias ETitle.Accounts.AccountRole
+  alias ETitle.Accounts.Services.AccountNotifier
+  alias ETitle.Accounts.Schemas.Account
+  alias ETitle.Accounts.Schemas.AccountRole
+  alias ETitle.Accounts.Schemas.AccountToken
+  alias ETitle.Accounts.Schemas.Role
+  alias ETitle.Accounts.Schemas.User
   ## Database getters
 
   @doc """
@@ -124,7 +125,7 @@ defmodule ETitle.Accounts do
   @doc """
   Returns an `%Ecto.Changeset{}` for changing the account email.
 
-  See `ETitle.Accounts.Account.email_changeset/3` for a list of supported options.
+  See `Title.Accounts.Schemas.Account.email_changeset/3` for a list of supported options.
 
   ## Examples
 
@@ -162,7 +163,7 @@ defmodule ETitle.Accounts do
   @doc """
   Returns an `%Ecto.Changeset{}` for changing the account password.
 
-  See `ETitle.Accounts.Account.password_changeset/3` for a list of supported options.
+  See `Title.Accounts.Schemas.Account.password_changeset/3` for a list of supported options.
 
   ## Examples
 

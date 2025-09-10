@@ -6,7 +6,7 @@ defmodule ETitle.AccountsFixtures do
 
   import Ecto.Query
 
-  alias ETitle.Accounts
+  alias ETitle.Accounts.Schemas.AccountToken
 
   def extract_account_token(fun) do
     {:ok, captured_email} = fun.(&"[TOKEN]#{&1}[TOKEN]")
@@ -16,7 +16,7 @@ defmodule ETitle.AccountsFixtures do
 
   def override_token_authenticated_at(token, authenticated_at) when is_binary(token) do
     ETitle.Repo.update_all(
-      from(t in Accounts.AccountToken,
+      from(t in AccountToken,
         where: t.token == ^token
       ),
       set: [authenticated_at: authenticated_at]
@@ -24,7 +24,7 @@ defmodule ETitle.AccountsFixtures do
   end
 
   def generate_account_magic_link_token(account) do
-    {encoded_token, account_token} = Accounts.AccountToken.build_email_token(account, "login")
+    {encoded_token, account_token} = AccountToken.build_email_token(account, "login")
     ETitle.Repo.insert!(account_token)
     {encoded_token, account_token.token}
   end
@@ -33,7 +33,7 @@ defmodule ETitle.AccountsFixtures do
     dt = DateTime.add(DateTime.utc_now(:second), amount_to_add, unit)
 
     ETitle.Repo.update_all(
-      from(ut in Accounts.AccountToken, where: ut.token == ^token),
+      from(ut in AccountToken, where: ut.token == ^token),
       set: [inserted_at: dt, authenticated_at: dt]
     )
   end

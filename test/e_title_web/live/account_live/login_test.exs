@@ -4,6 +4,8 @@ defmodule ETitleWeb.AccountLive.LoginTest do
   import Phoenix.LiveViewTest
   import ETitle.Factory
 
+  alias ETitle.Accounts.Schemas.AccountToken
+
   describe "login page" do
     test "renders login page", %{conn: conn} do
       {:ok, _lv, html} = live(conn, ~p"/accounts/log-in")
@@ -29,7 +31,7 @@ defmodule ETitleWeb.AccountLive.LoginTest do
 
       assert html =~ "If your email is in our system"
 
-      assert ETitle.Repo.get_by!(ETitle.Accounts.AccountToken, account_id: account.id).context ==
+      assert ETitle.Repo.get_by!(AccountToken, account_id: account.id).context ==
                "login"
     end
 

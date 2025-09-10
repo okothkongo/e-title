@@ -4,9 +4,11 @@ defmodule ETitle.AccountsTest do
   alias ETitle.Accounts
 
   import ETitle.AccountsFixtures
-  alias ETitle.Accounts.{Account, AccountToken}
-  alias ETitle.Accounts.AccountRole
   import ETitle.Factory
+  alias ETitle.Accounts.Schemas.Account
+  alias ETitle.Accounts.Schemas.AccountRole
+  alias ETitle.Accounts.Schemas.AccountToken
+  alias ETitle.Accounts.Schemas.Role
 
   @user_valid_attrs %{
     first_name: "John",
@@ -511,7 +513,7 @@ defmodule ETitle.AccountsTest do
 
     test "returns the role with the given id" do
       %{id: id} = role = insert(:role)
-      assert %ETitle.Accounts.Role{id: ^id} = Accounts.get_role(role.id)
+      assert %Role{id: ^id} = Accounts.get_role(role.id)
     end
   end
 

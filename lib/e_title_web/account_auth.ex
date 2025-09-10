@@ -8,7 +8,8 @@ defmodule ETitleWeb.AccountAuth do
   import Phoenix.Controller
 
   alias ETitle.Accounts
-  alias ETitle.Accounts.Scope
+  alias ETitle.Accounts.Schemas.Account
+  alias ETitle.Accounts.Schemas.Scope
 
   # Make the remember me cookie valid for 14 days. This should match
   # the session validity setting in AccountToken.
@@ -292,7 +293,7 @@ defmodule ETitleWeb.AccountAuth do
   @doc "Returns the path to redirect to after log in."
   # the account was already logged in, redirect to the appropriate dashboard
   def signed_in_path(
-        %Plug.Conn{assigns: %{current_scope: %Scope{account: %Accounts.Account{}}}},
+        %Plug.Conn{assigns: %{current_scope: %Scope{account: %Account{}}}},
         _account
       ) do
     ~p"/accounts/settings"

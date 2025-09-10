@@ -1,11 +1,12 @@
-defmodule ETitle.Accounts.AccountToken do
+defmodule ETitle.Accounts.Schemas.AccountToken do
   @moduledoc """
   Handles account tokens.
   """
 
   use Ecto.Schema
   import Ecto.Query
-  alias ETitle.Accounts.AccountToken
+  alias ETitle.Accounts.Schemas.Account
+  alias ETitle.Accounts.Schemas.AccountToken
 
   @hash_algorithm :sha256
   @rand_size 32
@@ -21,7 +22,7 @@ defmodule ETitle.Accounts.AccountToken do
     field :context, :string
     field :sent_to, :string
     field :authenticated_at, :utc_datetime
-    belongs_to :account, ETitle.Accounts.Account
+    belongs_to :account, Account
 
     timestamps(type: :utc_datetime, updated_at: false)
   end
