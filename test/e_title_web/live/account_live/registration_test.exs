@@ -4,7 +4,6 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
   import Phoenix.LiveViewTest
   import ETitle.Factory
   alias ETitle.Accounts.User
-  alias ETitle.Accounts.Scope
 
   describe "Registration page" do
     test "renders registration page", %{conn: conn} do

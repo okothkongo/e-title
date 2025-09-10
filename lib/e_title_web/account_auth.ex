@@ -251,15 +251,15 @@ defmodule ETitleWeb.AccountAuth do
   def on_mount(:require_authenticated_non_admin, _params, session, socket) do
     socket = mount_current_scope(socket, session)
 
-    if !admin?(socket.assigns.current_scope) do
-      {:cont, socket}
-    else
+    if admin?(socket.assigns.current_scope) do
       socket =
         socket
         |> Phoenix.LiveView.put_flash(:error, "You must log in to access this page.")
         |> Phoenix.LiveView.redirect(to: ~p"/accounts/log-in")
 
       {:halt, socket}
+    else
+      {:cont, socket}
     end
   end
 
@@ -333,14 +333,14 @@ defmodule ETitleWeb.AccountAuth do
   end
 
   def require_authenticated_non_admin_account(conn, _opts) do
-    if !admin?(conn.assigns.current_scope) do
-      conn
-    else
+    if admin?(conn.assigns.current_scope) do
       conn
       |> put_flash(:error, "Unathorized Access")
       |> maybe_store_return_to()
       |> redirect(to: ~p"/")
       |> halt()
+    else
+      conn
     end
   end
 
