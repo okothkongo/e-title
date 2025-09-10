@@ -10,6 +10,7 @@ defmodule ETitleWeb.Layouts do
   # skeleton of your application, namely HTML headers
   # and other static content.
   embed_templates "layouts/*"
+  alias ETitle.Accounts
 
   @doc """
    Renders the dashboard layout with sidebar navigation.
@@ -455,19 +456,19 @@ defmodule ETitleWeb.Layouts do
           >
             <div class="space-y-1 px-2">
               <a
-                href="#"
+                href={~p"/admin/dashboard"}
                 aria-current="page"
                 class="group flex items-center rounded-md bg-green-800 px-2 py-2 text-base font-medium text-white"
               >
                 <.icon name="hero-home" class="mr-4 size-6 shrink-0 text-green-200" /> Dashboard
               </a>
-              <a
-                href="#"
+
+              <.link
+                navigate={~p"/admin/users"}
                 class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
               >
-                <.icon name="hero-document-text" class="mr-4 size-6 shrink-0 text-green-200" />
-                Registrations
-              </a>
+                <.icon name="hero-document-text" class="mr-4 size-6 shrink-0 text-green-200" /> Users
+              </.link>
               <a
                 href="#"
                 class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
@@ -557,13 +558,14 @@ defmodule ETitleWeb.Layouts do
             >
               <.icon name="hero-home" class="mr-4 size-6 shrink-0 text-green-200" /> Dashboard
             </a>
-            <a
-              href="#"
-              class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
-            >
-              <.icon name="hero-document-text" class="mr-4 size-6 shrink-0 text-green-200" />
-              Registrations
-            </a>
+            <%= if Accounts.admin?(@current_scope.account) do %>
+              <.link
+                navigate={~p"/admin/users"}
+                class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
+              >
+                <.icon name="hero-document-text" class="mr-4 size-6 shrink-0 text-green-200" /> Users
+              </.link>
+            <% end %>
             <a
               href="#"
               class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"

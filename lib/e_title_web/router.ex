@@ -89,6 +89,7 @@ defmodule ETitleWeb.Router do
       ] do
       live "/dashboard", DashboardLive.Dashboard, :index
       live "/registries/new", RegistryLive.Form, :new
+      live "/users", UserLive.Index, :index
     end
   end
 
