@@ -87,6 +87,10 @@ defmodule ETitleWeb.Admin.DashboardLive.Dashboard do
     {:noreply, assign(socket, profile_menu_open: !socket.assigns[:profile_menu_open])}
   end
 
+  def handle_event("close_profile_menu", _params, socket) do
+    {:noreply, assign(socket, profile_menu_open: false)}
+  end
+
   def render(assigns) do
     ~H"""
     <Layouts.dashboard flash={@flash} current_scope={@current_scope}>

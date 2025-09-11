@@ -411,6 +411,9 @@ defmodule ETitleWeb.Layouts do
     """
   end
 
+  attr :current_scope, :map, default: nil
+  attr :profile_menu_open, :boolean, default: false
+
   def authenticated_navbar(assigns) do
     ~H"""
     <div
@@ -624,7 +627,10 @@ defmodule ETitleWeb.Layouts do
           <div class="relative">
             <button
               type="button"
-              phx-click="toggle_profile_menu"
+              id="profile-menu-button"
+              phx-click={JS.toggle(to: "#profile-menu-items")}
+              aria-haspopup="menu"
+              aria-controls="profile-menu-items"
               class="flex w-full items-center gap-x-4 px-2 py-2 text-sm/6 font-semibold text-white hover:bg-green-600 hover:text-white rounded-md"
             >
               <img
@@ -640,23 +646,35 @@ defmodule ETitleWeb.Layouts do
             </button>
 
             <div
-              :if={true}
-              class="absolute bottom-full left-0 z-10 mb-2 w-full overflow-hidden rounded-md bg-white shadow-lg"
+              id="profile-menu-items"
+              phx-click-away={JS.hide(to: "#profile-menu-items")}
+              phx-window-keydown={JS.hide(to: "#profile-menu-items")}
+              phx-key="escape"
+              class="hidden absolute bottom-full left-0 z-10 mb-2 w-full overflow-hidden rounded-md bg-white shadow-lg origin-bottom-left transition ease-out duration-150"
             >
-              <div class="py-1">
-                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+              <div class="py-1" role="menu" aria-label="Profile">
+                <a
+                  href="#"
+                  role="menuitem"
+                  tabindex="0"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-hidden"
+                >
                   Your Profile
                 </a>
                 <.link
                   href={~p"/accounts/settings"}
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  role="menuitem"
+                  tabindex="0"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-hidden"
                 >
                   Settings
                 </.link>
                 <.link
                   href={~p"/accounts/log-out"}
                   method="delete"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  role="menuitem"
+                  tabindex="0"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 focus:outline-hidden"
                 >
                   Sign out
                 </.link>

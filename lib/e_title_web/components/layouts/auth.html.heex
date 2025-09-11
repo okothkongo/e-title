@@ -31,7 +31,10 @@
     </script>
   </head>
   <body>
-    <.authenticated_navbar current_scope={@current_scope} />
+    <.authenticated_navbar
+      current_scope={@current_scope}
+      profile_menu_open={assigns[:profile_menu_open] || false}
+    />
     {@inner_content}
   </body>
 </html>
