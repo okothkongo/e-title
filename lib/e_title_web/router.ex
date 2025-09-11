@@ -90,6 +90,7 @@ defmodule ETitleWeb.Router do
       live "/dashboard", DashboardLive.Dashboard, :index
       live "/registries/new", RegistryLive.Form, :new
       live "/users", UserLive.Index, :index
+      live "/accounts", AccountLive.Index, :index
     end
   end
 

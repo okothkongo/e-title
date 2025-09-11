@@ -566,4 +566,40 @@ defmodule ETitle.AccountsTest do
     user = insert(:user)
     assert Accounts.list_users() == [user]
   end
+
+  test "list_accounts_with_user_and_role/0 returns all accounts with user and role in order of type and role" do
+    land_registry_clerk =
+      insert(:account,
+        type: :staff,
+        account_role: insert(:account_role, role: insert(:role, name: "land_registry_clerk"))
+      )
+
+    citizen = insert(:account, type: :citizen, account_role: insert(:account_role))
+
+    surveyor =
+      insert(:account,
+        type: :professional,
+        account_role: insert(:account_role, role: insert(:role, name: "surveyor"))
+      )
+
+    lawyer =
+      insert(:account,
+        type: :professional,
+        account_role: insert(:account_role, role: insert(:role, name: "lawyer"))
+      )
+
+    land_registrar =
+      insert(:account,
+        type: :staff,
+        account_role: insert(:account_role, role: insert(:role, name: "land_registrar"))
+      )
+
+    assert Accounts.list_accounts_with_user_and_role() == [
+             citizen,
+             lawyer,
+             surveyor,
+             land_registrar,
+             land_registry_clerk
+           ]
+  end
 end

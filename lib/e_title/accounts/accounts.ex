@@ -349,4 +349,19 @@ defmodule ETitle.Accounts do
   def list_users do
     Repo.all(User)
   end
+
+  def list_accounts_with_user_and_role do
+    query =
+      from a in Account,
+        join: u in User,
+        on: a.user_id == u.id,
+        join: ar in AccountRole,
+        on: a.id == ar.account_id,
+        join: r in Role,
+        on: ar.role_id == r.id,
+        preload: [user: u, account_role: {ar, role: r}],
+        order_by: [asc: a.type, asc: r.name]
+
+    Repo.all(query)
+  end
 end
