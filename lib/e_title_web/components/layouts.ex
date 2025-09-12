@@ -178,7 +178,7 @@ defmodule ETitleWeb.Layouts do
               </a>
             </div>
           </div>
-          
+
     <!-- Quick Links -->
           <div>
             <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Quick Links</h3>
@@ -233,7 +233,7 @@ defmodule ETitleWeb.Layouts do
               </li>
             </ul>
           </div>
-          
+
     <!-- Services -->
           <div>
             <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Services</h3>
@@ -316,7 +316,7 @@ defmodule ETitleWeb.Layouts do
               <span class="text-lg sm:text-2xl font-bold text-green-800">E-Title</span>
             </div>
           </div>
-          
+
     <!-- Desktop Navigation -->
           <div class="hidden lg:flex items-center space-x-6 xl:space-x-8">
             <.link
@@ -350,7 +350,7 @@ defmodule ETitleWeb.Layouts do
               Login
             </.link>
           </div>
-          
+
     <!-- Mobile Menu Button -->
           <div class="lg:hidden">
             <button
@@ -369,7 +369,7 @@ defmodule ETitleWeb.Layouts do
           </div>
         </div>
       </div>
-      
+
     <!-- Mobile Menu -->
       <div
         id="mobile-menu"
@@ -471,13 +471,13 @@ defmodule ETitleWeb.Layouts do
               >
                 <.icon name="hero-document-text" class="mr-4 size-6 shrink-0 text-green-200" /> Users
               </.link>
-              <a
-                href="#"
+              <.link
+                navigate={~p"/admin/registries"}
                 class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
               >
                 <.icon name="hero-magnifying-glass" class="mr-4 size-6 shrink-0 text-green-200" />
-                Search
-              </a>
+                Registries
+              </.link>
               <a
                 href="#"
                 class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
@@ -568,13 +568,13 @@ defmodule ETitleWeb.Layouts do
               <.icon name="hero-document-text" class="mr-4 size-6 shrink-0 text-green-200" /> Users
             </.link>
 
-            <a
-              href="#"
+            <.link
+              navigate={~p"/admin/registries"}
               class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
             >
               <.icon name="hero-magnifying-glass" class="mr-4 size-6 shrink-0 text-green-200" />
-              Search
-            </a>
+              Registries
+            </.link>
             <a
               href="#"
               class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"

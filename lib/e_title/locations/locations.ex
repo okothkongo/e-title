@@ -48,4 +48,17 @@ defmodule ETitle.Locations do
   def list_sub_counties_by_county_id(county_id) do
     Repo.all(from s in SubCounty, where: s.county_id == ^county_id)
   end
+
+  def list_registry_with_county_and_sub_county do
+    query =
+      from registry in Registry,
+        join: county in County,
+        on: registry.county_id == county.id,
+        join: sub_county in SubCounty,
+        on: registry.sub_county_id == sub_county.id,
+        preload: [county: county, sub_county: sub_county],
+        order_by: [asc: county.name, asc: sub_county.name, asc: registry.name]
+
+    Repo.all(query)
+  end
 end

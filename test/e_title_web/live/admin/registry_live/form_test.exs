@@ -1,4 +1,4 @@
-defmodule ETitleWeb.RegistryLiveTest do
+defmodule ETitleWeb.Admin.RegistryLive.FormTest do
   use ETitleWeb.ConnCase
 
   import Phoenix.LiveViewTest
