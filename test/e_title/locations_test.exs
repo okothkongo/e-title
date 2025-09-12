@@ -53,4 +53,21 @@ defmodule ETitle.LocationsTest do
              sub_county2
            ]
   end
+
+  test "list_registry_with_county_and_sub_county/0 returns all registries with county and sub county" do
+    kakamega_county = insert(:county, name: "Kakamega")
+    nairobi_county = insert(:county, name: "Nairobi")
+    westlands_sub_county = insert(:sub_county, county: nairobi_county, name: "Westlands")
+    shinyalu_sub_county = insert(:sub_county, county: kakamega_county, name: "Shinyalu")
+    umoja_sub_county = insert(:sub_county, county: nairobi_county, name: "Umoja")
+    tinjui_sub_county = insert(:sub_county, county: kakamega_county, name: "Tinjui")
+
+    registry1 = insert(:registry, county: kakamega_county, sub_county: tinjui_sub_county)
+    registry2 = insert(:registry, county: nairobi_county, sub_county: westlands_sub_county)
+    registry3 = insert(:registry, county: nairobi_county, sub_county: umoja_sub_county)
+    registry4 = insert(:registry, county: kakamega_county, sub_county: shinyalu_sub_county)
+
+    registries = Locations.list_registry_with_county_and_sub_county() |> Enum.map(& &1.name)
+    assert registries == [registry4.name, registry1.name, registry3.name, registry2.name]
+  end
 end
