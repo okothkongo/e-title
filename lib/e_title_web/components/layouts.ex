@@ -178,7 +178,7 @@ defmodule ETitleWeb.Layouts do
               </a>
             </div>
           </div>
-
+          
     <!-- Quick Links -->
           <div>
             <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Quick Links</h3>
@@ -233,7 +233,7 @@ defmodule ETitleWeb.Layouts do
               </li>
             </ul>
           </div>
-
+          
     <!-- Services -->
           <div>
             <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Services</h3>
@@ -316,7 +316,7 @@ defmodule ETitleWeb.Layouts do
               <span class="text-lg sm:text-2xl font-bold text-green-800">E-Title</span>
             </div>
           </div>
-
+          
     <!-- Desktop Navigation -->
           <div class="hidden lg:flex items-center space-x-6 xl:space-x-8">
             <.link
@@ -350,7 +350,7 @@ defmodule ETitleWeb.Layouts do
               Login
             </.link>
           </div>
-
+          
     <!-- Mobile Menu Button -->
           <div class="lg:hidden">
             <button
@@ -369,7 +369,7 @@ defmodule ETitleWeb.Layouts do
           </div>
         </div>
       </div>
-
+      
     <!-- Mobile Menu -->
       <div
         id="mobile-menu"
