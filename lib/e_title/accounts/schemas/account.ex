@@ -19,6 +19,7 @@ defmodule ETitle.Accounts.Schemas.Account do
     field :type, Ecto.Enum, values: @account_types, default: :citizen
     field :confirmed_at, :utc_datetime
     field :authenticated_at, :utc_datetime, virtual: true
+    field :status, Ecto.Enum, values: ~w(active inactive)a, default: :active
     belongs_to :user, User
     has_one :account_role, AccountRole
     timestamps(type: :utc_datetime)
@@ -37,10 +38,10 @@ defmodule ETitle.Accounts.Schemas.Account do
   """
   def email_changeset(account, attrs, opts \\ []) do
     account
-    |> cast(attrs, [:email, :phone_number, :type])
+    |> cast(attrs, [:email, :phone_number, :type, :status])
     |> validate_email(opts)
     |> validate_phone_number()
-    |> validate_required([:type])
+    |> validate_required([:type, :status])
   end
 
   defp validate_email(changeset, opts) do

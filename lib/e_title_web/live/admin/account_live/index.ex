@@ -37,6 +37,9 @@ defmodule ETitleWeb.Admin.AccountLive.Index do
                   <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
                     Confirmed At
                   </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
+                    Status
+                  </th>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-green-200">
@@ -57,6 +60,9 @@ defmodule ETitleWeb.Admin.AccountLive.Index do
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {account.confirmed_at || "Not confirmed"}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {account.status}
                     </td>
                   </tr>
                 <% end %>
