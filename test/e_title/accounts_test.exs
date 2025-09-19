@@ -602,4 +602,23 @@ defmodule ETitle.AccountsTest do
              land_registry_clerk
            ]
   end
+
+  describe "create_account/1" do
+    test "creates account with valid data" do
+      user = insert(:user)
+      valid_attrs = %{email: "test@example.com", phone_number: "254712345678", user_id: user.id}
+
+      assert {:ok, account} = Accounts.create_account(valid_attrs)
+      assert account.email == valid_attrs.email
+      assert account.phone_number == valid_attrs.phone_number
+      assert account.user_id == valid_attrs.user_id
+    end
+
+    test "fails to create account with invalid data" do
+      assert {:error, changeset} = Accounts.create_account(%{email: "invalid"})
+
+      assert %{email: ["must have the @ sign and no spaces"], phone_number: ["can't be blank"]} =
+               errors_on(changeset)
+    end
+  end
 end
