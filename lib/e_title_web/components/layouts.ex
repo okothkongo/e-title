@@ -478,15 +478,15 @@ defmodule ETitleWeb.Layouts do
                 <.icon name="hero-magnifying-glass" class="mr-4 size-6 shrink-0 text-green-200" />
                 Registries
               </.link>
-              <a
-                href="#"
+              <.link
+                navigate={~p"/admin/accounts"}
                 class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
               >
                 <.icon
                   name="hero-arrow-right-arrow-left"
                   class="mr-4 size-6 shrink-0 text-green-200"
-                /> Transfers
-              </a>
+                /> Accounts
+              </.link>
               <a
                 href="#"
                 class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
@@ -575,15 +575,15 @@ defmodule ETitleWeb.Layouts do
               <.icon name="hero-magnifying-glass" class="mr-4 size-6 shrink-0 text-green-200" />
               Registries
             </.link>
-            <a
-              href="#"
-              class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
+            <.link
+              navigate={~p"/admin/accounts"}
+              class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
             >
               <.icon
                 name="hero-arrow-right-arrow-left"
                 class="mr-4 size-6 shrink-0 text-green-200"
-              /> Transfers
-            </a>
+              /> Accounts
+            </.link>
             <a
               href="#"
               class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"

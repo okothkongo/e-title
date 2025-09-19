@@ -187,7 +187,7 @@ defmodule ETitle.AccountsTest do
   describe "change_account_email/3" do
     test "returns a account changeset" do
       assert %Ecto.Changeset{} = changeset = Accounts.change_account_email(%Account{})
-      assert changeset.required == [:type, :phone_number, :email]
+      assert changeset.required == [:type, :status, :phone_number, :email]
     end
   end
 
