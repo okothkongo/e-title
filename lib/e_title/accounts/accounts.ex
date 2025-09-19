@@ -364,4 +364,10 @@ defmodule ETitle.Accounts do
 
     Repo.all(query)
   end
+
+  def update_account(%Account{} = account, attrs) do
+    account
+    |> Account.update_changeset(attrs)
+    |> Repo.update()
+  end
 end

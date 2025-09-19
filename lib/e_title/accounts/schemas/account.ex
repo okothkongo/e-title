@@ -44,6 +44,13 @@ defmodule ETitle.Accounts.Schemas.Account do
     |> validate_required([:type, :status])
   end
 
+  def update_changeset(account, attrs) do
+    account
+    |> cast(attrs, [:email, :phone_number, :type, :status])
+    |> validate_phone_number()
+    |> validate_required([:type, :status, :phone_number, :email])
+  end
+
   defp validate_email(changeset, opts) do
     changeset =
       changeset
