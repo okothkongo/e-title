@@ -117,7 +117,7 @@ defmodule ETitleWeb.Admin.AccountLive.Index do
     {:ok, _account} =
       Accounts.update_account(account, %{status: :inactive})
 
-    {:noreply, stream_insert(socket, :accounts, account) |> push_patch(to: ~p"/admin/accounts")}
+    {:noreply, socket |> stream_insert(:accounts, account) |> push_patch(to: ~p"/admin/accounts")}
   end
 
   def handle_event("activate", %{"id" => id}, socket) do
@@ -126,6 +126,6 @@ defmodule ETitleWeb.Admin.AccountLive.Index do
     {:ok, account} =
       Accounts.update_account(account, %{status: :active})
 
-    {:noreply, stream_insert(socket, :accounts, account) |> push_patch(to: ~p"/admin/accounts")}
+    {:noreply, socket |> stream_insert(:accounts, account) |> push_patch(to: ~p"/admin/accounts")}
   end
 end
