@@ -138,7 +138,8 @@ defmodule ETitleWeb.Admin.AccountLive.Form do
   end
 
   defp list_roles_option(type) do
-    Accounts.get_active_roles_by_type(type)
+    type
+    |> Accounts.get_active_roles_by_type()
     |> Enum.reject(&(&1.name == "admin"))
     |> Enum.map(&{&1.name, &1.id})
   end
