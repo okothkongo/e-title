@@ -2,7 +2,7 @@ defmodule ETitleWeb.LandLive.Form do
   use ETitleWeb, :live_view
 
   alias ETitle.Lands
-  alias ETitle.Lands.Land
+  alias ETitle.Lands.Schemas.Land
 
   @impl true
   def render(assigns) do

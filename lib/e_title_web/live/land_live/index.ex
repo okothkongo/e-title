@@ -64,7 +64,7 @@ defmodule ETitleWeb.LandLive.Index do
   end
 
   @impl true
-  def handle_info({type, %ETitle.Lands.Land{}}, socket)
+  def handle_info({type, %ETitle.Lands.Schemas.Land{}}, socket)
       when type in [:created, :updated, :deleted] do
     {:noreply, stream(socket, :lands, list_lands(socket.assigns.current_scope), reset: true)}
   end

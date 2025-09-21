@@ -1,4 +1,4 @@
-defmodule ETitle.Lands.Land do
+defmodule ETitle.Lands.Schemas.Land do
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -8,7 +8,6 @@ defmodule ETitle.Lands.Land do
     field :gps_cordinates, :string
     field :account_id, :id
     field :registry_id, :id
-
 
     timestamps(type: :utc_datetime)
   end

@@ -9,7 +9,6 @@ defmodule ETitle.Repo.Migrations.CreateLands do
       add :account_id, references(:accounts, on_delete: :nothing)
       add :registry_id, references(:registries, on_delete: :nothing)
 
-
       timestamps(type: :utc_datetime)
     end
 

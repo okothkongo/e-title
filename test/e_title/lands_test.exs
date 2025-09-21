@@ -4,7 +4,7 @@ defmodule ETitle.LandsTest do
   alias ETitle.Lands
 
   describe "lands" do
-    alias ETitle.Lands.Land
+    alias ETitle.Lands.Schemas.Land
 
     import ETitle.AccountsFixtures, only: [account_scope_fixture: 0]
     import ETitle.LandsFixtures

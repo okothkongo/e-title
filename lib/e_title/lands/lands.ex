@@ -6,7 +6,7 @@ defmodule ETitle.Lands do
   import Ecto.Query, warn: false
   alias ETitle.Repo
 
-  alias ETitle.Lands.Land
+  alias ETitle.Lands.Schemas.Land
   alias ETitle.Accounts.Schemas.Scope
 
   @doc """

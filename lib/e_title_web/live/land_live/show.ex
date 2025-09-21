@@ -43,14 +43,14 @@ defmodule ETitleWeb.LandLive.Show do
 
   @impl true
   def handle_info(
-        {:updated, %ETitle.Lands.Land{id: id} = land},
+        {:updated, %ETitle.Lands.Schemas.Land{id: id} = land},
         %{assigns: %{land: %{id: id}}} = socket
       ) do
     {:noreply, assign(socket, :land, land)}
   end
 
   def handle_info(
-        {:deleted, %ETitle.Lands.Land{id: id}},
+        {:deleted, %ETitle.Lands.Schemas.Land{id: id}},
         %{assigns: %{land: %{id: id}}} = socket
       ) do
     {:noreply,
@@ -59,7 +59,7 @@ defmodule ETitleWeb.LandLive.Show do
      |> push_navigate(to: ~p"/lands")}
   end
 
-  def handle_info({type, %ETitle.Lands.Land{}}, socket)
+  def handle_info({type, %ETitle.Lands.Schemas.Land{}}, socket)
       when type in [:created, :updated, :deleted] do
     {:noreply, socket}
   end
