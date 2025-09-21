@@ -50,9 +50,10 @@ defmodule ETitleWeb.Admin.AccountLive.IndexTest do
 
   describe "create account" do
     @invalid_attrs %{email: nil, phone_number: nil, type: nil}
-    #
 
     test "save new account", %{conn: conn} do
+      role = insert(:role, name: "land_registrar", type: :staff, status: :active)
+
       admin =
         insert(:account,
           type: :staff,
@@ -84,7 +85,8 @@ defmodule ETitleWeb.Admin.AccountLive.IndexTest do
                  "account" => %{
                    email: "test@test.com",
                    phone_number: "254712345678",
-                   user_id_no: user.identity_doc_no
+                   user_id_no: user.identity_doc_no,
+                   role_id: role.id
                  }
                })
                |> render_submit()

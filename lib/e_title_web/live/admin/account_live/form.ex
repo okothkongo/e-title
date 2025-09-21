@@ -25,6 +25,14 @@ defmodule ETitleWeb.Admin.AccountLive.Form do
           placeholder="Enter user identity document number to link user"
           required
         />
+        <.input
+          field={@form[:role_id]}
+          type="select"
+          label="Account Role"
+          placeholder="Select account role"
+          options={[{"Select Role", ""}] ++ list_roles_option("staff")}
+          required
+        />
         <%= if @user do %>
           <.input
             field={@form[:user_name]}
@@ -96,6 +104,9 @@ defmodule ETitleWeb.Admin.AccountLive.Form do
   defp save_account(socket, :new, account_params) do
     case Accounts.create_account(account_params) do
       {:ok, account} ->
+        role_id = account_params["role_id"]
+        send_login_instructions_and_create_account_role(account, role_id)
+
         {:noreply,
          socket
          |> put_flash(:info, "Account created successfully")
@@ -124,5 +135,21 @@ defmodule ETitleWeb.Admin.AccountLive.Form do
 
   defp add_user_document_number_errors(changeset, _user_id_no, nil) do
     Ecto.Changeset.add_error(changeset, :user_id_no, "No user with this identity document number")
+  end
+
+  defp list_roles_option(type) do
+    Accounts.get_active_roles_by_type(type)
+    |> Enum.reject(&(&1.name == "admin"))
+    |> Enum.map(&{&1.name, &1.id})
+  end
+
+  def send_login_instructions_and_create_account_role(account, role_id) do
+    {:ok, _} = Accounts.create_account_role(%{account_id: account.id, role_id: role_id})
+
+    {:ok, _} =
+      Accounts.deliver_login_instructions(
+        account,
+        &url(~p"/accounts/log-in/#{&1}")
+      )
   end
 end

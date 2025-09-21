@@ -380,4 +380,9 @@ defmodule ETitle.Accounts do
     |> Account.update_changeset(attrs)
     |> Repo.update()
   end
+
+  def get_active_roles_by_type(type) do
+    query = from r in Role, where: r.type == ^type and r.status == :active, order_by: r.name
+    Repo.all(query)
+  end
 end

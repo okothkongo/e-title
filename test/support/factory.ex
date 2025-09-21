@@ -42,7 +42,10 @@ defmodule ETitle.Factory do
 
   def role_factory do
     %Role{
-      name: "user"
+      name: "user",
+      type: :citizen,
+      description: "A standard user role",
+      status: :active
     }
   end
 
