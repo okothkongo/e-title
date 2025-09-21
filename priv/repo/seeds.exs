@@ -17,11 +17,19 @@ alias ETitle.Accounts.Schemas.Role
 alias ETitle.Accounts.Schemas.User
 alias ETitle.Locations.Schemas.County
 
-for role_name <-
-      ~w[user lawyer land_registrar surveyor land_registry_clerk land_board_chair land_board_clerk admin] do
-  unless Repo.get_by(Role, name: role_name) do
-    Repo.insert!(%Role{name: role_name})
-  end
+role_types_and_names = [
+  {:staff, "admin"},
+  {:staff, "land_registrar"},
+  {:staff, "land_registry_clerk"},
+  {:staff, "land_board_chair"},
+  {:staff, "land_board_clerk"},
+  {:professional, "lawyer"},
+  {:professional, "surveyor"},
+  {:citizen, "user"}
+]
+
+for {type, role_name} <- role_types_and_names do
+  Repo.insert!(%Role{name: role_name, type: type, status: :active})
 end
 
 admin_role = ETitle.Accounts.get_role_by_name("admin")

@@ -38,7 +38,7 @@ defmodule ETitle.Accounts.Schemas.Account do
   """
   def email_changeset(account, attrs, opts \\ []) do
     account
-    |> cast(attrs, [:email, :phone_number, :type, :status])
+    |> cast(attrs, [:email, :phone_number, :type, :status, :user_id])
     |> validate_email(opts)
     |> validate_phone_number()
     |> validate_required([:type, :status])
@@ -84,6 +84,7 @@ defmodule ETitle.Accounts.Schemas.Account do
     |> validate_format(:phone_number, ~r/^254[0-9]{9}$/,
       message: "must be a valid Kenyan phone number starting with 254"
     )
+    |> unique_constraint(:phone_number)
   end
 
   @doc """

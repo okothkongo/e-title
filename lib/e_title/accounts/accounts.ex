@@ -106,6 +106,10 @@ defmodule ETitle.Accounts do
     Repo.get(User, id)
   end
 
+  def get_user_by_identity_document(identity_document) do
+    Repo.get_by(User, identity_doc_no: identity_document)
+  end
+
   ## Settings
 
   @doc """
@@ -135,6 +139,12 @@ defmodule ETitle.Accounts do
   """
   def change_account_email(account, attrs \\ %{}, opts \\ []) do
     Account.email_changeset(account, attrs, opts)
+  end
+
+  def create_account(attrs) do
+    %Account{}
+    |> Account.email_changeset(attrs)
+    |> Repo.insert()
   end
 
   @doc """
@@ -369,5 +379,10 @@ defmodule ETitle.Accounts do
     account
     |> Account.update_changeset(attrs)
     |> Repo.update()
+  end
+
+  def get_active_roles_by_type(type) do
+    query = from r in Role, where: r.type == ^type and r.status == :active, order_by: r.name
+    Repo.all(query)
   end
 end

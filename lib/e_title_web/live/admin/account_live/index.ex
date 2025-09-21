@@ -15,7 +15,16 @@ defmodule ETitleWeb.Admin.AccountLive.Index do
     <div class="min-h-full">
       <div class="flex flex-1 flex-col lg:pl-64">
         <div class="p-6">
-          <h1 class="text-2xl font-bold mb-6 text-green-700 text-center">User Accounts</h1>
+          <div class="relative flex justify-center items-center mb-6">
+            <.header>
+              <h1 class="text-2xl font-bold text-green-700">User Accounts</h1>
+              <:actions>
+                <.link navigate={~p"/admin/accounts/new"}>
+                  <.button>Create Account</.button>
+                </.link>
+              </:actions>
+            </.header>
+          </div>
 
           <div class="overflow-x-auto bg-white rounded-lg shadow-md">
             <.table
