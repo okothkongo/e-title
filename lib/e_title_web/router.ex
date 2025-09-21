@@ -73,6 +73,10 @@ defmodule ETitleWeb.Router do
       on_mount: [{ETitleWeb.AccountAuth, :require_authenticated}] do
       live "/accounts/settings", AccountLive.Settings, :edit
       live "/accounts/settings/confirm-email/:token", AccountLive.Settings, :confirm_email
+      live "/lands", LandLive.Index, :index
+      live "/lands/new", LandLive.Form, :new
+      live "/lands/:id", LandLive.Show, :show
+      live "/lands/:id/edit", LandLive.Form, :edit
     end
 
     post "/accounts/update-password", AccountSessionController, :update_password
