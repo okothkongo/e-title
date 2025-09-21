@@ -3,6 +3,7 @@ defmodule ETitleWeb.LandLive.Form do
 
   alias ETitle.Lands
   alias ETitle.Lands.Schemas.Land
+  # alias ETitle.Locations
 
   @impl true
   def render(assigns) do
@@ -17,6 +18,26 @@ defmodule ETitleWeb.LandLive.Form do
         <.input field={@form[:title_number]} type="text" label="Title number" />
         <.input field={@form[:size]} type="number" label="Size" step="any" />
         <.input field={@form[:gps_cordinates]} type="text" label="Gps cordinates" />
+        <.input
+          field={@form[:county_id]}
+          type="select"
+          label="County"
+          options={[{"Select County", ""}] ++ list_county_options()}
+          phx-change="county_selected"
+        />
+        <.input
+          field={@form[:sub_county_id]}
+          type="select"
+          label="Sub County"
+          options={[{"Select Sub County", ""}] ++ @sub_counties}
+          phx-change="subcounty_selected"
+        />
+        <.input
+          field={@form[:registry_id]}
+          type="select"
+          label="Registry"
+          options={[{"Select Registry", ""}] ++ @registries}
+        />
         <footer>
           <.button phx-disable-with="Saving..." variant="primary">Save Land</.button>
           <.button navigate={return_path(@current_scope, @return_to, @land)}>Cancel</.button>
@@ -31,6 +52,8 @@ defmodule ETitleWeb.LandLive.Form do
     {:ok,
      socket
      |> assign(:return_to, return_to(params["return_to"]))
+     |> assign(:sub_counties, [])
+     |> assign(:registries, [])
      |> apply_action(socket.assigns.live_action, params)}
   end
 
@@ -56,6 +79,16 @@ defmodule ETitleWeb.LandLive.Form do
   end
 
   @impl true
+  def handle_event("county_selected", %{"land" => %{"county_id" => county_id}}, socket) do
+    sub_counties = list_sub_counties_options(county_id)
+    {:noreply, assign(socket, sub_counties: sub_counties)}
+  end
+
+  def handle_event("subcounty_selected", %{"land" => %{"sub_county_id" => subcounty_id}}, socket) do
+    registries = list_subcount_registries_options(subcounty_id)
+    {:noreply, assign(socket, registries: registries)}
+  end
+
   def handle_event("validate", %{"land" => land_params}, socket) do
     changeset = Lands.change_land(socket.assigns.current_scope, socket.assigns.land, land_params)
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
@@ -97,4 +130,21 @@ defmodule ETitleWeb.LandLive.Form do
 
   defp return_path(_scope, "index", _land), do: ~p"/lands"
   defp return_path(_scope, "show", land), do: ~p"/lands/#{land}"
+
+  defp list_county_options do
+    ETitle.Locations.list_counties()
+    |> Enum.map(&{&1.name, &1.id})
+  end
+
+  defp list_sub_counties_options(county_id) do
+    county_id
+    |> ETitle.Locations.list_sub_counties_by_county_id()
+    |> Enum.map(&{&1.name, &1.id})
+  end
+
+  defp list_subcount_registries_options(subcounty_id) do
+    subcounty_id
+    |> ETitle.Locations.list_registries_by_subcount_id()
+    |> Enum.map(&{&1.name, &1.id})
+  end
 end

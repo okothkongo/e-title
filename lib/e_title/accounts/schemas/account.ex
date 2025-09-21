@@ -8,6 +8,7 @@ defmodule ETitle.Accounts.Schemas.Account do
 
   alias ETitle.Accounts.Schemas.AccountRole
   alias ETitle.Accounts.Schemas.User
+  alias ETitle.Lands.Schemas.Land
 
   @account_types ~w(citizen staff professional)a
 
@@ -22,6 +23,7 @@ defmodule ETitle.Accounts.Schemas.Account do
     field :status, Ecto.Enum, values: ~w(active inactive)a, default: :active
     belongs_to :user, User
     has_one :account_role, AccountRole
+    has_many :lands, Land
     timestamps(type: :utc_datetime)
   end
 

@@ -11,6 +11,8 @@ defmodule ETitle.Factory do
   alias ETitle.Locations.Schemas.County
   alias ETitle.Locations.Schemas.Registry
   alias ETitle.Locations.Schemas.SubCounty
+  alias ETitle.Lands.Schemas.Land
+  alias ETitle.Accounts.Schemas.Scope
 
   def user_factory do
     %User{
@@ -78,6 +80,22 @@ defmodule ETitle.Factory do
       email: sequence("registry_email", &"registry_#{&1}@example.com"),
       county: build(:county),
       sub_county: build(:sub_county)
+    }
+  end
+
+  def land_factory do
+    %Land{
+      title_number: "89",
+      size: 2.2,
+      gps_cordinates: "89,78",
+      account: build(:account),
+      registry: build(:registry)
+    }
+  end
+
+  def account_scope_factory do
+    %Scope{
+      account: build(:account)
     }
   end
 end

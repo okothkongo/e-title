@@ -6,6 +6,7 @@ defmodule ETitle.Locations.Schemas.Registry do
   import Ecto.Changeset
   alias ETitle.Locations.Schemas.County
   alias ETitle.Locations.Schemas.SubCounty
+  alias ETitle.Lands.Schemas.Land
 
   schema "registries" do
     field :name, :string
@@ -13,6 +14,7 @@ defmodule ETitle.Locations.Schemas.Registry do
     field :email, :string
     belongs_to :county, County
     belongs_to :sub_county, SubCounty
+    has_many :lands, Land
     timestamps(type: :utc_datetime)
   end
 
