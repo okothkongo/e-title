@@ -53,8 +53,8 @@ defmodule ETitleWeb.LandLive.Index do
               </:col>
 
               <:col
-                :if={ETitle.Accounts.account_has_role?(@current_scope.account, "admin")}
                 :let={{_id, land}}
+                :if={ETitle.Accounts.account_has_role?(@current_scope.account, "admin")}
                 label="Owner"
                 class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider"
               >

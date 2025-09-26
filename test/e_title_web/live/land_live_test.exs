@@ -22,8 +22,11 @@ defmodule ETitleWeb.LandLiveTest do
 
     test "lists all lands for admin users", %{conn: conn} do
       # Create roles if they don't exist
-      admin_role = ETitle.Accounts.get_role_by_name("admin") || insert(:role, name: "admin", type: :staff)
-      user_role = ETitle.Accounts.get_role_by_name("user") || insert(:role, name: "user", type: :citizen)
+      admin_role =
+        ETitle.Accounts.get_role_by_name("admin") || insert(:role, name: "admin", type: :staff)
+
+      user_role =
+        ETitle.Accounts.get_role_by_name("user") || insert(:role, name: "user", type: :citizen)
 
       # Create an admin account
       account = insert(:account, type: :staff)
@@ -54,7 +57,10 @@ defmodule ETitleWeb.LandLiveTest do
       # Create another user with their own land
       other_user = insert(:user)
       other_account = insert(:account, user: other_user, type: :citizen)
-      user_role = ETitle.Accounts.get_role_by_name("user") || insert(:role, name: "user", type: :citizen)
+
+      user_role =
+        ETitle.Accounts.get_role_by_name("user") || insert(:role, name: "user", type: :citizen)
+
       insert(:account_role, account: other_account, role: user_role)
       other_land = insert(:land, account: other_account)
 
@@ -198,8 +204,11 @@ defmodule ETitleWeb.LandLiveTest do
 
     test "admin can delete any land", %{conn: conn} do
       # Create roles if they don't exist
-      admin_role = ETitle.Accounts.get_role_by_name("admin") || insert(:role, name: "admin", type: :staff)
-      user_role = ETitle.Accounts.get_role_by_name("user") || insert(:role, name: "user", type: :citizen)
+      admin_role =
+        ETitle.Accounts.get_role_by_name("admin") || insert(:role, name: "admin", type: :staff)
+
+      user_role =
+        ETitle.Accounts.get_role_by_name("user") || insert(:role, name: "user", type: :citizen)
 
       # Create an admin account
       admin_account = insert(:account, type: :staff)
@@ -222,7 +231,10 @@ defmodule ETitleWeb.LandLiveTest do
       # Create another user with their own land
       other_user = insert(:user)
       other_account = insert(:account, user: other_user, type: :citizen)
-      user_role = ETitle.Accounts.get_role_by_name("user") || insert(:role, name: "user", type: :citizen)
+
+      user_role =
+        ETitle.Accounts.get_role_by_name("user") || insert(:role, name: "user", type: :citizen)
+
       insert(:account_role, account: other_account, role: user_role)
       other_land = insert(:land, account: other_account)
 
@@ -243,8 +255,11 @@ defmodule ETitleWeb.LandLiveTest do
 
     test "displays land with owner info for admin users", %{conn: conn} do
       # Create roles if they don't exist
-      admin_role = ETitle.Accounts.get_role_by_name("admin") || insert(:role, name: "admin", type: :staff)
-      user_role = ETitle.Accounts.get_role_by_name("user") || insert(:role, name: "user", type: :citizen)
+      admin_role =
+        ETitle.Accounts.get_role_by_name("admin") || insert(:role, name: "admin", type: :staff)
+
+      user_role =
+        ETitle.Accounts.get_role_by_name("user") || insert(:role, name: "user", type: :citizen)
 
       # Create an admin account
       admin_account = insert(:account, type: :staff)
@@ -270,7 +285,10 @@ defmodule ETitleWeb.LandLiveTest do
       # Create another user with their own land
       other_user = insert(:user)
       other_account = insert(:account, user: other_user, type: :citizen)
-      user_role = ETitle.Accounts.get_role_by_name("user") || insert(:role, name: "user", type: :citizen)
+
+      user_role =
+        ETitle.Accounts.get_role_by_name("user") || insert(:role, name: "user", type: :citizen)
+
       insert(:account_role, account: other_account, role: user_role)
       other_land = insert(:land, account: other_account)
 

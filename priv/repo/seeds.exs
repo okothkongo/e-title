@@ -10,12 +10,17 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 
+import Ecto.Query, warn: false
 alias ETitle.Repo
 alias ETitle.Accounts.Schemas.Account
 alias ETitle.Accounts.Schemas.AccountRole
 alias ETitle.Accounts.Schemas.Role
 alias ETitle.Accounts.Schemas.User
 alias ETitle.Locations.Schemas.County
+alias ETitle.Locations.Schemas.Registry
+alias ETitle.Locations.Schemas.SubCounty
+alias ETitle.Lands.Schemas.Land
+alias ETitle.Accounts.Schemas.Scope
 
 role_types_and_names = [
   {:staff, "admin"},
@@ -29,24 +34,44 @@ role_types_and_names = [
 ]
 
 for {type, role_name} <- role_types_and_names do
-  Repo.insert!(%Role{name: role_name, type: type, status: :active})
+  case Repo.get_by(Role, name: role_name, type: type) do
+    nil -> Repo.insert!(%Role{name: role_name, type: type, status: :active})
+    _existing -> :ok
+  end
 end
 
 admin_role = ETitle.Accounts.get_role_by_name("admin")
 
-admin_attrs = %{
-  first_name: "John",
-  surname: "Admin",
-  identity_doc_no: "22222222",
-  accounts: [%{email: "etitle@admin.com", type: :staff, phone_number: "254000000000"}]
-}
+# Check if admin account already exists
+case Repo.get_by(Account, email: "etitle@admin.com") do
+  nil ->
+    admin_attrs = %{
+      first_name: "John",
+      surname: "Admin",
+      identity_doc_no: "22222222",
+      accounts: [%{email: "etitle@admin.com", type: :staff, phone_number: "254000000000"}]
+    }
 
-{:ok, %{accounts: [account]}} = ETitle.Accounts.register_account(admin_attrs)
+    {:ok, %{accounts: [account]}} = ETitle.Accounts.register_account(admin_attrs)
 
-Repo.insert!(%AccountRole{
-  account_id: account.id,
-  role_id: admin_role.id
-})
+    Repo.insert!(%AccountRole{
+      account_id: account.id,
+      role_id: admin_role.id
+    })
+
+  existing_account ->
+    # Check if admin role is already assigned
+    case Repo.get_by(AccountRole, account_id: existing_account.id, role_id: admin_role.id) do
+      nil ->
+        Repo.insert!(%AccountRole{
+          account_id: existing_account.id,
+          role_id: admin_role.id
+        })
+
+      _existing_role ->
+        :ok
+    end
+end
 
 users =
   for _ <- 1..80 do
@@ -78,7 +103,7 @@ professional_accounts =
       user_id: user.id,
       email: Faker.Internet.email(),
       type: :professional,
-      phone_number: "#{Enum.random(254_000_000_0001..254_999_999_999)}"
+      phone_number: "#{Enum.random(254_000_000_001..254_999_999_999)}"
     })
   end
 
@@ -198,14 +223,78 @@ counties =
   |> Enum.reverse()
 
 for county_attrs <- counties do
-  county_changeset = County.changeset(%County{}, county_attrs)
-  Repo.insert!(county_changeset)
+  case Repo.get_by(County, code: county_attrs.code) do
+    nil ->
+      county_changeset = County.changeset(%County{}, county_attrs)
+      Repo.insert!(county_changeset)
 
-  # registrar
-  # registry_clerk
-  # board_chair
-  # board_clerk
-  # lawyer
-  # survery
-  # user
+    _existing ->
+      :ok
+  end
 end
+
+# Create registries for each sub-county
+for county <- Repo.all(County) do
+  sub_counties = Repo.all(from s in SubCounty, where: s.county_id == ^county.id)
+
+  for sub_county <- sub_counties do
+    registry_name = "#{sub_county.name} Land Registry"
+
+    case Repo.get_by(Registry,
+           name: registry_name,
+           county_id: county.id,
+           sub_county_id: sub_county.id
+         ) do
+      nil ->
+        registry_attrs = %{
+          name: registry_name,
+          phone_number: "254#{Enum.random(100_000_000..999_999_999)}",
+          email:
+            "#{String.downcase(String.replace(sub_county.name, " ", "_"))}_registry@etitle.gov.ke",
+          county_id: county.id,
+          sub_county_id: sub_county.id
+        }
+
+        registry_changeset = Registry.changeset(%Registry{}, registry_attrs)
+        Repo.insert!(registry_changeset)
+
+      _existing ->
+        :ok
+    end
+  end
+end
+
+# Get some citizen accounts and registries for land creation
+citizen_accounts = Repo.all(from a in Account, where: a.type == :citizen, limit: 20)
+all_registries = Repo.all(Registry)
+
+# Create sample lands
+lands_created =
+  for i <- 1..50 do
+    title_number = "TITLE-#{String.pad_leading(to_string(i), 6, "0")}"
+
+    case Repo.get_by(Land, title_number: title_number) do
+      nil ->
+        citizen = Enum.random(citizen_accounts)
+        registry = Enum.random(all_registries)
+
+        land_attrs = %{
+          title_number: title_number,
+          size: Decimal.new("#{Enum.random(1..100)}.#{Enum.random(0..99)}"),
+          gps_cordinates:
+            "#{Enum.random(-1..1)}.#{Enum.random(100_000..999_999)},#{Enum.random(36..37)}.#{Enum.random(100_000..999_999)}",
+          registry_id: registry.id,
+          account_id: citizen.id,
+          created_by_id: citizen.id
+        }
+
+        land_changeset = Land.changeset(%Land{}, land_attrs, %Scope{account: citizen})
+        Repo.insert!(land_changeset)
+
+      _existing ->
+        nil
+    end
+  end
+  |> Enum.reject(&is_nil/1)
+
+IO.puts("Seeded #{length(lands_created)} new lands successfully!")

@@ -27,7 +27,10 @@ defmodule ETitleWeb.LandLive.Show do
         <:item :if={ETitle.Accounts.account_has_role?(@current_scope.account, "admin")} title="Owner">
           {@land.account.user.first_name} {@land.account.user.surname}
         </:item>
-        <:item :if={ETitle.Accounts.account_has_role?(@current_scope.account, "admin")} title="Owner Email">
+        <:item
+          :if={ETitle.Accounts.account_has_role?(@current_scope.account, "admin")}
+          title="Owner Email"
+        >
           {@land.account.email}
         </:item>
       </.list>
