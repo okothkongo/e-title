@@ -109,4 +109,68 @@ defmodule ETitle.LandsTest do
     #   assert %Ecto.Changeset{} = Lands.change_land(scope, land)
     # end
   end
+
+  describe "search_land_by_title_number/1" do
+    test "returns land when found with valid title number" do
+      # Create a user and account
+      user = insert(:user, first_name: "John", surname: "Doe", identity_doc_no: "12345678")
+      account = insert(:account, user: user, type: :citizen)
+      user_role = insert(:role, name: "user", type: :citizen)
+      insert(:account_role, account: account, role: user_role)
+
+      # Create a registry
+      registry = insert(:registry, name: "Nairobi Registry")
+
+      # Create a land
+      land =
+        insert(:land,
+          title_number: "T123456",
+          size: Decimal.new("100.5"),
+          gps_cordinates: "1.2921,36.8219",
+          account: account,
+          registry: registry
+        )
+
+      # Search for the land
+      assert {:ok, found_land} = Lands.search_land_by_title_number("T123456")
+
+      # Verify the land details
+      assert found_land.id == land.id
+      assert found_land.title_number == "T123456"
+      assert found_land.size == Decimal.new("100.5")
+      assert found_land.gps_cordinates == "1.2921,36.8219"
+
+      # Verify preloaded associations
+      assert found_land.account.id == account.id
+      assert found_land.account.user.first_name == "John"
+      assert found_land.account.user.surname == "Doe"
+      assert found_land.account.user.identity_doc_no == "12345678"
+      assert found_land.registry.name == "Nairobi Registry"
+    end
+
+    test "returns error when land not found" do
+      assert {:error, :not_found} = Lands.search_land_by_title_number("NONEXISTENT")
+    end
+
+    test "returns error for invalid input" do
+      assert {:error, :invalid_input} = Lands.search_land_by_title_number(nil)
+      assert {:error, :invalid_input} = Lands.search_land_by_title_number(123)
+      assert {:error, :invalid_input} = Lands.search_land_by_title_number("")
+    end
+
+    test "is case sensitive" do
+      # Create a land with specific case
+      user = insert(:user)
+      account = insert(:account, user: user, type: :citizen)
+      user_role = insert(:role, name: "user", type: :citizen)
+      insert(:account_role, account: account, role: user_role)
+      registry = insert(:registry)
+
+      _land = insert(:land, title_number: "T123456", account: account, registry: registry)
+
+      # Search with different case should not find it
+      assert {:error, :not_found} = Lands.search_land_by_title_number("t123456")
+      assert {:error, :not_found} = Lands.search_land_by_title_number("T12345")
+    end
+  end
 end

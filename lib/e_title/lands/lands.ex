@@ -160,4 +160,41 @@ defmodule ETitle.Lands do
   def change_land(%Scope{} = scope, %Land{} = land, attrs \\ %{}) do
     Land.changeset(land, attrs, scope)
   end
+
+  @doc """
+  Searches for a land by title number.
+
+
+  ## Examples
+
+      iex> search_land_by_title_number("T123456")
+      {:ok, %Land{}}
+
+      iex> search_land_by_title_number("INVALID")
+      {:error, :not_found}
+
+  """
+  def search_land_by_title_number(title_number) when is_binary(title_number) do
+    trimmed_title = String.trim(title_number)
+    search_land_by_title_number_trimmed(trimmed_title)
+  end
+
+  def search_land_by_title_number(_), do: {:error, :invalid_input}
+
+  defp search_land_by_title_number_trimmed("") do
+    {:error, :invalid_input}
+  end
+
+  defp search_land_by_title_number_trimmed(title_number) do
+    query =
+      from(l in Land,
+        preload: [:registry, account: :user],
+        where: l.title_number == ^title_number
+      )
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      land -> {:ok, land}
+    end
+  end
 end

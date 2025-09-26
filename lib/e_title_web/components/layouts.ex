@@ -491,6 +491,15 @@ defmodule ETitleWeb.Layouts do
                 class="mr-4 size-6 shrink-0 text-green-200"
               /> Lands
             </.link>
+            <.link
+              navigate={~p"/lands/search"}
+              class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
+            >
+              <.icon
+                name="hero-magnifying-glass"
+                class="mr-4 size-6 shrink-0 text-green-200"
+              /> Lands Search
+            </.link>
             <div class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white cursor-not-allowed opacity-50">
               <.icon name="hero-chart-bar" class="mr-4 size-6 shrink-0 text-green-200" /> Reports
             </div>

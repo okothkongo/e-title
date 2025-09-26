@@ -75,6 +75,7 @@ defmodule ETitleWeb.Router do
       live "/accounts/settings/confirm-email/:token", AccountLive.Settings, :confirm_email
       live "/lands", LandLive.Index, :index
       live "/lands/new", LandLive.Form, :new
+      live "/lands/search", LandSearchLive, :index
       live "/lands/:id", LandLive.Show, :show
       live "/lands/:id/edit", LandLive.Form, :edit
     end
