@@ -344,17 +344,21 @@ defmodule ETitle.Accounts do
     end)
   end
 
-  def admin?(%Account{id: id}) do
+  def account_has_role?(%Account{id: id}, role_name) do
     query =
       from role in Role,
         join: account_role in AccountRole,
         on: account_role.role_id == role.id,
-        where: account_role.account_id == ^id and role.name == "admin"
+        join: account in Account,
+        on: account.id == account_role.account_id,
+        where:
+          account_role.account_id == ^id and role.name == ^role_name and account.type == role.type and
+            account.status == :active and role.status == :active
 
     Repo.exists?(query)
   end
 
-  def admin?(_), do: false
+  def account_has_role?(_, _role_name), do: false
 
   def list_users do
     Repo.all(User)

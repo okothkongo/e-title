@@ -8,7 +8,7 @@ defmodule ETitleWeb.Admin.RegistryLive.IndexTest do
     test "admin can see all registries", %{conn: conn} do
       admin = insert(:account, type: :staff)
       registry = insert(:registry)
-      _ = insert(:account_role, account: admin, role: insert(:role, name: "admin"))
+      _ = insert(:account_role, account: admin, role: insert(:role, name: "admin", type: :staff))
 
       {:ok, _view, html} =
         conn
