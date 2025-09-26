@@ -84,11 +84,14 @@ defmodule ETitle.Factory do
   end
 
   def land_factory do
+    account = build(:account)
+
     %Land{
-      title_number: "89",
+      title_number: sequence("title_number", &"TITLE-#{&1}"),
       size: 2.2,
-      gps_cordinates: "89,78",
-      account: build(:account),
+      gps_cordinates: sequence("gps_cordinates", &"#{&1},#{&1 + 100}"),
+      account: account,
+      created_by: account,
       registry: build(:registry)
     }
   end

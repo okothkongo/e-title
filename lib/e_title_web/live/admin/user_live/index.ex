@@ -6,7 +6,7 @@ defmodule ETitleWeb.Admin.UserLive.Index do
   def mount(_params, _session, socket) do
     users = Accounts.list_users()
 
-    {:ok, assign(socket, users: users)}
+    {:ok, stream(socket, :users, users)}
   end
 
   def render(assigns) do
@@ -14,43 +14,49 @@ defmodule ETitleWeb.Admin.UserLive.Index do
     <div class="min-h-full">
       <div class="flex flex-1 flex-col lg:pl-64">
         <div class="p-6">
-          <h1 class="text-2xl font-bold mb-6 text-green-700 text-center">User List</h1>
+          <div class="relative flex justify-center items-center mb-6">
+            <.header>
+              <h1 class="text-2xl font-bold text-green-700">Users</h1>
+            </.header>
+          </div>
 
           <div class="overflow-x-auto bg-white rounded-lg shadow-md">
-            <table class="min-w-full divide-y divide-green-200">
-              <thead class="bg-green-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
-                    First Name
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
-                    Middle Name
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
-                    Surname
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider">
-                    ID Number
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-green-200">
-                <%= for user <- @users do %>
-                  <tr class="hover:bg-green-50 transition-colors duration-150">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {user.first_name}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {user.middle_name || "-"}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{user.surname}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {user.identity_doc_no}
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
+            <.table
+              id="users"
+              rows={@streams.users}
+            >
+              <:col
+                :let={{_id, user}}
+                label="First Name"
+                class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider"
+              >
+                <span class="text-sm text-gray-900">{user.first_name}</span>
+              </:col>
+
+              <:col
+                :let={{_id, user}}
+                label="Middle Name"
+                class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider"
+              >
+                <span class="text-sm text-gray-600">{user.middle_name || "-"}</span>
+              </:col>
+
+              <:col
+                :let={{_id, user}}
+                label="Surname"
+                class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider"
+              >
+                <span class="text-sm text-gray-900">{user.surname}</span>
+              </:col>
+
+              <:col
+                :let={{_id, user}}
+                label="ID Number"
+                class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider"
+              >
+                <span class="text-sm font-medium text-gray-900">{user.identity_doc_no}</span>
+              </:col>
+            </.table>
           </div>
         </div>
       </div>

@@ -20,15 +20,19 @@ defmodule ETitle.Lands do
 
   """
   def subscribe_lands(%Scope{} = scope) do
-    key = scope.account.id
-
-    Phoenix.PubSub.subscribe(ETitle.PubSub, "account:#{key}:lands")
+    if ETitle.Accounts.account_has_role?(scope.account, "admin") do
+      Phoenix.PubSub.subscribe(ETitle.PubSub, "admin:lands")
+    else
+      key = scope.account.id
+      Phoenix.PubSub.subscribe(ETitle.PubSub, "account:#{key}:lands")
+    end
   end
 
   defp broadcast_land(%Scope{} = scope, message) do
     key = scope.account.id
 
     Phoenix.PubSub.broadcast(ETitle.PubSub, "account:#{key}:lands", message)
+    Phoenix.PubSub.broadcast(ETitle.PubSub, "admin:lands", message)
   end
 
   @doc """
@@ -41,7 +45,12 @@ defmodule ETitle.Lands do
 
   """
   def list_lands(%Scope{} = scope) do
-    Repo.all_by(Land, account_id: scope.account.id)
+    if ETitle.Accounts.account_has_role?(scope.account, "admin") do
+      query = from(l in Land, preload: [:registry, account: :user])
+      Repo.all(query)
+    else
+      Repo.all_by(Land, account_id: scope.account.id)
+    end
   end
 
   @doc """
@@ -59,7 +68,12 @@ defmodule ETitle.Lands do
 
   """
   def get_land!(%Scope{} = scope, id) do
-    Repo.get_by!(Land, id: id, account_id: scope.account.id)
+    if ETitle.Accounts.account_has_role?(scope.account, "admin") do
+      query = from(l in Land, preload: [:registry, account: :user])
+      Repo.get!(query, id)
+    else
+      Repo.get_by!(Land, id: id, account_id: scope.account.id)
+    end
   end
 
   @doc """
@@ -97,7 +111,9 @@ defmodule ETitle.Lands do
 
   """
   def update_land(%Scope{} = scope, %Land{} = land, attrs) do
-    true = land.account_id == scope.account.id
+    unless ETitle.Accounts.account_has_role?(scope.account, "admin") do
+      true = land.account_id == scope.account.id
+    end
 
     with {:ok, land = %Land{}} <-
            land
@@ -121,7 +137,9 @@ defmodule ETitle.Lands do
 
   """
   def delete_land(%Scope{} = scope, %Land{} = land) do
-    true = land.account_id == scope.account.id
+    unless ETitle.Accounts.account_has_role?(scope.account, "admin") do
+      true = land.account_id == scope.account.id
+    end
 
     with {:ok, land = %Land{}} <-
            Repo.delete(land) do
@@ -140,8 +158,6 @@ defmodule ETitle.Lands do
 
   """
   def change_land(%Scope{} = scope, %Land{} = land, attrs \\ %{}) do
-    true = land.account_id == scope.account.id
-
     Land.changeset(land, attrs, scope)
   end
 end

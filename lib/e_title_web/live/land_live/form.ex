@@ -18,6 +18,17 @@ defmodule ETitleWeb.LandLive.Form do
         <.input field={@form[:title_number]} type="text" label="Title number" />
         <.input field={@form[:size]} type="number" label="Size" step="any" />
         <.input field={@form[:gps_cordinates]} type="text" label="Gps cordinates" />
+
+        <%= if ETitle.Accounts.account_has_role?(@current_scope.account, "admin") do %>
+          <.input
+            field={@form[:identity_doc_no]}
+            type="text"
+            label="Citizen Identity Document Number"
+            placeholder="Enter citizen identity doc number"
+            required
+          />
+        <% end %>
+
         <.input
           field={@form[:county_id]}
           type="select"
@@ -49,12 +60,20 @@ defmodule ETitleWeb.LandLive.Form do
 
   @impl true
   def mount(params, _session, socket) do
-    {:ok,
-     socket
-     |> assign(:return_to, return_to(params["return_to"]))
-     |> assign(:sub_counties, [])
-     |> assign(:registries, [])
-     |> apply_action(socket.assigns.live_action, params)}
+    # Check if user has permission to create land
+    if can_create_land?(socket.assigns.current_scope.account) do
+      {:ok,
+       socket
+       |> assign(:return_to, return_to(params["return_to"]))
+       |> assign(:sub_counties, [])
+       |> assign(:registries, [])
+       |> apply_action(socket.assigns.live_action, params)}
+    else
+      {:ok,
+       socket
+       |> put_flash(:error, "You don't have permission to create land")
+       |> push_navigate(to: ~p"/accounts/log-in")}
+    end
   end
 
   defp return_to("show"), do: "show"
@@ -70,7 +89,16 @@ defmodule ETitleWeb.LandLive.Form do
   end
 
   defp apply_action(socket, :new, _params) do
-    land = %Land{account_id: socket.assigns.current_scope.account.id}
+    # For citizens, set account_id to their own account
+    # For admins, account_id will be set when they provide identity_doc_no
+    account_id =
+      if ETitle.Accounts.account_has_role?(socket.assigns.current_scope.account, "user") do
+        socket.assigns.current_scope.account.id
+      else
+        nil
+      end
+
+    land = %Land{account_id: account_id}
 
     socket
     |> assign(:page_title, "New Land")
@@ -146,5 +174,10 @@ defmodule ETitleWeb.LandLive.Form do
     subcounty_id
     |> ETitle.Locations.list_registries_by_subcount_id()
     |> Enum.map(&{&1.name, &1.id})
+  end
+
+  defp can_create_land?(account) do
+    ETitle.Accounts.account_has_role?(account, "user") or
+      ETitle.Accounts.account_has_role?(account, "admin")
   end
 end

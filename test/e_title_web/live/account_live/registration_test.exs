@@ -21,14 +21,14 @@ defmodule ETitleWeb.AccountLive.RegistrationTest do
         |> log_in_account(account)
         |> live(~p"/accounts/register")
 
-      assert {:error, {:redirect, %{to: "/user/dashboard", flash: %{}}}} == result
+      assert {:error, {:redirect, %{to: "/dashboard", flash: %{}}}} == result
       # assert redirected to dashboard
 
       {:ok, _lv, html} =
         conn
         # still logged in
         |> log_in_account(account)
-        |> live(~p"/user/dashboard")
+        |> live(~p"/dashboard")
 
       assert html =~ "Dashboard"
     end

@@ -389,4 +389,22 @@ defmodule ETitle.Accounts do
     query = from r in Role, where: r.type == ^type and r.status == :active, order_by: r.name
     Repo.all(query)
   end
+
+  def get_citizen_account_by_identity_doc_no(identity_doc_no) when is_binary(identity_doc_no) do
+    query =
+      from a in Account,
+        join: u in User,
+        on: a.user_id == u.id,
+        join: ar in AccountRole,
+        on: a.id == ar.account_id,
+        join: r in Role,
+        on: ar.role_id == r.id,
+        where:
+          a.type == :citizen and a.status == :active and r.name == "user" and
+            u.identity_doc_no == ^identity_doc_no,
+        limit: 1,
+        select: a
+
+    Repo.one(query)
+  end
 end

@@ -300,7 +300,7 @@ defmodule ETitleWeb.AccountAuth do
   end
 
   def signed_in_path(_conn, account) do
-    if admin?(account), do: ~p"/admin/dashboard", else: ~p"/user/dashboard"
+    if admin?(account), do: ~p"/admin/dashboard", else: ~p"/dashboard"
   end
 
   @doc """

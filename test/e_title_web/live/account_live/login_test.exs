@@ -61,7 +61,7 @@ defmodule ETitleWeb.AccountLive.LoginTest do
 
       conn = submit_form(form, conn)
 
-      assert redirected_to(conn) == ~p"/user/dashboard"
+      assert redirected_to(conn) == ~p"/dashboard"
     end
 
     test "redirects to login page with a flash error if credentials are invalid", %{

@@ -27,14 +27,15 @@ defmodule ETitle.LandsTest do
 
     test "create_land/2 with valid data creates a land" do
       account = insert(:account)
+      user_role = insert(:role, name: "user", type: :citizen)
+      insert(:account_role, account: account, role: user_role)
       registry = insert(:registry)
 
       valid_attrs = %{
         size: "120.5",
         title_number: "some title_number",
         gps_cordinates: "some gps_cordinates",
-        registry_id: registry.id,
-        account_id: account.id
+        registry_id: registry.id
       }
 
       scope = build(:account_scope, account: account)
@@ -44,10 +45,13 @@ defmodule ETitle.LandsTest do
       assert land.title_number == "some title_number"
       assert land.gps_cordinates == "some gps_cordinates"
       assert land.account_id == scope.account.id
+      assert land.created_by_id == scope.account.id
     end
 
     test "create_land/2 with invalid data returns error changeset" do
       account = insert(:account)
+      user_role = insert(:role, name: "user", type: :citizen)
+      insert(:account_role, account: account, role: user_role)
       scope = build(:account_scope, account: account)
       assert {:error, %Ecto.Changeset{}} = Lands.create_land(scope, @invalid_attrs)
     end
