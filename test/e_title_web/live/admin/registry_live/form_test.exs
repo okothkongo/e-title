@@ -13,7 +13,13 @@ defmodule ETitleWeb.Admin.RegistryLive.FormTest do
     county = insert(:county)
     sub_county = insert(:sub_county, county: county)
     admin_account = insert(:account, type: :staff)
-    _ = insert(:account_role, account: admin_account, role: insert(:role, name: "admin"))
+
+    _ =
+      insert(:account_role,
+        account: admin_account,
+        role: insert(:role, name: "admin", type: :staff)
+      )
+
     conn = log_in_account(conn, admin_account)
 
     {:ok, lv, _html} = live(conn, ~p"/admin/registries/new")

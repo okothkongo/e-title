@@ -9,7 +9,7 @@ defmodule ETitleWeb.Admin.AccountLive.IndexTest do
       admin =
         insert(:account,
           type: :staff,
-          account_role: insert(:account_role, role: insert(:role, name: "admin"))
+          account_role: insert(:account_role, role: insert(:role, name: "admin", type: :staff))
         )
 
       {:ok, _view, html} =
@@ -37,7 +37,7 @@ defmodule ETitleWeb.Admin.AccountLive.IndexTest do
     admin =
       insert(:account,
         type: :staff,
-        account_role: insert(:account_role, role: insert(:role, name: "admin"))
+        account_role: insert(:account_role, role: insert(:role, name: "admin", type: :staff))
       )
 
     {:ok, _view, html} =
@@ -57,7 +57,7 @@ defmodule ETitleWeb.Admin.AccountLive.IndexTest do
       admin =
         insert(:account,
           type: :staff,
-          account_role: insert(:account_role, role: insert(:role, name: "admin"))
+          account_role: insert(:account_role, role: insert(:role, name: "admin", type: :staff))
         )
 
       user = insert(:user)
