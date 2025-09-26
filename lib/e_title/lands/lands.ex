@@ -46,8 +46,8 @@ defmodule ETitle.Lands do
   """
   def list_lands(%Scope{} = scope) do
     if ETitle.Accounts.account_has_role?(scope.account, "admin") do
-      from(l in Land, preload: [:registry, account: :user])
-      |> Repo.all()
+      query = from(l in Land, preload: [:registry, account: :user])
+      Repo.all(query)
     else
       Repo.all_by(Land, account_id: scope.account.id)
     end
@@ -69,8 +69,8 @@ defmodule ETitle.Lands do
   """
   def get_land!(%Scope{} = scope, id) do
     if ETitle.Accounts.account_has_role?(scope.account, "admin") do
-      from(l in Land, preload: [:registry, account: :user])
-      |> Repo.get!(id)
+      query = from(l in Land, preload: [:registry, account: :user])
+      Repo.get!(query, id)
     else
       Repo.get_by!(Land, id: id, account_id: scope.account.id)
     end

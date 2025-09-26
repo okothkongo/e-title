@@ -42,22 +42,27 @@ defmodule ETitle.Lands.Schemas.Land do
         put_change(changeset, :account_id, account_scope.account.id)
 
       ETitle.Accounts.account_has_role?(account_scope.account, "admin") ->
-        case get_field(changeset, :identity_doc_no) do
-          nil ->
-            add_error(changeset, :identity_doc_no, "Identity document number is required")
-
-          "" ->
-            add_error(changeset, :identity_doc_no, "Identity document number is required")
-
-          identity_doc_no ->
-            case ETitle.Accounts.get_citizen_account_by_identity_doc_no(identity_doc_no) do
-              nil -> add_error(changeset, :identity_doc_no, "Citizen not found")
-              account -> put_change(changeset, :account_id, account.id)
-            end
-        end
+        validate_admin_account_assignment(changeset)
 
       true ->
         add_error(changeset, :account_id, "Only citizens and admins can create land")
+    end
+  end
+
+  defp validate_admin_account_assignment(changeset) do
+    identity_doc_no = get_field(changeset, :identity_doc_no)
+
+    if is_nil(identity_doc_no) or identity_doc_no == "" do
+      add_error(changeset, :identity_doc_no, "Identity document number is required")
+    else
+      assign_citizen_account(changeset, identity_doc_no)
+    end
+  end
+
+  defp assign_citizen_account(changeset, identity_doc_no) do
+    case ETitle.Accounts.get_citizen_account_by_identity_doc_no(identity_doc_no) do
+      nil -> add_error(changeset, :identity_doc_no, "Citizen not found")
+      account -> put_change(changeset, :account_id, account.id)
     end
   end
 end
