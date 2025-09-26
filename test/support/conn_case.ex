@@ -46,6 +46,8 @@ defmodule ETitleWeb.ConnCase do
   """
   def register_and_log_in_account(%{conn: conn} = context) do
     account = ETitle.Factory.insert(:account)
+    user_role = ETitle.Factory.insert(:role, name: "user", type: :citizen)
+    ETitle.Factory.insert(:account_role, account: account, role: user_role)
     scope = ETitle.Accounts.Schemas.Scope.for_account(account)
 
     opts =

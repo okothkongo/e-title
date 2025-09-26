@@ -27,6 +27,21 @@ defmodule ETitleWeb.LandLiveTest do
         live(conn, ~p"/lands")
     end
 
+    test "unauthorized user (non-citizen/non-admin) is redirected to sign-in", %{conn: conn} do
+      # Create a professional account (lawyer) without proper land creation permissions
+      account = insert(:account, type: :professional)
+      lawyer_role = insert(:role, name: "lawyer", type: :professional)
+      insert(:account_role, account: account, role: lawyer_role)
+
+      # Log in the professional account
+      conn = log_in_account(conn, account)
+
+      {:error,
+       {:live_redirect,
+        %{to: "/accounts/log-in", flash: %{"error" => "You don't have permission to create land"}}}} =
+        live(conn, ~p"/lands/new")
+    end
+
     test "logged in user saves new land", %{logged_in_conn: conn} do
       registry = insert(:registry)
 

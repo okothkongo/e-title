@@ -140,8 +140,6 @@ defmodule ETitle.Lands do
 
   """
   def change_land(%Scope{} = scope, %Land{} = land, attrs \\ %{}) do
-    true = land.account_id == scope.account.id
-
     Land.changeset(land, attrs, scope)
   end
 end
