@@ -468,7 +468,7 @@ defmodule ETitleWeb.Layouts do
               navigate={~p"/admin/registries"}
               class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white"
             >
-              <.icon name="hero-magnifying-glass" class="mr-4 size-6 shrink-0 text-green-200" />
+              <.icon name="hero-building-office" class="mr-4 size-6 shrink-0 text-green-200" />
               Registries
             </.link>
             <%= if admin?(@current_scope) do %>
@@ -477,15 +477,20 @@ defmodule ETitleWeb.Layouts do
                 class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
               >
                 <.icon
-                  name="hero-arrow-right-arrow-left"
+                  name="hero-user-circle"
                   class="mr-4 size-6 shrink-0 text-green-200"
                 /> Accounts
               </.link>
             <% end %>
-            <div class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white cursor-not-allowed opacity-50">
-              <.icon name="hero-shield-check" class="mr-4 size-6 shrink-0 text-green-200" />
-              Verification
-            </div>
+            <.link
+              navigate={~p"/lands"}
+              class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
+            >
+              <.icon
+                name="hero-map"
+                class="mr-4 size-6 shrink-0 text-green-200"
+              /> Lands
+            </.link>
             <div class="group flex items-center rounded-md px-2 py-2 text-sm/6 font-medium text-green-100 hover:bg-green-600 hover:text-white cursor-not-allowed opacity-50">
               <.icon name="hero-chart-bar" class="mr-4 size-6 shrink-0 text-green-200" /> Reports
             </div>
