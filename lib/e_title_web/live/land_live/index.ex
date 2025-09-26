@@ -52,6 +52,17 @@ defmodule ETitleWeb.LandLive.Index do
                 <span class="text-sm text-gray-600">{land.gps_cordinates}</span>
               </:col>
 
+              <:col
+                :if={ETitle.Accounts.account_has_role?(@current_scope.account, "admin")}
+                :let={{_id, land}}
+                label="Owner"
+                class="px-6 py-3 text-left text-xs font-medium text-green-700 uppercase tracking-wider"
+              >
+                <span class="text-sm text-gray-900">
+                  {land.account.user.first_name} {land.account.user.surname}
+                </span>
+              </:col>
+
               <:action :let={{_id, land}}>
                 <div class="sr-only">
                   <.link navigate={~p"/lands/#{land}"}>Show</.link>

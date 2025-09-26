@@ -24,6 +24,12 @@ defmodule ETitleWeb.LandLive.Show do
         <:item title="Title number">{@land.title_number}</:item>
         <:item title="Size">{@land.size}</:item>
         <:item title="Gps cordinates">{@land.gps_cordinates}</:item>
+        <:item :if={ETitle.Accounts.account_has_role?(@current_scope.account, "admin")} title="Owner">
+          {@land.account.user.first_name} {@land.account.user.surname}
+        </:item>
+        <:item :if={ETitle.Accounts.account_has_role?(@current_scope.account, "admin")} title="Owner Email">
+          {@land.account.email}
+        </:item>
       </.list>
     </Layouts.app>
     """
