@@ -31,17 +31,10 @@
     </script>
   </head>
   <body>
-    <%= if ETitle.Accounts.account_has_role?(@current_scope.account, "admin") do %>
-      <.admin_authenticated_navbar
-        current_scope={@current_scope}
-        profile_menu_open={assigns[:profile_menu_open] || false}
-      />
-    <% else %>
-      <.non_admin_authenticated_navbar
-        current_scope={@current_scope}
-        profile_menu_open={assigns[:profile_menu_open] || false}
-      />
-    <% end %>
+    <.authenticated_navbar
+      current_scope={@current_scope}
+      profile_menu_open={assigns[:profile_menu_open] || false}
+    />
 
     {@inner_content}
   </body>

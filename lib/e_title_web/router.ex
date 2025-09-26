@@ -79,6 +79,13 @@ defmodule ETitleWeb.Router do
       live "/lands/:id/edit", LandLive.Form, :edit
     end
 
+    live_session :require_authenticated_non_admin_account,
+      on_mount: [
+        {ETitleWeb.AccountAuth, :require_authenticated_non_admin}
+      ] do
+      live "/dashboard", User.DashboardLive.Dashboard, :index
+    end
+
     post "/accounts/update-password", AccountSessionController, :update_password
   end
 
@@ -97,18 +104,6 @@ defmodule ETitleWeb.Router do
       live "/accounts", AccountLive.Index, :index
       live "/registries", RegistryLive.Index, :index
       live "/accounts/new", AccountLive.Form, :new
-    end
-  end
-
-  # non admin routes
-  scope "/user" do
-    pipe_through [:authenticated, :require_authenticated_non_admin_account]
-
-    live_session :require_authenticated_non_admin_account,
-      on_mount: [
-        {ETitleWeb.AccountAuth, :require_authenticated_non_admin}
-      ] do
-      live "/dashboard", ETitleWeb.User.DashboardLive.Dashboard, :index
     end
   end
 end
