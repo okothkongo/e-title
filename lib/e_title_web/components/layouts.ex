@@ -178,7 +178,7 @@ defmodule ETitleWeb.Layouts do
               </a>
             </div>
           </div>
-
+          
     <!-- Quick Links -->
           <div>
             <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Quick Links</h3>
@@ -233,7 +233,7 @@ defmodule ETitleWeb.Layouts do
               </li>
             </ul>
           </div>
-
+          
     <!-- Services -->
           <div>
             <h3 class="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Services</h3>
@@ -316,7 +316,7 @@ defmodule ETitleWeb.Layouts do
               <span class="text-lg sm:text-2xl font-bold text-green-800">E-Title</span>
             </div>
           </div>
-
+          
     <!-- Desktop Navigation -->
           <div class="hidden lg:flex items-center space-x-6 xl:space-x-8">
             <.link
@@ -350,7 +350,7 @@ defmodule ETitleWeb.Layouts do
               Login
             </.link>
           </div>
-
+          
     <!-- Mobile Menu Button -->
           <div class="lg:hidden">
             <button
@@ -369,7 +369,7 @@ defmodule ETitleWeb.Layouts do
           </div>
         </div>
       </div>
-
+      
     <!-- Mobile Menu -->
       <div
         id="mobile-menu"
@@ -415,105 +415,6 @@ defmodule ETitleWeb.Layouts do
 
   def authenticated_navbar(assigns) do
     ~H"""
-    <div
-      role="dialog"
-      aria-modal="true"
-      class={["relative z-40 lg:hidden", if(false, do: "block", else: "hidden")]}
-    >
-      <div aria-hidden="true" class="fixed inset-0 bg-gray-600/75"></div>
-      <div class="fixed inset-0 z-40 flex">
-        <div class="relative flex w-full max-w-xs flex-1 flex-col bg-green-700 pt-5 pb-4">
-          <div class="absolute top-0 right-0 -mr-12 pt-2">
-            <button
-              type="button"
-              phx-click="close_mobile_menu"
-              class="relative ml-1 flex size-10 items-center justify-center rounded-full focus:ring-2 focus:ring-white focus:outline-hidden focus:ring-inset"
-            >
-              <span class="absolute -inset-0.5"></span>
-              <span class="sr-only">Close sidebar</span>
-              <.icon name="hero-x-mark" class="size-6 text-white" />
-            </button>
-          </div>
-
-          <div class="flex shrink-0 items-center px-4">
-            <svg
-              class="h-8 w-auto text-green-300"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              />
-            </svg>
-            <span class="ml-2 text-xl font-bold text-white">E-Title</span>
-          </div>
-
-          <nav
-            aria-label="Sidebar"
-            class="mt-5 h-full shrink-0 divide-y divide-green-800 overflow-y-auto"
-          >
-            <div class="space-y-1 px-2">
-              <.link
-                navigate={~p"/admin/dashboard"}
-                aria-current="page"
-                class="group flex items-center rounded-md bg-green-800 px-2 py-2 text-base font-medium text-white"
-              >
-                <.icon name="hero-home" class="mr-4 size-6 shrink-0 text-green-200" /> Dashboard
-              </.link>
-
-              <.link
-                navigate={~p"/admin/users"}
-                class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
-              >
-                <.icon name="hero-users" class="mr-4 size-6 shrink-0 text-green-200" /> Users
-              </.link>
-              <.link
-                navigate={~p"/admin/registries"}
-                class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
-              >
-                <.icon name="hero-magnifying-glass" class="mr-4 size-6 shrink-0 text-green-200" />
-                Registries
-              </.link>
-              <.link
-                navigate={~p"/admin/accounts"}
-                class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white"
-              >
-                <.icon
-                  name="hero-arrow-right-arrow-left"
-                  class="mr-4 size-6 shrink-0 text-green-200"
-                /> Accounts
-              </.link>
-              <div class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white cursor-not-allowed opacity-50">
-                <.icon name="hero-shield-check" class="mr-4 size-6 shrink-0 text-green-200" />
-                Verification
-              </div>
-              <div class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white cursor-not-allowed opacity-50">
-                <.icon name="hero-chart-bar" class="mr-4 size-6 shrink-0 text-green-200" /> Reports
-              </div>
-            </div>
-            <div class="mt-6 pt-6">
-              <div class="space-y-1 px-2">
-                <div class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white cursor-not-allowed opacity-50">
-                  <.icon name="hero-cog-6-tooth" class="mr-4 size-6 text-green-200" /> Settings
-                </div>
-                <div class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white cursor-not-allowed opacity-50">
-                  <.icon name="hero-question-mark-circle" class="mr-4 size-6 text-green-200" /> Help
-                </div>
-                <div class="group flex items-center rounded-md px-2 py-2 text-base font-medium text-green-100 hover:bg-green-600 hover:text-white cursor-not-allowed opacity-50">
-                  <.icon name="hero-shield-check" class="mr-4 size-6 text-green-200" /> Privacy
-                </div>
-              </div>
-            </div>
-          </nav>
-        </div>
-        <div aria-hidden="true" class="w-14 shrink-0"></div>
-      </div>
-    </div>
-
     <!-- Static sidebar for desktop -->
     <div class="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
       <div class="flex grow flex-col overflow-y-auto bg-green-800 pt-5">
