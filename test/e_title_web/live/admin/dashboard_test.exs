@@ -6,7 +6,7 @@ defmodule ETitleWeb.Admin.DashboardTest do
 
   test "admin dashboard access", %{conn: conn} do
     admin = insert(:account, type: :staff)
-    _ = insert(:account_role, account: admin, role: insert(:role, name: "admin"))
+    _ = insert(:account_role, account: admin, role: insert(:role, name: "admin", type: :staff))
     user = admin.user
     conn = log_in_account(conn, admin)
     {:ok, _index_live, html} = live(conn, ~p"/admin/dashboard")

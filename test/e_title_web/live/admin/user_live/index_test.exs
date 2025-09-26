@@ -8,7 +8,7 @@ defmodule ETitleWeb.Admin.UserLive.IndexTest do
     test "admin can see all users", %{conn: conn} do
       admin = insert(:account, type: :staff)
       user = insert(:user)
-      _ = insert(:account_role, account: admin, role: insert(:role, name: "admin"))
+      _ = insert(:account_role, account: admin, role: insert(:role, name: "admin", type: :staff))
 
       {:ok, _view, html} =
         conn
