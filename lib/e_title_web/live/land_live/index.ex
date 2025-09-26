@@ -76,6 +76,7 @@ defmodule ETitleWeb.LandLive.Index do
   end
 
   defp can_create_land?(account) do
-    ETitle.Accounts.account_has_role?(account, "user") or ETitle.Accounts.account_has_role?(account, "admin")
+    ETitle.Accounts.account_has_role?(account, "user") or
+      ETitle.Accounts.account_has_role?(account, "admin")
   end
 end
