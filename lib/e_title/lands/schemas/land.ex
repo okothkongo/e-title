@@ -1,4 +1,7 @@
 defmodule ETitle.Lands.Schemas.Land do
+  @moduledoc """
+   Land Schema
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

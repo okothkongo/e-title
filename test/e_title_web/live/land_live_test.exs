@@ -2,19 +2,9 @@ defmodule ETitleWeb.LandLiveTest do
   use ETitleWeb.ConnCase
 
   import Phoenix.LiveViewTest
-  # import ETitle.LandsFixtures
+
   import ETitle.Factory
 
-  @create_attrs %{
-    size: "120.5",
-    title_number: "some title_number",
-    gps_cordinates: "some gps_cordinates"
-  }
-  @update_attrs %{
-    size: "456.7",
-    title_number: "some updated title_number",
-    gps_cordinates: "some updated gps_cordinates"
-  }
   @invalid_attrs %{size: nil, title_number: nil, gps_cordinates: nil}
 
   setup context do
