@@ -7,6 +7,7 @@ defmodule ETitle.Lands.Schemas.Land do
 
   alias ETitle.Locations.Schemas.Registry
   alias ETitle.Accounts.Schemas.Account
+  alias ETitle.Lands.Schemas.LandEncumbrance
 
   schema "lands" do
     field :title_number, :string
@@ -16,6 +17,7 @@ defmodule ETitle.Lands.Schemas.Land do
     belongs_to :registry, Registry
     belongs_to :account, Account
     belongs_to :created_by, Account, foreign_key: :created_by_id
+    has_many :land_encumbrances, LandEncumbrance
     timestamps(type: :utc_datetime)
   end
 

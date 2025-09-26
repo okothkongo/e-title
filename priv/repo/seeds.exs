@@ -298,3 +298,67 @@ lands_created =
   |> Enum.reject(&is_nil/1)
 
 IO.puts("Seeded #{length(lands_created)} new lands successfully!")
+
+# Create land encumbrances
+IO.puts("Creating land encumbrances...")
+
+# Get all accounts with their roles for easier filtering
+all_accounts = citizen_accounts ++ professional_accounts ++ staff_accounts
+
+land_encumbrances_created =
+  lands_created
+  |> Enum.take(5)
+  |> Enum.map(fn land ->
+    # Get a professional account (surveyor or lawyer)
+    professional_accounts =
+      all_accounts
+      |> Enum.filter(fn account ->
+        ETitle.Accounts.account_has_role?(account, "surveyor") or
+          ETitle.Accounts.account_has_role?(account, "lawyer")
+      end)
+
+    case professional_accounts do
+      [] ->
+        nil
+
+      [professional | _] ->
+        # Get a different citizen account for created_for
+        citizen_accounts_for_encumbrance =
+          all_accounts
+          |> Enum.filter(fn account ->
+            ETitle.Accounts.account_has_role?(account, "user")
+          end)
+          |> Enum.reject(fn account -> account.id == land.account_id end)
+
+        case citizen_accounts_for_encumbrance do
+          [] ->
+            nil
+
+          [citizen_for | _] ->
+            # Get the user's identity document number
+            user = Repo.get!(User, citizen_for.user_id)
+
+            land_encumbrance_attrs = %{
+              land_id: land.id,
+              reason: Enum.random(["loan", "bond"]),
+              created_for_id: citizen_for.id,
+              identity_doc_no: user.identity_doc_no
+            }
+
+            land_encumbrance_changeset =
+              ETitle.Lands.Schemas.LandEncumbrance.changeset(
+                %ETitle.Lands.Schemas.LandEncumbrance{},
+                land_encumbrance_attrs,
+                %Scope{account: professional}
+              )
+
+            case Repo.insert(land_encumbrance_changeset) do
+              {:ok, land_encumbrance} -> land_encumbrance
+              {:error, _changeset} -> nil
+            end
+        end
+    end
+  end)
+  |> Enum.reject(&is_nil/1)
+
+IO.puts("Seeded #{length(land_encumbrances_created)} new land encumbrances successfully!")
