@@ -10,9 +10,11 @@ defmodule ETitleWeb.LandLive.Index do
       <.header>
         Listing Lands
         <:actions>
-          <.button variant="primary" navigate={~p"/lands/new"}>
-            <.icon name="hero-plus" /> New Land
-          </.button>
+          <%= if can_create_land?(@current_scope.account) do %>
+            <.button variant="primary" navigate={~p"/lands/new"}>
+              <.icon name="hero-plus" /> New Land
+            </.button>
+          <% end %>
         </:actions>
       </.header>
 
@@ -71,5 +73,9 @@ defmodule ETitleWeb.LandLive.Index do
 
   defp list_lands(current_scope) do
     Lands.list_lands(current_scope)
+  end
+
+  defp can_create_land?(account) do
+    ETitle.Accounts.account_has_role?(account, "user") or ETitle.Accounts.account_has_role?(account, "admin")
   end
 end

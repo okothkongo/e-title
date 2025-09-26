@@ -20,6 +20,39 @@ defmodule ETitleWeb.LandLiveTest do
       assert html =~ land.title_number
     end
 
+    test "shows New Land button for authorized users (citizens)", %{logged_in_conn: conn} do
+      {:ok, _index_live, html} = live(conn, ~p"/lands")
+
+      assert html =~ "New Land"
+      assert html =~ ~p"/lands/new"
+    end
+
+    test "shows New Land button for admin users", %{conn: conn} do
+      # Create an admin account
+      account = insert(:account, type: :staff)
+      admin_role = insert(:role, name: "admin", type: :staff)
+      insert(:account_role, account: account, role: admin_role)
+
+      conn = log_in_account(conn, account)
+      {:ok, _index_live, html} = live(conn, ~p"/lands")
+
+      assert html =~ "New Land"
+      assert html =~ ~p"/lands/new"
+    end
+
+    test "hides New Land button for unauthorized users (professionals)", %{conn: conn} do
+      # Create a professional account (lawyer) without land creation permissions
+      account = insert(:account, type: :professional)
+      lawyer_role = insert(:role, name: "lawyer", type: :professional)
+      insert(:account_role, account: account, role: lawyer_role)
+
+      conn = log_in_account(conn, account)
+      {:ok, _index_live, html} = live(conn, ~p"/lands")
+
+      refute html =~ "New Land"
+      refute html =~ ~p"/lands/new"
+    end
+
     test "non-logged in user saves new land", %{conn: conn} do
       {:error,
        {:redirect,
