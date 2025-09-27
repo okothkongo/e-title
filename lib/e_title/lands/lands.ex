@@ -189,7 +189,7 @@ defmodule ETitle.Lands do
   defp search_land_by_title_number_trimmed(title_number) do
     query =
       from(l in Land,
-        preload: [:registry, account: :user],
+        preload: [:registry, :land_encumbrances, account: :user],
         where: l.title_number == ^title_number
       )
 

@@ -94,6 +94,53 @@ defmodule ETitleWeb.LandSearchLive do
                     </div>
                   </div>
                 </div>
+
+                <%= if @search_result.land_encumbrances && length(@search_result.land_encumbrances) > 0 do %>
+                  <div class="mt-8">
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <div class="flex">
+                        <div class="flex-shrink-0">
+                          <.icon name="hero-exclamation-triangle" class="h-5 w-5 text-red-400" />
+                        </div>
+                        <div class="ml-3">
+                          <h3 class="text-sm font-medium text-red-800">Land Encumbrances</h3>
+                          <div class="mt-2 text-sm text-red-700">
+                            <p>
+                              This land has {length(@search_result.land_encumbrances)} encumbrance(s) recorded.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="mt-4 space-y-2">
+                      <%= for encumbrance <- @search_result.land_encumbrances do %>
+                        <div class="bg-red-50 rounded-lg p-3 border border-red-200">
+                          <span class="text-sm font-medium text-gray-500">Reason:</span>
+                          <span class="text-gray-900 ml-2">
+                            {encumbrance.reason |> Atom.to_string() |> String.capitalize()}
+                          </span>
+                        </div>
+                      <% end %>
+                    </div>
+                  </div>
+                <% else %>
+                  <div class="mt-8">
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <div class="flex">
+                        <div class="flex-shrink-0">
+                          <.icon name="hero-check-circle" class="h-5 w-5 text-green-400" />
+                        </div>
+                        <div class="ml-3">
+                          <h3 class="text-sm font-medium text-green-800">Land has no encumbrances</h3>
+                          <div class="mt-2 text-sm text-green-700">
+                            <p>This land is free from any encumbrances.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
               </div>
             </div>
           <% end %>
