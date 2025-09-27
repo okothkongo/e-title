@@ -284,8 +284,7 @@ defmodule ETitleWeb.LandEncumbranceLive.Index do
   end
 
   defp can_create_encumbrance?(account) do
-    ETitle.Accounts.account_has_role?(account, "surveyor") or
-      ETitle.Accounts.account_has_role?(account, "lawyer") or
+    ETitle.Accounts.account_has_professional_role?(account) or
       ETitle.Accounts.account_has_role?(account, "admin")
   end
 

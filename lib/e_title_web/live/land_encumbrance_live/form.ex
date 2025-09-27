@@ -158,13 +158,20 @@ defmodule ETitleWeb.LandEncumbranceLive.Form do
 
   @impl true
   def mount(_params, _session, socket) do
-    land_options = get_land_options(socket.assigns.current_scope)
+    unless can_create_encumbrance?(socket.assigns.current_scope.account) do
+      {:ok,
+       socket
+       |> put_flash(:error, "Only professional accounts can create encumbrances")
+       |> push_navigate(to: ~p"/land-encumbrances")}
+    else
+      land_options = get_land_options(socket.assigns.current_scope)
 
-    {:ok,
-     socket
-     |> assign(:page_title, "Land Encumbrance Form")
-     |> assign(:land_options, land_options)
-     |> assign(:land_encumbrance, nil)}
+      {:ok,
+       socket
+       |> assign(:page_title, "Land Encumbrance Form")
+       |> assign(:land_options, land_options)
+       |> assign(:land_encumbrance, nil)}
+    end
   end
 
   @impl true
@@ -193,7 +200,8 @@ defmodule ETitleWeb.LandEncumbranceLive.Form do
   end
 
   defp apply_action(socket, :new, _params) do
-    form = to_form(%LandEncumbrance{}, as: :land_encumbrance)
+    changeset = LandEncumbrance.changeset(%LandEncumbrance{}, %{}, socket.assigns.current_scope)
+    form = to_form(changeset, as: :land_encumbrance)
 
     socket
     |> assign(:page_title, "New Land Encumbrance")
@@ -204,10 +212,8 @@ defmodule ETitleWeb.LandEncumbranceLive.Form do
 
   @impl true
   def handle_event("validate", %{"land_encumbrance" => land_encumbrance_params}, socket) do
-    form =
-      %LandEncumbrance{}
-      |> to_form(land_encumbrance_params)
-      |> Map.put(:errors, [])
+    changeset = LandEncumbrance.changeset(%LandEncumbrance{}, land_encumbrance_params, socket.assigns.current_scope)
+    form = to_form(changeset, as: :land_encumbrance)
 
     {:noreply, assign(socket, form: form)}
   end
@@ -245,6 +251,11 @@ defmodule ETitleWeb.LandEncumbranceLive.Form do
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, assign(socket, form: to_form(changeset))}
     end
+  end
+
+  defp can_create_encumbrance?(account) do
+    ETitle.Accounts.account_has_professional_role?(account) or
+      ETitle.Accounts.account_has_role?(account, "admin")
   end
 
   defp get_land_options(current_scope) do
