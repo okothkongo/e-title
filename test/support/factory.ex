@@ -12,6 +12,7 @@ defmodule ETitle.Factory do
   alias ETitle.Locations.Schemas.Registry
   alias ETitle.Locations.Schemas.SubCounty
   alias ETitle.Lands.Schemas.Land
+  alias ETitle.Lands.Schemas.LandEncumbrance
   alias ETitle.Accounts.Schemas.Scope
 
   def user_factory do
@@ -99,6 +100,85 @@ defmodule ETitle.Factory do
   def account_scope_factory do
     %Scope{
       account: build(:account)
+    }
+  end
+
+  def surveyor_account_factory do
+    struct!(
+      unconfirmed_account_factory(),
+      %{
+        confirmed_at: DateTime.utc_now(),
+        hashed_password: Bcrypt.hash_pwd_salt("hello World!1234"),
+        type: :professional
+      }
+    )
+  end
+
+  def lawyer_account_factory do
+    struct!(
+      unconfirmed_account_factory(),
+      %{
+        confirmed_at: DateTime.utc_now(),
+        hashed_password: Bcrypt.hash_pwd_salt("hello World!1234"),
+        type: :professional
+      }
+    )
+  end
+
+  def land_registrar_account_factory do
+    struct!(
+      unconfirmed_account_factory(),
+      %{
+        confirmed_at: DateTime.utc_now(),
+        hashed_password: Bcrypt.hash_pwd_salt("hello World!1234"),
+        type: :staff
+      }
+    )
+  end
+
+  def surveyor_role_factory do
+    %Role{
+      name: "surveyor",
+      type: :professional,
+      description: "A surveyor role",
+      status: :active
+    }
+  end
+
+  def lawyer_role_factory do
+    %Role{
+      name: "lawyer",
+      type: :professional,
+      description: "A lawyer role",
+      status: :active
+    }
+  end
+
+  def land_registrar_role_factory do
+    %Role{
+      name: "land_registrar",
+      type: :staff,
+      description: "A land registrar role",
+      status: :active
+    }
+  end
+
+  def admin_role_factory do
+    %Role{
+      name: "admin",
+      type: :staff,
+      description: "An admin role",
+      status: :active
+    }
+  end
+
+  def land_encumbrance_factory do
+    %LandEncumbrance{
+      land: build(:land),
+      created_by: build(:surveyor_account),
+      created_for: build(:account),
+      reason: :loan,
+      status: :pending
     }
   end
 end

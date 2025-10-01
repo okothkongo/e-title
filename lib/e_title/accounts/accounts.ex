@@ -360,6 +360,22 @@ defmodule ETitle.Accounts do
 
   def account_has_role?(_, _role_name), do: false
 
+  def account_has_professional_role?(%Account{id: id}) do
+    query =
+      from role in Role,
+        join: account_role in AccountRole,
+        on: account_role.role_id == role.id,
+        join: account in Account,
+        on: account.id == account_role.account_id,
+        where:
+          account_role.account_id == ^id and account.type == :professional and
+            account.status == :active and role.status == :active
+
+    Repo.exists?(query)
+  end
+
+  def account_has_professional_role?(_), do: false
+
   def list_users do
     Repo.all(User)
   end

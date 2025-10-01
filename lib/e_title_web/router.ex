@@ -75,8 +75,13 @@ defmodule ETitleWeb.Router do
       live "/accounts/settings/confirm-email/:token", AccountLive.Settings, :confirm_email
       live "/lands", LandLive.Index, :index
       live "/lands/new", LandLive.Form, :new
+      live "/lands/search", LandSearchLive, :index
       live "/lands/:id", LandLive.Show, :show
       live "/lands/:id/edit", LandLive.Form, :edit
+      live "/land-encumbrances", LandEncumbranceLive.Index, :index
+      live "/land-encumbrances/new", LandEncumbranceLive.Form, :new
+      live "/land-encumbrances/:id", LandEncumbranceLive.Show, :show
+      live "/land-encumbrances/:id/edit", LandEncumbranceLive.Form, :edit
     end
 
     live_session :require_authenticated_non_admin_account,
