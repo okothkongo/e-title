@@ -158,12 +158,7 @@ defmodule ETitleWeb.LandEncumbranceLive.Form do
 
   @impl true
   def mount(_params, _session, socket) do
-    unless can_create_encumbrance?(socket.assigns.current_scope.account) do
-      {:ok,
-       socket
-       |> put_flash(:error, "Only professional accounts can create encumbrances")
-       |> push_navigate(to: ~p"/land-encumbrances")}
-    else
+    if can_create_encumbrance?(socket.assigns.current_scope.account) do
       land_options = get_land_options(socket.assigns.current_scope)
 
       {:ok,
@@ -171,6 +166,11 @@ defmodule ETitleWeb.LandEncumbranceLive.Form do
        |> assign(:page_title, "Land Encumbrance Form")
        |> assign(:land_options, land_options)
        |> assign(:land_encumbrance, nil)}
+    else
+      {:ok,
+       socket
+       |> put_flash(:error, "Only professional accounts can create encumbrances")
+       |> push_navigate(to: ~p"/land-encumbrances")}
     end
   end
 
@@ -212,7 +212,13 @@ defmodule ETitleWeb.LandEncumbranceLive.Form do
 
   @impl true
   def handle_event("validate", %{"land_encumbrance" => land_encumbrance_params}, socket) do
-    changeset = LandEncumbrance.changeset(%LandEncumbrance{}, land_encumbrance_params, socket.assigns.current_scope)
+    changeset =
+      LandEncumbrance.changeset(
+        %LandEncumbrance{},
+        land_encumbrance_params,
+        socket.assigns.current_scope
+      )
+
     form = to_form(changeset, as: :land_encumbrance)
 
     {:noreply, assign(socket, form: form)}

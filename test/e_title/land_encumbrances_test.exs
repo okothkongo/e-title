@@ -25,8 +25,6 @@ defmodule ETitle.LandEncumbrancesTest do
     registrar_role = insert(:land_registrar_role)
     insert(:account_role, account: registrar_account, role: registrar_role)
 
-    # land_encumbrance = insert(:land_encumbrance, status: :active, created_by: surveyor_account, created_for: citizen_account)
-
     land_encumbrance_attrs = %{
       land_id: land.id,
       reason: "loan",
@@ -570,45 +568,6 @@ defmodule ETitle.LandEncumbrancesTest do
       assert updated_encumbrance.approved_at != nil
       assert updated_encumbrance.dismissed_at == nil
     end
-
-    # test "admin can approve pending encumbrance", %{admin_account: admin_account, land_encumbrance: land_encumbrance} do
-    #   scope = build(:account_scope, account: admin_account)
-
-    #   # Test the context function directly
-    #   {:ok, updated_encumbrance} = Lands.approve_land_encumbrance(scope, land_encumbrance, %{status: :active})
-
-    #   # Verify the encumbrance was approved
-    #   assert updated_encumbrance.status == :active
-    #   assert updated_encumbrance.approved_by_id == admin_account.id
-    #   assert updated_encumbrance.approved_at != nil
-    # end
-
-    # test "admin can dismiss pending encumbrance", %{admin_account: admin_account, land_encumbrance: land_encumbrance} do
-    #   scope = build(:account_scope, account: admin_account)
-
-    #   # Test the context function directly
-    #   {:ok, updated_encumbrance} = Lands.dismiss_land_encumbrance(scope, land_encumbrance, %{status: :dismissed})
-
-    #   # Verify the encumbrance was dismissed
-    #   assert updated_encumbrance.status == :dismissed
-    #   assert updated_encumbrance.dismissed_by_id == admin_account.id
-    #   assert updated_encumbrance.dismissed_at != nil
-    # end
-
-    # test "admin can deactivate active encumbrance", %{admin_account: admin_account, land_encumbrance: land_encumbrance} do
-    #   scope = build(:account_scope, account: admin_account)
-
-    #   # First approve the encumbrance to make it active
-    #   {:ok, _} = Lands.approve_land_encumbrance(scope, land_encumbrance, %{status: :active})
-
-    #   # Test the context function directly
-    #   {:ok, updated_encumbrance} = Lands.deactivate_land_encumbrance(scope, land_encumbrance, %{status: :inactive})
-
-    #   # Verify the encumbrance was deactivated
-    #   assert updated_encumbrance.status == :inactive
-    #   assert updated_encumbrance.deactivated_by_id == admin_account.id
-    #   assert updated_encumbrance.deactivated_at != nil
-    # end
 
     test "surveyor cannot approve their own encumbrance", %{
       surveyor_account: surveyor_account,
